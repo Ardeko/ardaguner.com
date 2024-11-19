@@ -12,39 +12,109 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-
-a:hover {
-  color: #535bf2;
-}
-
 body {
   margin: 0;
   display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: linear-gradient(135deg, #1e1e37, #2c2c54, #1f0036);
+  animation: cyberpunk-bg-animation 10s infinite alternate;
 }
 
+@keyframes cyberpunk-bg-animation {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Geri Dönme Butonu */
+.return-button {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background-color: #646cff;
+  color: #fff;
+  border: none;
+  padding: 1rem;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.return-button:hover {
+  background-color: #535bf2;
+  transform: scale(1.1);
+}
+
+$1
+.header {
+  width: 100%;
+  text-align: center;
+  padding: 1.5rem 0;
+}
+
+.header h1 {
+  font-size: 2.5rem;
+  color: #fff;
+  transition: text-shadow 0.3s ease;
+  text-shadow: 0 0 10px #ff007f, 0 0 20px #ff007f;
+}
+
+.header h1:hover {
+  text-shadow: 0 0 20px #ff007f, 0 0 40px #ff007f, 0 0 60px #ff007f;
+}
+
+.header ul {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.header ul li {
+  margin: 0 1rem;
+}
+
+.header ul li a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.header ul li a:hover {
+  color: #646cff;
+}
+
+/* Hero Section */
 .hero {
+  width: 100%;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 80vh;
-  background: linear-gradient(135deg, #1e1e37, #2c2c54);
   color: #fff;
   text-align: center;
   padding: 2rem;
+  box-sizing: border-box;
+  position: relative;
 }
 
 .hero h1 {
   font-size: 3rem;
   margin-bottom: 1rem;
+  max-width: 80%;
 }
 
 .hero p {
@@ -59,15 +129,49 @@ body {
   padding: 1rem 2rem;
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s, transform 0.3s;
 }
 
 .hero button:hover {
   background-color: #535bf2;
+  transform: scale(1.05);
 }
 
-/* Telif hakkı mesajı için stil */
-.restricted {
+/* Projects Section */
+.projects-container {
+  width: 100%;
+  max-width: 1200px;
+  padding: 4rem 2rem;
+  text-align: center;
+  color: #f1f1f1;
+  box-sizing: border-box;
+}
+
+.projects-container h2 {
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+}
+
+.projects-container ul {
+  list-style: none;
+  padding: 0;
+}
+
+.projects-container li {
+  margin-bottom: 2.5rem;
+}
+
+.projects-container a {
+  color: #646cff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.projects-container a:hover {
+  color: #535bf2;
+}
+
+.projects-container .restricted {
   color: #ff4d4f;
   font-weight: bold;
   margin-top: 0.5rem;
@@ -77,4 +181,47 @@ body {
   border-radius: 5px;
   display: inline-block;
   text-align: center;
+  max-width: 90%;
+}
+
+/* Footer */
+.footer { width: 100%; padding: 2rem 0; text-align: center; }
+.footer .social-links a.linkedin:before { content: '.footer {
+  width: 100%;
+  padding: 2rem 0;
+  text-align: center;F5E0'; margin-right: 5px !important;
+  background: #1e1e37;
+  color: #fff;
+  font-size: 0.9rem;
+}
+
+.footer .social-links a {
+  margin: 0 1rem;
+  color: #646cff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.footer .social-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.footer .social-links a.linkedin {
+  margin: 0 1rem;
+  color: #0077b5;
+}
+
+.footer .social-links a.linkedin:hover {
+  color: #005582;
+}
+  margin: 0 1rem;
+  color: #646cff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.footer .social-links a:hover {
+  color: #535bf2;
 }
