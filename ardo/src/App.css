@@ -73,3 +73,80 @@
 .projects-container a:hover {
   color: #535bf2;
 }
+
+/* Oyunlar Kısmı */
+.games-container {
+  text-align: center;
+  padding: 2rem;
+}
+
+.games-container h2 {
+  font-size: 2.5rem;
+  color: #fff;
+  margin-bottom: 2rem;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+  animation: glow 2s infinite alternate;
+}
+
+.games-container ul {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  list-style: none;
+  padding: 0;
+}
+
+.games-container li {
+  background: linear-gradient(135deg, #4a90e2, #9013fe);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  font-size: 1.2rem;
+  color: #fff;
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.games-container li:hover {
+  transform: scale(1.1);
+  box-shadow: 0 10px 30px rgba(144, 19, 254, 0.7);
+}
+
+.games-container li a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.games-container li a:hover {
+  text-decoration: underline;
+}
+
+@keyframes glow {
+  from {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+  }
+  to {
+    text-shadow: 0 0 20px rgba(255, 255, 255, 1);
+  }
+}
+
+/* Responsive tasarım için */
+@media (max-width: 768px) {
+  .games-container ul {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .games-container li {
+    width: 80%; /* Daha dar ekranlar için genişliği küçült */
+  }
+}
+
+@media (max-width: 1024px) {
+  .games-container h2 {
+    font-size: 2rem;
+  }
+}

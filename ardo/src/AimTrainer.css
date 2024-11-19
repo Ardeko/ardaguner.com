@@ -1,0 +1,38 @@
+.aim-trainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #1e1e37;
+    color: white;
+  }
+  
+  .aim-trainer h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+  }
+  
+  .aim-trainer p {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .target {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background-color: red;
+    border: 3px solid white;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.3s ease, background-color 0.3s ease, left 0.3s ease, top 0.3s ease;
+  }
+  
+  .target:hover {
+    transform: scale(1.2);
+    background-color: #ff6666;
+  }
+  
