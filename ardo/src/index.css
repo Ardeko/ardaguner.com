@@ -22,8 +22,9 @@ body {
   height: 100%;
   padding: 0;
   box-sizing: border-box;
-  overflow: hidden;
-  background: linear-gradient(135deg, #1e1e37, #2c2c54, #1f0036);
+  overflow: auto;
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('./assets/ardobg.jpg') no-repeat center center fixed;
+  background-size: cover;
   animation: cyberpunk-bg-animation 10s infinite alternate;
 }
 
@@ -56,7 +57,7 @@ body {
   transform: scale(1.1);
 }
 
-$1
+/* Header */
 .header {
   width: 100%;
   text-align: center;
@@ -66,12 +67,12 @@ $1
 .header h1 {
   font-size: 2.5rem;
   color: #fff;
+  text-shadow: 0 0 10px cyan, 0 0 20px cyan;
   transition: text-shadow 0.3s ease;
-  text-shadow: 0 0 10px #ff007f, 0 0 20px #ff007f;
 }
 
 .header h1:hover {
-  text-shadow: 0 0 20px #ff007f, 0 0 40px #ff007f, 0 0 60px #ff007f;
+  text-shadow: 0 0 20px cyan, 0 0 40px cyan, 0 0 60px cyan;
 }
 
 .header ul {
@@ -137,89 +138,144 @@ $1
   transform: scale(1.05);
 }
 
+/* Hakkımda kısmı */
+.about-container {
+  max-width: 900px;
+  margin: 4rem auto;
+  background-color: #2c2c2c;
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  color: #ffffff;
+  text-align: left;
+  line-height: 1.6;
+}
+
+.about-container h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  color: #ffffff;
+}
+
 /* Projects Section */
 .projects-container {
   width: 100%;
   max-width: 1200px;
-  padding: 4rem 2rem;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #2c2c2c;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  color: #ffffff;
   text-align: center;
-  color: #f1f1f1;
-  box-sizing: border-box;
 }
 
 .projects-container h2 {
   font-size: 2.5rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .projects-container ul {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
 .projects-container li {
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border-radius: 10px;
+  background-color: #1e1e1e;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.projects-container li:hover {
+  transform: scale(1.02);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
 .projects-container a {
-  color: #646cff;
+  color: #64b5f6;
   text-decoration: none;
   font-weight: bold;
 }
 
 .projects-container a:hover {
-  color: #535bf2;
-}
-
-.projects-container .restricted {
-  color: #ff4d4f;
-  font-weight: bold;
-  margin-top: 0.5rem;
-  background: rgba(255, 77, 79, 0.1);
-  border: 1px solid #ff4d4f;
-  padding: 0.5rem;
-  border-radius: 5px;
-  display: inline-block;
-  text-align: center;
-  max-width: 90%;
+  color: #42a5f5;
 }
 
 /* Footer */
-.footer { width: 100%; padding: 2rem 0; text-align: center; }
-.footer .social-links a.linkedin:before { content: '.footer {
+.footer {
   width: 100%;
   padding: 2rem 0;
-  text-align: center;F5E0'; margin-right: 5px !important;
+  text-align: center;
   background: #1e1e37;
   color: #fff;
   font-size: 0.9rem;
 }
 
-.footer .social-links a {
-  margin: 0 1rem;
-  color: #646cff;
-  text-decoration: none;
-  font-weight: bold;
+.footer h2 {
+  margin-bottom: 1rem;
+  font-size: 1.8rem;
+  color: #ffffff;
 }
 
+/* İletişim Bölümü Liste */
+.contact-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column; /* Listeyi dikey hizala */
+  align-items: center; /* Ortala */
+  gap: 1rem; /* Öğeler arasına boşluk */
+}
+
+.contact-list li {
+  display: flex;
+  align-items: center; /* İkon ve metni yatayda hizala */
+  gap: 0.5rem; /* İkon ve metin arasına boşluk */
+}
+
+.contact-icon img {
+  width: 24px; /* İkon genişliği */
+  height: 24px; /* İkon yüksekliği */
+  object-fit: contain; /* Görüntü bozulmasın */
+  margin-right: 0.5rem; /* İkon ile metin arasına boşluk */
+}
+
+.contact-list a {
+  color: #64b5f6;
+  text-decoration: none;
+  font-size: 1rem;
+}
+
+.contact-list a:hover {
+  color: #42a5f5;
+}
+
+/* Sosyal Linkler */
 .footer .social-links {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.footer .social-links a.linkedin {
+.footer .social-links a {
   margin: 0 1rem;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.footer .social-links a.linkedin {
   color: #0077b5;
 }
 
 .footer .social-links a.linkedin:hover {
   color: #005582;
-}
-  margin: 0 1rem;
-  color: #646cff;
-  text-decoration: none;
-  font-weight: bold;
+  text-decoration: underline;
 }
 
 .footer .social-links a:hover {
