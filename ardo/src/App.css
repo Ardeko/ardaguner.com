@@ -1,3 +1,4 @@
+/* Root container */
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -5,15 +6,18 @@
   text-align: center;
 }
 
+/* Logo animasyonu ve görünüm */
 .logo {
   height: 6em;
   padding: 1.5em;
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
@@ -33,10 +37,39 @@
   }
 }
 
+/* Kart tasarımı */
 .card {
   padding: 2em;
 }
 
+/* Okuma rehberi metni */
 .read-the-docs {
   color: #888;
+}
+
+/* Projeler kısmı */
+.projects-container {
+  padding: 4rem 2rem;
+  text-align: center;
+  background-color: #242424;
+  color: #f1f1f1;
+}
+
+.projects-container ul {
+  list-style: none;
+  padding: 0;
+}
+
+.projects-container li {
+  margin-bottom: 2rem;
+}
+
+.projects-container a {
+  color: #646cff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.projects-container a:hover {
+  color: #535bf2;
 }
