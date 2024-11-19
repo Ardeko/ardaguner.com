@@ -79,7 +79,7 @@ function App() {
       <section id="about" className="about-container">
         <h2>Hakkımda</h2>
         <p>
-          Merhaba, ben Arda Güner. 2018-2023 yılları arasında A Üniversitesi’nde 
+          Merhaba, ben Arda Güner. 2018-2023 yılları arasında Altınbaş Üniversitesi’nde 
           Yazılım Mühendisliği eğitimi aldım. Üniversite hayatım boyunca ve sonrasında 
           teknolojiye olan tutkum beni farklı projelerde çalışmaya yönlendirdi.
         </p>
