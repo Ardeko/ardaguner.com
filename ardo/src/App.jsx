@@ -78,7 +78,7 @@ function App() {
                 <h1>Merhaba, Ben Arda!</h1>
                 <p>Yazılım mühendisliğine tutkuyla bağlı bir geliştiriciyim.</p>
                 <div className="daily-tip-widget">
-                  <h3>Günün Yazılım İpucu</h3>
+                  <h3>Yazılım İpucu</h3>
                   <p>{tips[Math.floor(Math.random() * tips.length)]}</p>
                 </div>
                 <button
