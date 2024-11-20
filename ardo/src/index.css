@@ -337,3 +337,36 @@ body {
 .footer .social-links a:hover {
   color: #535bf2;
 }
+
+.daily-tip-widget {
+  padding: 1rem 1.5rem;
+  margin: 2rem auto;
+  background: linear-gradient(135deg, #4a90e2, #9013fe);
+  color: #fff;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 1s ease;
+}
+
+.daily-tip-widget h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #ffdf6c;
+}
+
+.daily-tip-widget p {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

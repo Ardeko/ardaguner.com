@@ -4,7 +4,7 @@ import "./App.css";
 import CatMouseGame from "./CatMouseGame";
 import RockPaperScissors from "./RockPaperScissors";
 import AimTrainer from "./AimTrainer";
-
+import { tips } from "./tips";
 function App() {
   const projectList = [
     {
@@ -72,10 +72,15 @@ function App() {
           path="/"
           element={
             <>
-              {/* Hero Section */}
-              <section id="hero" className="hero">
+             {/* Hero Section */}
+
+            <section id="hero" className="hero">
                 <h1>Merhaba, Ben Arda!</h1>
                 <p>Yazılım mühendisliğine tutkuyla bağlı bir geliştiriciyim.</p>
+                <div className="daily-tip-widget">
+                  <h3>Günün Yazılım İpucu</h3>
+                  <p>{tips[Math.floor(Math.random() * tips.length)]}</p>
+                </div>
                 <button
                   onClick={() => {
                     document.getElementById("about").scrollIntoView({ behavior: "smooth" });
@@ -84,16 +89,23 @@ function App() {
                   Hakkımda Daha Fazla
                 </button>
               </section>
+
                   
               <section id="about" className="about-container">
-  <h2>Hakkımda</h2>
+  <h2 className="about-title">Hakkımda</h2>
   <div className="about-content">
-  <img src="/arda.JPG" alt="Arda Güner" className="profile-picture" />
+    <img src="/arda.JPG" alt="Arda Güner" className="profile-picture" />
     <div className="about-text">
       <p>
-        Merhaba, ben <strong>Arda Güner</strong>. 2018-2023 yılları arasında 
-        <strong> Altınbaş Üniversitesi</strong>’nde Yazılım Mühendisliği eğitimi aldım. 
-        Üniversite hayatım boyunca ve sonrasında teknolojiye olan tutkum beni farklı projelerde çalışmaya yönlendirdi.
+        Merhaba, ben <strong>Arda Güner</strong>. Yazılım geliştirme yolculuğumda 
+        <strong> JavaScript</strong> ile başladım ve bu alanda kendimi geliştirdim. Modern web teknolojilerini kullanarak 
+        yaratıcı ve etkili çözümler üretmekten keyif alıyorum. Özellikle 
+        <strong> React</strong> ve <strong>Node.js</strong> gibi JavaScript ekosistemindeki araçlarla projeler geliştirmek benim için hem bir iş hem de bir tutku.
+      </p>
+      <p>
+        <strong>Flutter</strong> ve <strong>Dart</strong> sayesinde mobil uygulama geliştirme alanında da deneyim sahibiyim. 
+        Kullanıcı dostu ve performanslı mobil uygulamalar tasarlamak en güçlü yönlerimden biri. 
+        Öte yandan, <strong>Kotlin</strong> konusunda hala öğrenme sürecindeyim ve bu alanda eksikliklerimi kapatmak için çaba sarf ediyorum.
       </p>
       <h3>Çalışma Hayatım</h3>
       <ul>
@@ -103,22 +115,44 @@ function App() {
       </ul>
       <h3>Becerilerim</h3>
       <p>
-        Yazılım dilleri (<strong>C, C++, C#, Python, Solidity, JavaScript</strong>) ve 
-        veri tabanı yönetimi (<strong>MySQL, SQL</strong>) konularında bilgi sahibiyim. 
-        Ayrıca <strong>Linux, MacOS</strong> ve <strong>Windows</strong> işletim sistemlerini etkin bir şekilde kullanabiliyorum.
+        <strong>Yazılım Dilleri:</strong>
+        <ul>
+          <li><b>JavaScript (React, Node.js):</b> Güçlü</li>
+          <li><b>Dart ve Flutter:</b> İleri Düzey</li>
+          <li><b>C, C++, C#, Python, Solidity:</b> İyi</li>
+          <li><b>Kotlin:</b> Geliştirme Sürecinde</li>
+        </ul>
+        <strong>Veritabanı Yönetimi:</strong> MySQL, SQL <br />
+        <strong>İşletim Sistemleri:</strong> Linux, MacOS, Windows
+      </p>
+      <p>
+        <strong>Ek Yetkinlikler:</strong>
+        <ul>
+          <li>Git ve GitHub ile versiyon kontrol</li>
+          <li>Algoritma tasarımı ve problem çözme</li>
+        </ul>
       </p>
       <h3>Hobilerim</h3>
+      <p>Boş zamanlarımda:</p>
+      <ul>
+        <li>Yaratıcı oyun fikirleri geliştirmek,</li>
+        <li>Bilimkurgu filmleri izlemek (<i>Lucy, Limitless, Inception</i> gibi),</li>
+        <li>Buz pateni yaparak hem zihin hem de bedenimi dinlendirmek,</li>
+        <li>Scuba Diving ve su altı keşifleriyle doğanın derinliklerini deneyimlemek,</li>
+        <li>Drone pilotluğu ile modern teknolojiyi hobiyle birleştirmek.</li>
+      </ul>
       <p>
-        Boş zamanlarımda yaratıcı oyun fikirleri geliştirmekten, bilimkurgu filmleri izlemekten 
-        (<i>Lucy, Limitless, Inception</i> gibi) ve yeni teknolojilere yönelik projelerde yer almaktan keyif alıyorum. 
-        Hayat felsefem, sürekli öğrenme ve yeniliklere açık olmaktır.
+        Hayat felsefem, sürekli öğrenme, keşfetme ve yeniliklere açık olmaktır.
       </p>
       <p>
-        Ayrıca <a href="https://github.com/SeIectra" target="_blank" rel="noopener noreferrer">GitHub</a> üzerindeki projelerimi inceleyebilirsiniz.
+        Ayrıca, projelerimi GitHub hesabımda paylaşıyorum. Daha fazlası için:
+        <a href="https://github.com/SeIectra" target="_blank" rel="noopener noreferrer"> GitHub Profilim</a>
       </p>
     </div>
   </div>
 </section>
+
+
 
               {/* Projects Section */}
               <section id="projects" className="projects-container">
@@ -227,6 +261,9 @@ function App() {
       </footer>
     </Router>
   );
+
+  
 }
+
 
 export default App;
