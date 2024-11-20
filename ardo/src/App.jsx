@@ -14,6 +14,12 @@ function App() {
       emoji: "🌊",
     },
     {
+      name: "Ardobot - Discord Bot",
+      description: "Yapay zeka destekli, özelleştirilebilir bir Discord botu.",
+      link: "https://github.com/SeIectra/ardobot", 
+      emoji: "🤖", 
+    },
+    {
       name: "Renault Randevu Muayene App",
       description: "Renault MAIS Muayene ve Randevu uygulaması",
       isRestricted: true,
@@ -113,7 +119,7 @@ function App() {
         <li><b>2023:</b> Fit Bilişim Bilgisayar ve Danışmanlık, Ağ İzleme Stajyeri</li>
         <li><b>2023 - Şu Anda:</b> TAC A.Ş., Yazılım Geliştirme Uzmanı</li>
       </ul>
-      <h3>Becerilerim</h3>
+      <h3>Yeteneklerim</h3>
       <p>
         <strong>Yazılım Dilleri:</strong>
         <ul>
