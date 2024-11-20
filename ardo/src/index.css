@@ -284,22 +284,22 @@ body {
   padding: 0;
   margin: 0 auto;
   display: flex;
-  flex-direction: column; /* Listeyi dikey hizala */
-  align-items: center; /* Ortala */
-  gap: 1rem; /* Öğeler arasına boşluk */
+  flex-direction: column; 
+  align-items: center; 
+  gap: 1rem; 
 }
 
 .contact-list li {
   display: flex;
-  align-items: center; /* İkon ve metni yatayda hizala */
-  gap: 0.5rem; /* İkon ve metin arasına boşluk */
+  align-items: center; 
+  gap: 0.5rem; 
 }
 
 .contact-icon img {
-  width: 24px; /* İkon genişliği */
-  height: 24px; /* İkon yüksekliği */
-  object-fit: contain; /* Görüntü bozulmasın */
-  margin-right: 0.5rem; /* İkon ile metin arasına boşluk */
+  width: 24px; 
+  height: 24px; 
+  object-fit: contain; 
+  margin-right: 0.5rem; 
 }
 
 .contact-list a {

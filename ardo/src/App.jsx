@@ -4,7 +4,6 @@ import "./App.css";
 import CatMouseGame from "./CatMouseGame";
 import RockPaperScissors from "./RockPaperScissors";
 import AimTrainer from "./AimTrainer";
-import ardaImage from "./assets/arda.jpg";
 
 function App() {
   const projectList = [
@@ -85,11 +84,11 @@ function App() {
                   Hakkımda Daha Fazla
                 </button>
               </section>
-
+                  
               <section id="about" className="about-container">
   <h2>Hakkımda</h2>
   <div className="about-content">
-  <img src={ardaImage} alt="Arda Güner" className="profile-picture" />
+  <img src="/arda.JPG" alt="Arda Güner" className="profile-picture" />
     <div className="about-text">
       <p>
         Merhaba, ben <strong>Arda Güner</strong>. 2018-2023 yılları arasında 
