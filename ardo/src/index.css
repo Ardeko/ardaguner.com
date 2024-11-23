@@ -272,10 +272,17 @@ body {
   font-size: 0.9rem;
 }
 
-.footer h2 {
-  margin-bottom: 1rem;
-  font-size: 1.8rem;
-  color: #ffffff;
+.footer p {
+  font-size: 1rem;
+  margin: 0;
+  color: #64b5f6;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.footer p:hover {
+  color: #42a5f5;
+  text-shadow: 0 0 5px rgba(66, 165, 245, 0.8);
 }
 
 /* İletişim Bölümü Liste */

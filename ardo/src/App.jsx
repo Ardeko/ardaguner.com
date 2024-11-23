@@ -217,54 +217,61 @@ function App() {
       </Routes>
 
       {/* Footer */}
-      <footer id="contact" className="footer">
-        <h2>İletişim</h2>
-        <ul className="contact-list">
-          <li>
-            <span className="contact-icon" role="img" aria-label="email">
-              📧
-            </span>
-            <a href="mailto:ardaguner2000@gmail.com">ardaguner2000@gmail.com</a>
-          </li>
-          <li>
-            <span className="contact-icon" role="img" aria-label="email">
-              📧
-            </span>
-            <a href="mailto:ardaguner@hotmail.com">ardaguner@hotmail.com</a>
-          </li>
-          <li>
-            <span className="contact-icon">
-              <img
-                src="https://cdn-icons-png.flaticon.com/512/174/174857.png"
-                alt="LinkedIn Icon"
-              />
-            </span>
-            <a
-              href="https://www.linkedin.com/in/arda-g%C3%BCner/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              LinkedIn
-            </a>
-          </li>
-          <li>
-            <span className="contact-icon">
-              <img
-                src="https://cdn-icons-png.flaticon.com/512/733/733553.png"
-                alt="GitHub Icon"
-              />
-            </span>
-            <a
-              href="https://github.com/SeIectra"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              GitHub
-            </a>
-          </li>
-        </ul>
-        <p>© 2024 Arda Güner. Tüm hakları saklıdır.</p>
-      </footer>
+      {/* Footer */}
+<footer id="contact" className="footer">
+  <h2>İletişim</h2>
+  <ul className="contact-list">
+    <li>
+      <span className="contact-icon" role="img" aria-label="email">
+        📧
+      </span>
+      <a href="mailto:ardaguner2000@gmail.com">ardaguner2000@gmail.com</a>
+    </li>
+    <li>
+      <span className="contact-icon" role="img" aria-label="email">
+        📧
+      </span>
+      <a href="mailto:ardaguner@hotmail.com">ardaguner@hotmail.com</a>
+    </li>
+    <li>
+      <span className="contact-icon">
+        <img
+          src="https://cdn-icons-png.flaticon.com/512/174/174857.png"
+          alt="LinkedIn Icon"
+        />
+      </span>
+      <a
+        href="https://www.linkedin.com/in/arda-g%C3%BCner/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        LinkedIn
+      </a>
+    </li>
+    <li>
+      <span className="contact-icon">
+        <img
+          src="https://cdn-icons-png.flaticon.com/512/733/733553.png"
+          alt="GitHub Icon"
+        />
+      </span>
+      <a
+        href="https://github.com/SeIectra"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        GitHub
+      </a>
+    </li>
+  </ul>
+  <p 
+    style={{ cursor: "pointer", color: "#64b5f6" }} 
+    onClick={() => alert("Special Thanks to Soner and Çiğdem Güner!")}
+  >
+    © 2024 Arda Güner. Tüm hakları saklıdır.
+  </p>
+</footer>
+
     </Router>
   );
 
