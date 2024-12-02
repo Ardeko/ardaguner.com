@@ -217,8 +217,7 @@ function App() {
       </Routes>
 
       {/* Footer */}
-      {/* Footer */}
-<footer id="contact" className="footer">
+      <footer id="contact" className="footer">
   <h2>İletişim</h2>
   <ul className="contact-list">
     <li>
@@ -263,6 +262,7 @@ function App() {
         GitHub
       </a>
     </li>
+    <li style={{ marginBottom: "1rem" }}></li> {/* Boşluk için */}
   </ul>
   <p 
     style={{ cursor: "pointer", color: "#64b5f6" }} 
