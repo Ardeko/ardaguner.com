@@ -1,0 +1,65 @@
+{
+  "profession": "Software Engineer",
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "projects": "Projects",
+    "contact": "Contact",
+    "games": "Games"
+  },
+  "hero": {
+    "title": "Hi, I'm Arda!",
+    "subtitle": "A software engineer passionate about development.",
+    "tipTitle": "Daily Software Tip",
+    "aboutButton": "Learn More About Me"
+  },
+  "about": {
+    "title": "About Me",
+    "description": "Hi, I'm Arda Güner. I started my software journey with JavaScript and developed projects in modern technologies.",
+    "workExperience": "Work Experience",
+    "education": "Education",
+    "educationDetails": "2018-2023: Altınbaş University, Software Engineering",
+    "job1": "2019-2021: DNY, Technical Support Intern",
+    "job2": "2023: Fit Computing and Consulting, Network Monitoring Intern",
+    "job3": "2023 - Present: TAC A.Ş., Software Developer",
+    "skills": "My Skills",
+    "languages": "Programming Languages: JavaScript, Dart, C++, Python, Solidity",
+    "databases": "Database Management: MySQL, SQL",
+    "os": "Operating Systems: Linux, MacOS, Windows",
+    "additionalSkills": [
+      "Version control with Git and GitHub",
+      "Algorithm design and problem solving",
+      "Performance optimization and code refactoring"
+    ],
+    "hobbies": "Hobbies",
+    "hobbyList": [
+      "Developing creative game ideas",
+      "Watching sci-fi movies (Lucy, Limitless, Inception)",
+      "Ice skating to refresh both mind and body",
+      "Scuba diving to explore the depths of nature",
+      "Drone piloting to merge technology with hobbies"
+    ]
+  },
+  "projects": {
+    "title": "My Projects",
+    "underwaterDrone": "Teknofest Autonomous Underwater Drone",
+    "underwaterDescription": "Designed with autonomous image processing technology.",
+    "ardobot": "Ardobot - Discord Bot",
+    "ardobotDescription": "An AI-powered, customizable Discord bot.",
+    "renaultApp": "Renault Appointment Inspection App",
+    "renaultDescription": "Renault MAIS Inspection and Appointment application.",
+    "wordeko": "Wordeko Word Game",
+    "wordekoDescription": "A fun word guessing game.",
+    "protocolGame": "Protocol Racing Game",
+    "protocolDescription": "An exciting race of speed and strategy.",
+    "unichain": "Unichain Blockchain Monitoring Chain",
+    "unichainDescription": "A system for tracking blockchain transactions.",
+    "restricted": "This project is restricted due to copyright.",
+    "more": "Learn More"
+  },
+  "footer": {
+    "title": "Contact",
+    "thanks": "Special thanks to Soner and Çiğdem Güner!",
+    "copyright": "© 2024 Arda Güner. All rights reserved."
+  }
+}

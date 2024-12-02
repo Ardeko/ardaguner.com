@@ -1,0 +1,66 @@
+{
+    "profession": "Yazılım Mühendisi",
+    "nav": {
+      "home": "Anasayfa",
+      "about": "Hakkımda",
+      "projects": "Projeler",
+      "contact": "İletişim",
+      "games": "Oyunlar"
+    },
+    "hero": {
+      "title": "Merhaba, Ben Arda!",
+      "subtitle": "Yazılım mühendisliğine tutkuyla bağlı bir geliştiriciyim.",
+      "tipTitle": "Günün Yazılım İpucu",
+      "aboutButton": "Hakkımda Daha Fazla"
+    },
+    "about": {
+      "title": "Hakkımda",
+      "description": "Merhaba, ben Arda Güner. Yazılım geliştirme yolculuğumda JavaScript ile başladım ve modern teknolojilere yönelik projeler geliştirdim.",
+      "workExperience": "Çalışma Hayatım",
+      "education": "Eğitim",
+      "educationDetails": "2018-2023: Altınbaş Üniversitesi, Yazılım Mühendisliği",
+      "job1": "2019-2021: DNY, Teknik Destek Stajyeri",
+      "job2": "2023: Fit Bilişim ve Danışmanlık, Ağ İzleme Stajyeri",
+      "job3": "2023 - Şu Anda: TAC A.Ş., Yazılım Geliştirme Uzmanı",
+      "skills": "Yeteneklerim",
+      "languages": "Yazılım Dilleri: JavaScript, Dart, C++, Python, Solidity",
+      "databases": "Veritabanı Yönetimi: MySQL, SQL",
+      "os": "İşletim Sistemleri: Linux, MacOS, Windows",
+      "additionalSkills": [
+        "Git ve GitHub ile versiyon kontrol",
+        "Algoritma tasarımı ve problem çözme",
+        "Performans optimizasyonu ve kod temizliği"
+      ],
+      "hobbies": "Hobilerim",
+      "hobbyList": [
+        "Yaratıcı oyun fikirleri geliştirmek",
+        "Bilimkurgu filmleri izlemek (Lucy, Limitless, Inception gibi)",
+        "Buz pateni yaparak hem zihin hem de bedenimi dinlendirmek",
+        "Scuba Diving ve su altı keşifleriyle doğanın derinliklerini deneyimlemek",
+        "Drone pilotluğu ile modern teknolojiyi hobiyle birleştirmek"
+      ]
+    },
+    "projects": {
+      "title": "Projelerim",
+      "underwaterDrone": "Teknofest Autonomous Underwater Drone",
+      "underwaterDescription": "Otonom görüntü işleme teknolojisiyle tasarlandı.",
+      "ardobot": "Ardobot - Discord Bot",
+      "ardobotDescription": "Yapay zeka destekli, özelleştirilebilir bir Discord botu.",
+      "renaultApp": "Renault Randevu Muayene App",
+      "renaultDescription": "Renault MAIS Muayene ve Randevu uygulaması.",
+      "wordeko": "Wordeko Kelime Oyunu",
+      "wordekoDescription": "Eğlenceli bir kelime tahmin oyunu.",
+      "protocolGame": "Protocol Yarış Oyunu",
+      "protocolDescription": "Heyecan dolu bir hız ve strateji yarışı.",
+      "unichain": "Unichain Blockchain İzleme Zinciri",
+      "unichainDescription": "Blockchain işlemlerini takip etmeye yönelik bir sistem.",
+      "restricted": "Bu proje telif hakları nedeniyle paylaşılmamaktadır.",
+      "more": "Daha Fazla"
+    },
+    "footer": {
+    "title": "İletişim",
+    "thanks": "Soner ve Çiğdem Güner'e özel teşekkürler!",
+    "copyright": "© 2024 Arda Güner. Tüm hakları saklıdır."
+  }
+  }
+  

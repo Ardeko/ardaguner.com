@@ -1,45 +1,51 @@
-import React from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import "./App.css";
 import CatMouseGame from "./CatMouseGame";
 import RockPaperScissors from "./RockPaperScissors";
 import AimTrainer from "./AimTrainer";
 import { tips } from "./tips";
+import tr from "/locales/tr.json";
+import en from "/locales/en.json";
+
 function App() {
+  const [language, setLanguage] = useState("tr");
+  const strings = language === "tr" ? tr : en;
+
   const projectList = [
     {
-      name: "Teknofest Autonomous Underwater Drone",
-      description: "Otonom görüntü işleme teknolojisiyle tasarlandı.",
+      name: strings.projects.underwaterDrone,
+      description: strings.projects.underwaterDescription,
       link: "https://github.com/EVA-Submarine-Team",
       emoji: "🌊",
     },
     {
       name: "Ardobot - Discord Bot",
-      description: "Yapay zeka destekli, özelleştirilebilir bir Discord botu.",
-      link: "https://github.com/SeIectra/ardobot", 
-      emoji: "🤖", 
+      description: strings.projects.ardobotDescription,
+      link: "https://github.com/SeIectra/ardobot",
+      emoji: "🤖",
     },
     {
-      name: "Renault Randevu Muayene App",
-      description: "Renault MAIS Muayene ve Randevu uygulaması",
+      name: strings.projects.renaultApp,
+      description: strings.projects.renaultDescription,
       isRestricted: true,
       emoji: "🚗",
     },
     {
-      name: "Wordeko Kelime Oyunu",
-      description: "Eğlenceli bir kelime tahmin oyunu.",
+      name: strings.projects.wordeko,
+      description: strings.projects.wordekoDescription,
       link: "https://github.com/SeIectra/wordeko",
       emoji: "📖",
     },
     {
-      name: "Protocol Yarış Oyunu",
-      description: "Heyecan dolu bir hız ve strateji yarışı.",
+      name: strings.projects.protocolGame,
+      description: strings.projects.protocolDescription,
       link: "https://github.com/SeIectra/protocol",
       emoji: "🏎️",
     },
     {
-      name: "Unichain Blockchain İzleme Zinciri",
-      description: "Blockchain işlemlerini takip etmeye yönelik bir sistem.",
+      name: strings.projects.unichain,
+      description: strings.projects.unichainDescription,
       link: "https://github.com/SeIectra/unichain",
       emoji: "🔗",
     },
@@ -49,23 +55,27 @@ function App() {
     <Router>
       <header className="header">
         <h1>Arda Güner</h1>
-        <p>Software Engineer</p>
+        <p>{strings.profession}</p>
+        <div style={{ position: "absolute", top: 10, right: 10 }}>
+          <button onClick={() => setLanguage("tr")}>🇹🇷 Türkçe</button>
+          <button onClick={() => setLanguage("en")}>en English</button>
+        </div>
         <nav>
           <ul>
             <li>
-              <Link to="/">Anasayfa</Link>
+              <Link to="/">{strings.nav.home}</Link>
             </li>
             <li>
-              <a href="#about">Hakkımda</a>
+              <a href="#about">{strings.nav.about}</a>
             </li>
             <li>
-              <a href="#projects">Projeler</a>
+              <a href="#projects">{strings.nav.projects}</a>
             </li>
             <li>
-              <a href="#contact">İletişim</a>
+              <a href="#contact">{strings.nav.contact}</a>
             </li>
             <li>
-              <Link to="/games">Oyunlar</Link>
+              <Link to="/games">{strings.nav.games}</Link>
             </li>
           </ul>
         </nav>
@@ -78,13 +88,12 @@ function App() {
           path="/"
           element={
             <>
-             {/* Hero Section */}
-
-            <section id="hero" className="hero">
-                <h1>Merhaba, Ben Arda!</h1>
-                <p>Yazılım mühendisliğine tutkuyla bağlı bir geliştiriciyim.</p>
+              {/* Hero Section */}
+              <section id="hero" className="hero">
+                <h1>{strings.hero.title}</h1>
+                <p>{strings.hero.subtitle}</p>
                 <div className="daily-tip-widget">
-                  <h3>Yazılım İpucu</h3>
+                  <h3>{strings.hero.tipTitle}</h3>
                   <p>{tips[Math.floor(Math.random() * tips.length)]}</p>
                 </div>
                 <button
@@ -92,95 +101,47 @@ function App() {
                     document.getElementById("about").scrollIntoView({ behavior: "smooth" });
                   }}
                 >
-                  Hakkımda Daha Fazla
+                  {strings.hero.aboutButton}
                 </button>
               </section>
 
-                  
+              {/* About Section */}
               <section id="about" className="about-container">
-  <h2 className="about-title">Hakkımda</h2>
-  <div className="about-content">
-    <img src="/arda.JPG" alt="Arda Güner" className="profile-picture" />
-    <div className="about-text">
-      <p>
-        Merhaba, ben <strong>Arda Güner</strong>. Yazılım geliştirme yolculuğumda 
-        <strong> JavaScript</strong> ile başladım ve bu alanda kendimi geliştirdim. Modern web teknolojilerini kullanarak 
-        yaratıcı ve etkili çözümler üretmekten keyif alıyorum. Özellikle 
-        <strong> React</strong> ve <strong>Node.js</strong> gibi JavaScript ekosistemindeki araçlarla projeler geliştirmek benim için hem bir iş hem de bir tutku.
-      </p>
-      <p>
-        <strong>Flutter</strong> ve <strong>Dart</strong> sayesinde mobil uygulama geliştirme alanında da deneyim sahibiyim. 
-        Kullanıcı dostu ve performanslı mobil uygulamalar tasarlamak en güçlü yönlerimden biri. 
-        Öte yandan, <strong>Kotlin</strong> konusunda hala öğrenme sürecindeyim ve bu alanda eksikliklerimi kapatmak için çaba sarf ediyorum.
-      </p>
-      <h3>Çalışma Hayatım</h3>
-      <ul>
-        <li><b>2019-2021:</b> DNY, Teknik Destek Stajyeri</li>
-        <li><b>2023:</b> Fit Bilişim Bilgisayar ve Danışmanlık, Ağ İzleme Stajyeri</li>
-        <li><b>2023 - Şu Anda:</b> TAC A.Ş., Yazılım Geliştirme Uzmanı</li>
-      </ul>
-      <h3>Yeteneklerim</h3>
-      <p>
-        <strong>Yazılım Dilleri:</strong>
-        <ul>
-          <li><b>JavaScript (React, Node.js):</b> Güçlü</li>
-          <li><b>Dart ve Flutter:</b> İleri Düzey</li>
-          <li><b>C, C++, C#, Python, Solidity:</b> İyi</li>
-          <li><b>Kotlin:</b> Geliştirme Sürecinde</li>
-        </ul>
-        <strong>Veritabanı Yönetimi:</strong> MySQL, SQL <br />
-        <strong>İşletim Sistemleri:</strong> Linux, MacOS, Windows
-      </p>
-      <p>
-        <strong>Ek Yetkinlikler:</strong>
-        <ul>
-          <li>Git ve GitHub ile versiyon kontrol</li>
-          <li>Algoritma tasarımı ve problem çözme</li>
-        </ul>
-      </p>
-      <h3>Hobilerim</h3>
-      <p>Boş zamanlarımda:</p>
-      <ul>
-        <li>Yaratıcı oyun fikirleri geliştirmek,</li>
-        <li>Bilimkurgu filmleri izlemek (<i>Lucy, Limitless, Inception</i> gibi),</li>
-        <li>Buz pateni yaparak hem zihin hem de bedenimi dinlendirmek,</li>
-        <li>Scuba Diving ve su altı keşifleriyle doğanın derinliklerini deneyimlemek,</li>
-        <li>Drone pilotluğu ile modern teknolojiyi hobiyle birleştirmek.</li>
-      </ul>
-      <p>
-        Hayat felsefem, sürekli öğrenme, keşfetme ve yeniliklere açık olmaktır.
-      </p>
-      <p>
-        Ayrıca, projelerimi GitHub hesabımda paylaşıyorum. Daha fazlası için:
-        <a href="https://github.com/SeIectra" target="_blank" rel="noopener noreferrer"> GitHub Profilim</a>
-      </p>
-    </div>
-  </div>
-</section>
-
-
+                <h2 className="about-title">{strings.about.title}</h2>
+                <div className="about-content">
+                  <img src="/arda.JPG" alt="Arda Güner" className="profile-picture" />
+                  <div className="about-text">
+                    <p>{strings.about.description}</p>
+                    <h3>{strings.about.workExperience}</h3>
+                    <ul>
+                      <li>{strings.about.job1}</li>
+                      <li>{strings.about.job2}</li>
+                      <li>{strings.about.job3}</li>
+                    </ul>
+                    <h3>{strings.about.skills}</h3>
+                    <ul>
+                      <li>{strings.about.languages}</li>
+                      <li>{strings.about.databases}</li>
+                      <li>{strings.about.os}</li>
+                    </ul>
+                  </div>
+                </div>
+              </section>
 
               {/* Projects Section */}
               <section id="projects" className="projects-container">
-                <h2>Projelerim</h2>
+                <h2>{strings.projects.title}</h2>
                 <ul>
                   {projectList.map((project, index) => (
-                    <li
-                      key={index}
-                      className={`project-${project.name.toLowerCase().replace(/\s+/g, "-")}`}
-                    >
-                      <span className="project-emoji" role="img" aria-label="emoji">
-                        {project.emoji}
-                      </span>
+                    <li key={index}>
+                      <span className="project-emoji">{project.emoji}</span>
                       <h3>{project.name}</h3>
                       <p>{project.description}</p>
                       {project.isRestricted ? (
-                        <p className="restricted">
-                          🚫 Bu proje telif hakları nedeniyle paylaşılmamaktadır.
-                        </p>
+                        <p>🚫 {strings.projects.restricted}</p>
                       ) : (
                         <a href={project.link} target="_blank" rel="noopener noreferrer">
-                          Daha Fazla
+                          {strings.projects.more}
                         </a>
                       )}
                     </li>
@@ -191,34 +152,34 @@ function App() {
           }
         />
 
-        {/* Oyunlar */}
-        <Route
+        {/* Games */}
+        {/* <Route
           path="/games"
           element={
             <div className="games-container">
-  <h2>Oyunlar (Beta) </h2>
-  <ul>
-    <li>
-      <Link to="/game">Kedi-Fare Yakalama Oyunu</Link>
-    </li>
-    <li>
-      <Link to="/games/rock-paper-scissors">Taş-Kağıt-Makas</Link>
-    </li>
-    <li>
-      <Link to="/games/aim-trainer">Hedef Vurma</Link>
-    </li>
-  </ul>
-</div>
+              <h2>{strings.games.title}</h2>
+              <ul>
+                <li>
+                  <Link to="/game">{strings.games.catMouse}</Link>
+                </li>
+                <li>
+                  <Link to="/games/rock-paper-scissors">{strings.games.rps}</Link>
+                </li>
+                <li>
+                  <Link to="/games/aim-trainer">{strings.games.aimTrainer}</Link>
+                </li>
+              </ul>
+            </div>
           }
         />
         <Route path="/game" element={<CatMouseGame />} />
         <Route path="/games/rock-paper-scissors" element={<RockPaperScissors />} />
-        <Route path="/games/aim-trainer" element={<AimTrainer />} />
+        <Route path="/games/aim-trainer" element={<AimTrainer />} /> */}
       </Routes>
 
       {/* Footer */}
       <footer id="contact" className="footer">
-  <h2>İletişim</h2>
+  <h2>{strings.footer.title}</h2>
   <ul className="contact-list">
     <li>
       <span className="contact-icon" role="img" aria-label="email">
@@ -266,17 +227,14 @@ function App() {
   </ul>
   <p 
     style={{ cursor: "pointer", color: "#64b5f6" }} 
-    onClick={() => alert("Special Thanks to Soner and Çiğdem Güner!")}
+    onClick={() => alert(strings.footer.thanks)}
   >
-    © 2024 Arda Güner. Tüm hakları saklıdır.
+    {strings.footer.copyright}
   </p>
 </footer>
 
     </Router>
   );
-
-  
 }
-
 
 export default App;
