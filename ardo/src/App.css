@@ -151,48 +151,73 @@
   }
 }
 
-button {
-  margin: 0 5px;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  background-color: #646cff;
-  color: white;
-  font-size: 14px;
-  transition: transform 0.2s ease;
-}
-
-button:hover {
-  transform: scale(1.1);
-  background-color: #535bf2;
-}
-
-
 .language-switcher {
-  display: flex;
-  gap: 0.5rem;
   position: fixed;
   top: 10px;
   right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.language-switcher button {
-  background-color: #2c2c2c;
-  color: #fff;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 5px;
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 70px; /* Daha geniş alan */
+  height: 34px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #f44336; /* TR için kırmızı */
+  border-radius: 34px;
+  transition: 0.4s;
 }
 
-.language-switcher button:hover {
-  background-color: #646cff;
-  transform: scale(1.05);
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.4s;
 }
 
-.language-switcher button.active {
-  background-color: #535bf2;
-  font-weight: bold;
+/* Slide hareketi */
+input:checked + .slider {
+  background-color: #2196f3; /* EN için mavi */
+}
+
+input:checked + .slider:before {
+  transform: translateX(36px);
+}
+
+/* Dil Etiketleri */
+.language-labels {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  text-align: center;
+  transform: translate(-50%, -50%);
+  font-size: 12px;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 8px; /* Etiketler için boşluk */
+  pointer-events: none;
 }

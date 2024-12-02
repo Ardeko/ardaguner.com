@@ -12,6 +12,10 @@ function App() {
   const [language, setLanguage] = useState("tr");
   const strings = language === "tr" ? tr : en;
 
+  const toggleLanguage = () => {
+    setLanguage((prevLanguage) => (prevLanguage === "tr" ? "en" : "tr"));
+  };
+
   const projectList = [
     {
       name: strings.projects.underwaterDrone,
@@ -56,10 +60,6 @@ function App() {
       <header className="header">
         <h1>Arda Güner</h1>
         <p>{strings.profession}</p>
-        <div style={{ position: "absolute", top: 10, right: 10 }}>
-          <button onClick={() => setLanguage("tr")}>🇹🇷 Türkçe</button>
-          <button onClick={() => setLanguage("en")}>en English</button>
-        </div>
         <nav>
           <ul>
             <li>
@@ -74,11 +74,24 @@ function App() {
             <li>
               <a href="#contact">{strings.nav.contact}</a>
             </li>
-            <li>
-              <Link to="/games">{strings.nav.games}</Link>
-            </li>
           </ul>
         </nav>
+        <div className="language-switcher">
+          <label className="switch">
+            <input
+              type="checkbox"
+              id="language-toggle"
+              onChange={toggleLanguage}
+              checked={language === "en"}
+            />
+            <span className="slider">
+              <span className="language-labels">
+                <span style={{ marginLeft: "10px" }}>TR</span>
+                <span style={{ marginRight: "10px" }}>EN</span>
+              </span>
+            </span>
+          </label>
+        </div>
       </header>
 
       {/* Routes */}
@@ -94,7 +107,7 @@ function App() {
                 <p>{strings.hero.subtitle}</p>
                 <div className="daily-tip-widget">
                   <h3>{strings.hero.tipTitle}</h3>
-                  <p>{tips[Math.floor(Math.random() * tips.length)]}</p>
+                  <p>{tips[language][Math.floor(Math.random() * tips[language].length)]}</p>
                 </div>
                 <button
                   onClick={() => {
@@ -107,26 +120,48 @@ function App() {
 
               {/* About Section */}
               <section id="about" className="about-container">
-                <h2 className="about-title">{strings.about.title}</h2>
-                <div className="about-content">
-                  <img src="/arda.JPG" alt="Arda Güner" className="profile-picture" />
-                  <div className="about-text">
-                    <p>{strings.about.description}</p>
-                    <h3>{strings.about.workExperience}</h3>
-                    <ul>
-                      <li>{strings.about.job1}</li>
-                      <li>{strings.about.job2}</li>
-                      <li>{strings.about.job3}</li>
-                    </ul>
-                    <h3>{strings.about.skills}</h3>
-                    <ul>
-                      <li>{strings.about.languages}</li>
-                      <li>{strings.about.databases}</li>
-                      <li>{strings.about.os}</li>
-                    </ul>
-                  </div>
-                </div>
-              </section>
+  <h2 className="about-title">{strings.about.title}</h2>
+  <div className="about-content">
+    <img src="/arda.JPG" alt="Arda Güner" className="profile-picture" />
+    <div className="about-text">
+      {strings.about.detailedDescription.map((paragraph, index) => (
+        <p key={index}>{paragraph}</p>
+      ))}
+      <h3>{strings.about.workExperience}</h3>
+      <ul>
+        {strings.about.jobs.map((job, index) => (
+          <li key={index}>{job}</li>
+        ))}
+      </ul>
+      <h3>{strings.about.skills}</h3>
+      <ul>
+        <li>{strings.about.languages}</li>
+        <li>{strings.about.databases}</li>
+        <li>{strings.about.os}</li>
+        {strings.about.additionalSkills.map((skill, index) => (
+          <li key={index}>{skill}</li>
+        ))}
+      </ul>
+      <h3>{strings.about.hobbies}</h3>
+      <ul>
+        {strings.about.hobbyList.map((hobby, index) => (
+          <li key={index}>{hobby}</li>
+        ))}
+      </ul>
+      <p>{strings.about.philosophy}</p>
+      <p>
+        {strings.about.githubCTA}{" "}
+        <a
+          href="https://github.com/SeIectra"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {strings.about.githubLink}
+        </a>
+      </p>
+    </div>
+  </div>
+</section>
 
               {/* Projects Section */}
               <section id="projects" className="projects-container">
@@ -151,88 +186,63 @@ function App() {
             </>
           }
         />
-
-        {/* Games */}
-        {/* <Route
-          path="/games"
-          element={
-            <div className="games-container">
-              <h2>{strings.games.title}</h2>
-              <ul>
-                <li>
-                  <Link to="/game">{strings.games.catMouse}</Link>
-                </li>
-                <li>
-                  <Link to="/games/rock-paper-scissors">{strings.games.rps}</Link>
-                </li>
-                <li>
-                  <Link to="/games/aim-trainer">{strings.games.aimTrainer}</Link>
-                </li>
-              </ul>
-            </div>
-          }
-        />
-        <Route path="/game" element={<CatMouseGame />} />
-        <Route path="/games/rock-paper-scissors" element={<RockPaperScissors />} />
-        <Route path="/games/aim-trainer" element={<AimTrainer />} /> */}
       </Routes>
 
       {/* Footer */}
       <footer id="contact" className="footer">
-  <h2>{strings.footer.title}</h2>
-  <ul className="contact-list">
-    <li>
-      <span className="contact-icon" role="img" aria-label="email">
-        📧
-      </span>
-      <a href="mailto:ardaguner2000@gmail.com">ardaguner2000@gmail.com</a>
-    </li>
-    <li>
-      <span className="contact-icon" role="img" aria-label="email">
-        📧
-      </span>
-      <a href="mailto:ardaguner@hotmail.com">ardaguner@hotmail.com</a>
-    </li>
-    <li>
-      <span className="contact-icon">
-        <img
-          src="https://cdn-icons-png.flaticon.com/512/174/174857.png"
-          alt="LinkedIn Icon"
-        />
-      </span>
-      <a
-        href="https://www.linkedin.com/in/arda-g%C3%BCner/"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        LinkedIn
-      </a>
-    </li>
-    <li>
-      <span className="contact-icon">
-        <img
-          src="https://cdn-icons-png.flaticon.com/512/733/733553.png"
-          alt="GitHub Icon"
-        />
-      </span>
-      <a
-        href="https://github.com/SeIectra"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        GitHub
-      </a>
-    </li>
-    <li style={{ marginBottom: "1rem" }}></li> {/* Boşluk için */}
-  </ul>
-  <p 
-    style={{ cursor: "pointer", color: "#64b5f6" }} 
-    onClick={() => alert(strings.footer.thanks)}
-  >
-    {strings.footer.copyright}
-  </p>
-</footer>
-
+        <h2>{strings.footer.title}</h2>
+        <ul className="contact-list">
+          <li>
+            <span className="contact-icon" role="img" aria-label="email">
+              📬
+            </span>
+            <a href="mailto:ardaguner2000@gmail.com">ardaguner2000@gmail.com</a>
+          </li>
+          <li>
+            <span className="contact-icon" role="img" aria-label="email">
+              📬
+            </span>
+            <a href="mailto:ardaguner@hotmail.com">ardaguner@hotmail.com</a>
+          </li>
+          <li>
+            <span className="contact-icon">
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/174/174857.png"
+                alt="LinkedIn Icon"
+              />
+            </span>
+            <a
+              href="https://www.linkedin.com/in/arda-g%C3%BCner/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              LinkedIn
+            </a>
+          </li>
+          <li>
+            <span className="contact-icon">
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/733/733553.png"
+                alt="GitHub Icon"
+              />
+            </span>
+            <a
+              href="https://github.com/SeIectra"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              GitHub
+            </a>
+          </li>
+          <li style={{ marginBottom: "1rem" }}></li> {/* Boşluk için */}
+        </ul>
+        <p 
+          style={{ cursor: "pointer", color: "#64b5f6" }} 
+          onClick={() => alert(strings.footer.thanks)}
+        >
+          {strings.footer.copyright}
+        </p>
+      </footer>
     </Router>
   );
 }

@@ -16,12 +16,18 @@
   "about": {
     "title": "About Me",
     "description": "Hi, I'm Arda Güner. I started my software journey with JavaScript and developed projects in modern technologies.",
+    "detailedDescription": [
+      "Hi, I'm Arda Güner. I started my software journey with JavaScript and developed my skills in this field. I enjoy producing creative and effective solutions using modern web technologies. Especially, developing projects with tools in the JavaScript ecosystem like React and Node.js is both a job and a passion for me.",
+      "Thanks to Flutter and Dart, I also have experience in mobile app development. Designing user-friendly and high-performance mobile applications is one of my strongest suits. On the other hand, I am still in the learning phase with Kotlin and striving to fill my gaps in this area."
+    ],
     "workExperience": "Work Experience",
     "education": "Education",
     "educationDetails": "2018-2023: Altınbaş University, Software Engineering",
-    "job1": "2019-2021: DNY, Technical Support Intern",
-    "job2": "2023: Fit Computing and Consulting, Network Monitoring Intern",
-    "job3": "2023 - Present: TAC A.Ş., Software Developer",
+    "jobs": [
+      "2019-2021: DNY, Technical Support Intern",
+      "2023: Fit Computing and Consulting, Network Monitoring Intern",
+      "2023 - Present: TAC A.Ş., Software Developer"
+    ],
     "skills": "My Skills",
     "languages": "Programming Languages: JavaScript, Dart, C++, Python, Solidity",
     "databases": "Database Management: MySQL, SQL",
@@ -38,7 +44,10 @@
       "Ice skating to refresh both mind and body",
       "Scuba diving to explore the depths of nature",
       "Drone piloting to merge technology with hobbies"
-    ]
+    ],
+    "philosophy": "My life philosophy is to always learn, explore, and be open to new opportunities.",
+    "githubCTA": "Additionally, I share my projects on my GitHub profile. For more:",
+    "githubLink": "GitHub Profile"
   },
   "projects": {
     "title": "My Projects",
