@@ -71,4 +71,9 @@
     "thanks": "Soner ve Çiğdem Güner'e özel teşekkürler!",
     "copyright": "© 2024 Arda Güner. Tüm hakları saklıdır."
   }
+,
+  "cv": {
+  "title": "CV",
+  "downloadButton": "PDF Dosyası"
+}
 }

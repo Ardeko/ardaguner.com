@@ -221,3 +221,61 @@ input:checked + .slider:before {
   padding: 0 8px; /* Etiketler için boşluk */
   pointer-events: none;
 }
+.cv-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: white;
+  text-align: center;
+  position: relative;
+  margin-bottom: 20px;
+  text-shadow: 0 0 10px rgba(255, 165, 0, 0.8), 
+               0 0 20px rgba(255, 140, 0, 0.8), 
+               0 0 30px rgba(255, 69, 0, 0.8);
+  transition: text-shadow 0.3s ease-in-out;
+}
+
+.cv-title:hover {
+  text-shadow: 0 0 20px rgba(255, 165, 0, 1),
+               0 0 40px rgba(255, 140, 0, 1),
+               0 0 60px rgba(255, 69, 0, 1);
+}
+
+.cv-title::before {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 4px;
+  background: linear-gradient(90deg, #ff7e5f, #feb47b);
+  border-radius: 2px;
+}
+.pdf-button {
+  display: inline-block;
+  text-decoration: none;
+  color: #fff;
+  background: linear-gradient(90deg, #ff7e5f, #feb47b);
+  padding: 12px 24px;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: bold;
+  transition: transform 0.3s ease, background 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.pdf-button:hover {
+  transform: scale(1.1);
+  background: linear-gradient(90deg, #feb47b, #ff7e5f);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+.pdf-button:active {
+  transform: scale(0.95);
+}
+
+.pdf-icon {
+  margin-right: 8px;
+  font-size: 18px;
+  vertical-align: middle;
+}
