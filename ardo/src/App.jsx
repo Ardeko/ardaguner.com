@@ -102,27 +102,41 @@ function App() {
           element={
             <>
               {/* Hero Section */}
-                  <section id="hero" className="hero">
-      <h1>{strings.hero.title}</h1>
-      <p>{strings.hero.subtitle}</p>
-      <div className="daily-tip-widget">
-        <h3>{strings.hero.tipTitle}</h3>
-        <p>{tips[Math.floor(Math.random() * tips.length)]}</p>
-      </div>
-      <div style={{ marginTop: "20px" }}>
-        <h2 className="cv-title">{strings.cv.title}</h2>
-        <a
-          href="/files/arda-guner-cv.pdf"
-          className="pdf-button"
-          target="_blank"
-          rel="noopener noreferrer"
-          download="arda-guner-cv.pdf"
-        >
-          <span className="pdf-icon">📄</span>
-         {strings.cv.downloadButton}
-        </a>
-      </div>
-    </section>
+              <section id="hero" className="hero">
+  <h1>{strings.hero.title}</h1>
+  <p>{strings.hero.subtitle}</p>
+
+  {/* Daily Software Tip */}
+  <div className="daily-tip-widget">
+    <h3>{strings.hero.tipTitle}</h3>
+    <p>{tips[language][Math.floor(Math.random() * tips[language].length)]}</p>
+  </div>
+
+  {/* About Button */}
+  <button
+    onClick={() => {
+      document.getElementById("about").scrollIntoView({ behavior: "smooth" });
+    }}
+  >
+    {strings.hero.aboutButton}
+  </button>
+
+  {/* CV Download */}
+  <div style={{ marginTop: "20px" }}>
+    <h2 className="cv-title">{strings.cv.title}</h2>
+    <a
+      href="/files/arda-guner-cv.pdf"
+      className="pdf-button"
+      target="_blank"
+      rel="noopener noreferrer"
+      download="arda-guner-cv.pdf"
+    >
+      <span className="pdf-icon">📄</span>
+      {strings.cv.downloadButton}
+    </a>
+  </div>
+</section>
+
               {/* About Section */}
               <section id="about" className="about-container">
   <h2 className="about-title">{strings.about.title}</h2>
