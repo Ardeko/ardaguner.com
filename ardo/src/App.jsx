@@ -112,11 +112,11 @@ function App() {
       <div style={{ marginTop: "20px" }}>
         <h2 className="cv-title">{strings.cv.title}</h2>
         <a
-          href="/cv.pdf"
+          href="/files/arda-guner-cv.pdf"
           className="pdf-button"
           target="_blank"
           rel="noopener noreferrer"
-          download="Arda_Guner_CV.pdf"
+          download="arda-guner-cv.pdf"
         >
           <span className="pdf-icon">📄</span>
          {strings.cv.downloadButton}
