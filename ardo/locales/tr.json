@@ -30,7 +30,7 @@
     ],
     "skills": "Yeteneklerim",
     "languages": "Yazılım Dilleri: JavaScript, Dart, C++, Python, Solidity, Selenium, .NET, C, C#, Node.js, React.js, React Native, TypeScript, Flutter, HTML, CSS",
-    "databases": "Veritabanı Yönetimi: MySQL, SQL",
+    "databases": "Veritabanı Yönetimi: MySQL, SQL, MongoDB, PostgreSQL",
     "os": "İşletim Sistemleri: Linux, MacOS, Windows",
     "additionalSkills": [
       "Git ve GitHub ile versiyon kontrol",

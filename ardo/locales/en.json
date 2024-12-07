@@ -30,7 +30,7 @@
     ],
     "skills": "My Skills",
     "languages": "Programming Languages: JavaScript, Dart, C++, Python, Solidity, Selenium, .NET, C, C#, Node.js, React.js, React Native, TypeScript, Flutter, HTML, CSS",
-    "databases": "Database Management: MySQL, SQL",
+    "databases": "Database Management: MySQL, SQL, MongoDB, PostgreSQL,",
     "os": "Operating Systems: Linux, MacOS, Windows",
     "additionalSkills": [
       "Version control with Git and GitHub",
