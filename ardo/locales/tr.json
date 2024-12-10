@@ -29,8 +29,9 @@
       "2023 - Şu Anda: TAC A.Ş., Yazılım Geliştirme Uzmanı"
     ],
     "skills": "Yeteneklerim",
-    "languages": "Yazılım Dilleri: JavaScript, Dart, C++, Python, Solidity, Selenium, .NET, C, C#, Node.js, React.js, React Native, TypeScript, Flutter, HTML, CSS",
-    "databases": "Veritabanı Yönetimi: MySQL, SQL, MongoDB, PostgreSQL",
+    "languages": "Programlama Dilleri: C++, C#, Python, JavaScript",
+    "webTechnologies": "Web Teknolojileri: HTML, CSS, React.js, Node.js, TypeScript",
+    "databases": "Veritabanı Yönetimi: MySQL, SQL, MongoDB",
     "os": "İşletim Sistemleri: Linux, MacOS, Windows",
     "additionalSkills": [
       "Git ve GitHub ile versiyon kontrol",

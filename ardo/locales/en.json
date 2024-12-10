@@ -29,8 +29,9 @@
       "2023 - Present: TAC A.Ş., Software Developer"
     ],
     "skills": "My Skills",
-    "languages": "Programming Languages: JavaScript, Dart, C++, Python, Solidity, Selenium, .NET, C, C#, Node.js, React.js, React Native, TypeScript, Flutter, HTML, CSS",
-    "databases": "Database Management: MySQL, SQL, MongoDB, PostgreSQL,",
+    "languages": "Programming Languages: C++, C#, Python, JavaScript",
+    "webTechnologies": "Web Technologies: HTML, CSS, React.js, Node.js, TypeScript",
+    "databases": "Database Management: MySQL, SQL, MongoDB",
     "os": "Operating Systems: Linux, MacOS, Windows",
     "additionalSkills": [
       "Version control with Git and GitHub",

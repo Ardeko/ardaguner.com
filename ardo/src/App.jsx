@@ -155,6 +155,7 @@ function App() {
       <h3>{strings.about.skills}</h3>
       <ul>
         <li>{strings.about.languages}</li>
+        <li>{strings.about.webTechnologies}</li>
         <li>{strings.about.databases}</li>
         <li>{strings.about.os}</li>
         {strings.about.additionalSkills.map((skill, index) => (
