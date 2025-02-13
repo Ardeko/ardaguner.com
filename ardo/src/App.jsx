@@ -18,6 +18,12 @@ function App() {
 
   const projectList = [
     {
+      name: "Legend of Rey", 
+      description: strings.projects.legendOfReyDescription,
+      link: "https://github.com/SeIectra/legend-of-rey", 
+      emoji: "⚔️", 
+    },
+    {
       name: strings.projects.underwaterDrone,
       description: strings.projects.underwaterDescription,
       link: "https://github.com/EVA-Submarine-Team",

@@ -52,6 +52,8 @@
   },
   "projects": {
     "title": "My Projects",
+    "legendOfRey": "Legend of Rey",
+    "legendOfReyDescription": "A Python-based adventure platformer game I developed.",
     "underwaterDrone": "Teknofest Autonomous Underwater Drone",
     "underwaterDescription": "Designed with autonomous image processing technology.",
     "ardobot": "Ardobot - Discord Bot",

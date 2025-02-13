@@ -51,6 +51,7 @@
   },
   "projects": {
     "title": "Projelerim",
+    "legendOfReyDescription": "Kendi geliştirdiğim Python tabanlı macera platform oyunu.",
     "underwaterDrone": "Teknofest Autonomous Underwater Drone",
     "underwaterDescription": "Otonom görüntü işleme teknolojisiyle tasarlandı.",
     "ardobot": "Ardobot - Discord Bot",
