@@ -10,7 +10,7 @@
   "hero": {
     "title": "Hi, I'm Arda!",
     "subtitle": "A software engineer passionate about development.",
-    "tipTitle": "Daily Software Tip",
+    "tipTitle": "Software Tip",
     "aboutButton": "Learn More About Me"
   },
   "about": {
@@ -26,7 +26,7 @@
     "jobs": [
       "2019-2021: DNY, Technical Support Intern",
       "2023: Fit Computing and Consulting, Network Monitoring Intern",
-      "2023 - Present: TAC A.Ş., Software Developer"
+      "2023 - 2025: TAC A.Ş., Software Developer"
     ],
     "skills": "My Skills",
     "languages": "Programming Languages: C++, C#, Python, JavaScript",
@@ -76,6 +76,6 @@
   },
   "cv": {
   "title": "Resume",
-  "downloadButton": "PDF File"
+  "downloadButton": "PDF File (EN)"
 }
 }

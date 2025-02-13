@@ -10,7 +10,7 @@
   "hero": {
     "title": "Merhaba, Ben Arda!",
     "subtitle": "Yazılım mühendisliğine tutkuyla bağlı bir geliştiriciyim.",
-    "tipTitle": "Günün Yazılım İpucu",
+    "tipTitle": "Yazılım İpucu",
     "aboutButton": "Hakkımda Daha Fazla"
   },
   "about": {
@@ -26,7 +26,7 @@
     "jobs": [
       "2019-2021: DNY, Teknik Destek Stajyeri",
       "2023: Fit Bilişim ve Danışmanlık, Ağ İzleme Stajyeri",
-      "2023 - Şu Anda: TAC A.Ş., Yazılım Geliştirme Uzmanı"
+      "2023 - 2025: TAC A.Ş., Yazılım Geliştirme Uzmanı"
     ],
     "skills": "Yeteneklerim",
     "languages": "Programlama Dilleri: C++, C#, Python, JavaScript",
@@ -75,6 +75,6 @@
 ,
   "cv": {
   "title": "CV",
-  "downloadButton": "PDF Dosyası"
+  "downloadButton": "PDF Dosyası (TR)"
 }
 }

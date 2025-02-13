@@ -128,20 +128,21 @@ function App() {
     {strings.hero.aboutButton}
   </button>
 
-  {/* CV Download */}
-  <div style={{ marginTop: "20px" }}>
-    <h2 className="cv-title">{strings.cv.title}</h2>
-    <a
-      href="/files/arda-guner-cv.pdf"
-      className="pdf-button"
-      target="_blank"
-      rel="noopener noreferrer"
-      download="arda-guner-cv.pdf"
-    >
-      <span className="pdf-icon">📄</span>
-      {strings.cv.downloadButton}
-    </a>
-  </div>
+{/* CV Download */}
+<div style={{ marginTop: "20px" }}>
+  <h2 className="cv-title">{strings.cv.title}</h2>
+  <a
+    href={language === "tr" ? "/files/arda-guner-cv-tr.pdf" : "/files/arda-guner-cv-en.pdf"}
+    className="pdf-button"
+    target="_blank"
+    rel="noopener noreferrer"
+    download={language === "tr" ? "arda-guner-cv-tr.pdf" : "arda-guner-cv-en.pdf"}
+  >
+    <span className="pdf-icon">📄</span>
+    {strings.cv.downloadButton}
+  </a>
+</div>
+
 </section>
 
               {/* About Section */}
