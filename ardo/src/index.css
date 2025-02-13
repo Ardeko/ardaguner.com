@@ -25,16 +25,7 @@ body {
   overflow: auto;
   background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('./assets/ardobg.jpg') no-repeat center center fixed;
   background-size: cover;
-  animation: cyberpunk-bg-animation 10s infinite alternate;
-}
-
-@keyframes cyberpunk-bg-animation {
-  0% {
-    background-position: 0% 50%;
-  }
-  100% {
-    background-position: 100% 50%;
-  }
+  animation: none !important;
 }
 
 /* Geri Dönme Butonu */

@@ -16,7 +16,7 @@ function App() {
     setLanguage((prevLanguage) => (prevLanguage === "tr" ? "en" : "tr"));
   };
 
-  const projectList = [
+  const projectList = [  
     {
       name: "Legend of Rey", 
       description: strings.projects.legendOfReyDescription,
@@ -59,7 +59,8 @@ function App() {
       link: "https://github.com/SeIectra/unichain",
       emoji: "🔗",
     },
-  ];
+];
+
 
   return (
     <Router>
@@ -92,8 +93,8 @@ function App() {
             />
             <span className="slider">
               <span className="language-labels">
-                <span style={{ marginLeft: "10px" }}>TR</span>
-                <span style={{ marginRight: "10px" }}>EN</span>
+                <span style={{ marginLeft: "10px" }}>EN</span>
+                <span style={{ marginRight: "10px" }}>TR</span>
               </span>
             </span>
           </label>

@@ -6,7 +6,7 @@
   text-align: center;
 }
 
-/* Logo animasyonu ve görünüm */
+/* Logo */
 .logo {
   height: 6em;
   padding: 1.5em;
@@ -47,57 +47,44 @@
   color: #888;
 }
 
-/* Projeler kısmı */
-.projects-container {
-  padding: 4rem 2rem;
+/* Projeler ve Oyunlar */
+.projects-container,
+.games-container {
   text-align: center;
+  padding: 4rem 2rem;
   background-color: #242424;
   color: #f1f1f1;
 }
 
-.projects-container ul {
+.projects-container ul,
+.games-container ul {
   list-style: none;
   padding: 0;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
 }
 
-.projects-container li {
+.projects-container li,
+.games-container li {
   margin-bottom: 2rem;
 }
 
-.projects-container a {
+.projects-container a,
+.games-container li a {
   color: #646cff;
   text-decoration: none;
   font-weight: bold;
 }
 
-.projects-container a:hover {
+.projects-container a:hover,
+.games-container li a:hover {
   color: #535bf2;
+  text-decoration: underline;
 }
 
-/* Oyunlar Kısmı */
-.games-container {
-  text-align: center;
-  padding: 2rem;
-}
-
-.games-container h2 {
-  font-size: 2.5rem;
-  color: #fff;
-  margin-bottom: 2rem;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-  animation: glow 2s infinite alternate;
-}
-
-.games-container ul {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  list-style: none;
-  padding: 0;
-}
-
+/* Oyun kartları */
 .games-container li {
   background: linear-gradient(135deg, #4a90e2, #9013fe);
   border-radius: 12px;
@@ -115,15 +102,6 @@
   box-shadow: 0 10px 30px rgba(144, 19, 254, 0.7);
 }
 
-.games-container li a {
-  color: #fff;
-  text-decoration: none;
-}
-
-.games-container li a:hover {
-  text-decoration: underline;
-}
-
 @keyframes glow {
   from {
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
@@ -133,37 +111,29 @@
   }
 }
 
-
-@media (max-width: 768px) {
-  .games-container ul {
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .games-container li {
-    width: 80%; 
-  }
+/* Arka plan */
+body {
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+              url('./assets/ardobg.jpg') no-repeat center center fixed;
+  background-size: cover;
 }
 
-@media (max-width: 1024px) {
-  .games-container h2 {
-    font-size: 2rem;
-  }
-}
-
+/* Dil Değiştirme Butonu */
 .language-switcher {
   position: fixed;
   top: 10px;
-  right: 10px;
+  left: 10px;
+  z-index: 999;
   display: flex;
   align-items: center;
   gap: 10px;
+  width: 80px;
 }
 
 .switch {
   position: relative;
   display: inline-block;
-  width: 70px; /* Daha geniş alan */
+  width: 70px;
   height: 34px;
 }
 
@@ -180,7 +150,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #f44336; /* TR için kırmızı */
+  background-color: #f44336;
   border-radius: 34px;
   transition: 0.4s;
 }
@@ -197,9 +167,8 @@
   transition: 0.4s;
 }
 
-/* Slide hareketi */
 input:checked + .slider {
-  background-color: #2196f3; /* EN için mavi */
+  background-color: #2196f3;
 }
 
 input:checked + .slider:before {
@@ -218,15 +187,16 @@ input:checked + .slider:before {
   color: white;
   display: flex;
   justify-content: space-between;
-  padding: 0 8px; /* Etiketler için boşluk */
+  padding: 0 8px;
   pointer-events: none;
 }
+
+/* CV Başlık */
 .cv-title {
   font-size: 2rem;
   font-weight: bold;
   color: white;
   text-align: center;
-  position: relative;
   margin-bottom: 20px;
   text-shadow: 0 0 10px rgba(255, 165, 0, 0.8), 
                0 0 20px rgba(255, 140, 0, 0.8), 
@@ -240,17 +210,7 @@ input:checked + .slider:before {
                0 0 60px rgba(255, 69, 0, 1);
 }
 
-.cv-title::before {
-  content: "";
-  position: absolute;
-  bottom: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 50px;
-  height: 4px;
-  background: linear-gradient(90deg, #ff7e5f, #feb47b);
-  border-radius: 2px;
-}
+/* PDF Butonu */
 .pdf-button {
   display: inline-block;
   text-decoration: none;
@@ -267,7 +227,6 @@ input:checked + .slider:before {
 .pdf-button:hover {
   transform: scale(1.1);
   background: linear-gradient(90deg, #feb47b, #ff7e5f);
-  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
 }
 
 .pdf-button:active {
@@ -278,4 +237,81 @@ input:checked + .slider:before {
   margin-right: 8px;
   font-size: 18px;
   vertical-align: middle;
+}
+
+/* Mobil Uyumluluk */
+@media (max-width: 768px) {
+  .header ul {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .header ul li {
+    margin: 0.5rem 0;
+  }
+
+  .projects-container ul,
+  .games-container ul {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .projects-container li,
+  .games-container li {
+    width: 90%;
+    text-align: center;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  h2 {
+    font-size: 1.8rem;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+  }
+
+  p {
+    font-size: 1rem;
+  }
+
+  button {
+    font-size: 1.2rem;
+    padding: 1rem 2rem;
+    width: 80%;
+    max-width: 300px;
+  }
+
+  .profile-picture {
+    width: 100px;
+    height: 100px;
+  }
+
+  .footer .contact-list,
+  .footer .social-links {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+@media (max-width: 768px) {
+  .about-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+    max-width: 95%;
+    margin: 0 auto;
+    padding: 15px;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .about-container p {
+    max-width: 90%;
+  }
 }
