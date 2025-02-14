@@ -209,6 +209,30 @@ input:checked + .slider:before {
                0 0 40px rgba(255, 140, 0, 1),
                0 0 60px rgba(255, 69, 0, 1);
 }
+.clock {
+  font-size: 1.2rem;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  display: inline-block;
+  text-align: center;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Saatten Sonra Bir Satır Boşluk */
+.clock::after {
+  content: "";
+  display: block;
+  margin-bottom: 30px;
+}
+  
+/* Mobil için daha küçük stil */
+@media (max-width: 768px) {
+  .clock {
+    font-size: 1rem;
+    padding: 8px 16px;
+  }
+}
 
 /* PDF Butonu */
 .pdf-button {

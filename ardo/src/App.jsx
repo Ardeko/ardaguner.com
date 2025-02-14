@@ -1,12 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import "./App.css";
-import CatMouseGame from "./CatMouseGame";
-import RockPaperScissors from "./RockPaperScissors";
-import AimTrainer from "./AimTrainer";
 import { tips } from "./tips";
 import tr from "/locales/tr.json";
 import en from "/locales/en.json";
+
+function Clock() {
+  const [time, setTime] = useState(new Date());
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTime(new Date());
+    }, 1000);
+    
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="clock">
+      🕒 {time.toLocaleTimeString()} - 📅 {time.toLocaleDateString()}
+    </div>
+  );
+}
 
 function App() {
   const [language, setLanguage] = useState("tr");
@@ -216,8 +231,8 @@ function App() {
         />
       </Routes>
 
-      {/* Footer */}
-      <footer id="contact" className="footer">
+       {/* Footer */}
+       <footer id="contact" className="footer">
         <h2>{strings.footer.title}</h2>
         <ul className="contact-list">
           <li>
@@ -264,6 +279,10 @@ function App() {
           </li>
           <li style={{ marginBottom: "1rem" }}></li> {/* Boşluk için */}
         </ul>
+
+        {/* Saat ve Tarih */}
+        <Clock />
+
         <p 
           style={{ cursor: "pointer", color: "#64b5f6" }} 
           onClick={() => alert(strings.footer.thanks)}
