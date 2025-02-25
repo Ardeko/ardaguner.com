@@ -24,7 +24,7 @@ function Clock() {
 }
 
 function App() {
-  const [language, setLanguage] = useState("tr");
+  const [language, setLanguage] = useState("en");
   const strings = language === "tr" ? tr : en;
 
   const toggleLanguage = () => {
