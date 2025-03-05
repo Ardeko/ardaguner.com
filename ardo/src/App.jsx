@@ -50,14 +50,14 @@ function App() {
       link: "https://github.com/SeIectra/ardobot",
       emoji: "🤖",
     },
-    /*
+    
     {
       name: strings.projects.renaultApp,
       description: strings.projects.renaultDescription,
       isRestricted: true,
       emoji: "🚗",
     },
-    */
+    
     {
       name: strings.projects.wordeko,
       description: strings.projects.wordekoDescription,
