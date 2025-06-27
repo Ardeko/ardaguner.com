@@ -57,6 +57,13 @@ function App() {
       isRestricted: true,
       emoji: "🚗",
     },
+
+    {
+      name: strings.projects.stokApp,
+      description: strings.projects.stokDescription,
+      link: "https://github.com/Ardeko/StokEkstresiApp",
+      emoji: "📦"
+    },
     
     {
       name: strings.projects.wordeko,

@@ -65,7 +65,10 @@
     "unichain": "Unichain Blockchain İzleme Zinciri",
     "unichainDescription": "Blockchain işlemlerini takip etmeye yönelik bir sistem.",
     "restricted": "Bu proje telif hakları nedeniyle paylaşılmamaktadır.",
-    "more": "Daha Fazla"
+    "more": "Daha Fazla",
+    "stokApp": "Stok Ekstresi Web Uygulaması",
+    "stokDescription": "MSSQL veritabanı ile çalışan, filtrelenebilir ASP.NET Core MVC tabanlı stok takibi uygulaması."
+
   },
   "footer": {
     "title": "İletişim",

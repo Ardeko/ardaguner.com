@@ -67,7 +67,11 @@
     "unichain": "Unichain Blockchain Monitoring Chain",
     "unichainDescription": "A system for tracking blockchain transactions.",
     "restricted": "This project is restricted due to copyright.",
-    "more": "Learn More"
+    "more": "Learn More",
+    "stokApp": "Stok Ekstresi Web App",
+    "stokDescription": "A filterable ASP.NET Core MVC application that displays stock movements from a MSSQL database."
+
+
   },
   "footer": {
     "title": "Contact",
