@@ -39,6 +39,12 @@ function App() {
       emoji: "⚔️", 
     },
     {
+     name: strings.projects.revoApp,
+    description: strings.projects.revoDescription,
+    link: "https://github.com/Ardeko/Repo",
+    emoji: "💬"
+    },
+    {
       name: strings.projects.underwaterDrone,
       description: strings.projects.underwaterDescription,
       link: "https://github.com/EVA-Submarine-Team",
@@ -136,6 +142,14 @@ function App() {
               <section id="hero" className="hero">
   <h1>{strings.hero.title}</h1>
   <p>{strings.hero.subtitle}</p>
+<a
+  href="https://ardaguner.online"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="revo-button"
+>
+  {language === "tr" ? "REVO ile Sohbet Et" : "Chat with REVO"}
+</a>
 
   {/* Daily Software Tip */}
   <div className="daily-tip-widget">

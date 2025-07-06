@@ -11,7 +11,8 @@
     "title": "Merhaba, Ben Arda!",
     "subtitle": "Yazılım mühendisliğine tutkuyla bağlı bir geliştiriciyim.",
     "tipTitle": "Yazılım İpucu",
-    "aboutButton": "Hakkımda Daha Fazla"
+    "aboutButton": "Hakkımda Daha Fazla",
+    "revoButton": "💬 REVO ile Sohbet Et"
   },
   "about": {
     "title": "Hakkımda",
@@ -67,7 +68,9 @@
     "restricted": "Bu proje telif hakları nedeniyle paylaşılmamaktadır.",
     "more": "Daha Fazla",
     "stokApp": "Stok Ekstresi Web Uygulaması",
-    "stokDescription": "MSSQL veritabanı ile çalışan, filtrelenebilir ASP.NET Core MVC tabanlı stok takibi uygulaması."
+    "stokDescription": "MSSQL veritabanı ile çalışan, filtrelenebilir ASP.NET Core MVC tabanlı stok takibi uygulaması.",
+    "revoApp": "REVO - Gerçek Zamanlı Sohbet",
+    "revoDescription": "SignalR ve WebRTC teknolojileriyle geliştirilmiş, tarayıcı üzerinden sesli ve yazılı iletişim sağlayan web uygulaması."
 
   },
   "footer": {

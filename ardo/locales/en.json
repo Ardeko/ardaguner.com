@@ -11,7 +11,8 @@
     "title": "Hi, I'm Arda!",
     "subtitle": "A software engineer passionate about development.",
     "tipTitle": "Software Tip",
-    "aboutButton": "Learn More About Me"
+    "aboutButton": "Learn More About Me",
+    "revoButton": "💬 Chat with REVO"
   },
   "about": {
     "title": "About Me",
@@ -49,6 +50,7 @@
     "philosophy": "My life philosophy is to always learn, explore, and be open to new opportunities.",
     "githubCTA": "Additionally, I share my projects on my GitHub profile. For more:",
     "githubLink": "GitHub Profile"
+
   },
   "projects": {
     "title": "My Projects",
@@ -68,8 +70,10 @@
     "unichainDescription": "A system for tracking blockchain transactions.",
     "restricted": "This project is restricted due to copyright.",
     "more": "Learn More",
-    "stokApp": "Stok Ekstresi Web App",
-    "stokDescription": "A filterable ASP.NET Core MVC application that displays stock movements from a MSSQL database."
+    "stokApp": "Stock Statement Web Ap",
+    "stokDescription": "A filterable ASP.NET Core MVC application that displays stock movements from a MSSQL database.",
+    "revoApp": "REVO - Real-Time Chat App",
+    "revoDescription": "A browser-based real-time communication app built with SignalR and WebRTC for voice and text chat."
 
 
   },
