@@ -41,7 +41,7 @@ function App() {
     {
      name: strings.projects.revoApp,
     description: strings.projects.revoDescription,
-    link: "https://github.com/Ardeko/Repo",
+    link: "https://github.com/Ardeko/Revo",
     emoji: "💬"
     },
     {
