@@ -73,7 +73,10 @@
     "stokApp": "Stock Statement Web App",
     "stokDescription": "A filterable ASP.NET Core MVC application that displays stock movements from a MSSQL database.",
     "revoApp": "REVO - Real-Time Chat App",
-    "revoDescription": "A browser-based real-time communication app built with SignalR and WebRTC for voice and text chat."
+    "revoDescription": "A browser-based real-time communication app built with SignalR and WebRTC for voice and text chat.",
+    "nebula": "Nebula - Bubble Shooter",
+    "nebulaDescription": "A cosmic-themed bubble shooter game with 50 levels and an infinite mode. Built with React, Phaser 3, FastAPI, and MongoDB. Mobile-first design, power-ups, achievements, and more."
+
 
 
   },

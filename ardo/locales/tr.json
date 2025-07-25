@@ -70,7 +70,10 @@
     "stokApp": "Stok Ekstresi Web Uygulaması",
     "stokDescription": "MSSQL veritabanı ile çalışan, filtrelenebilir ASP.NET Core MVC tabanlı stok takibi uygulaması.",
     "revoApp": "REVO - Gerçek Zamanlı Sohbet",
-    "revoDescription": "SignalR ve WebRTC teknolojileriyle geliştirilmiş, tarayıcı üzerinden sesli ve yazılı iletişim sağlayan web uygulaması."
+    "revoDescription": "SignalR ve WebRTC teknolojileriyle geliştirilmiş, tarayıcı üzerinden sesli ve yazılı iletişim sağlayan web uygulaması.",
+    "nebula": "Nebula - Balon Patlatma",
+    "nebulaDescription": "50 seviyelik ve sonsuz modlu kozmik temalı bir bubble shooter oyunu. React, Phaser 3, FastAPI ve MongoDB ile geliştirildi. Mobil öncelikli tasarım, güçlendiriciler, başarımlar ve daha fazlası."
+
 
   },
   "footer": {

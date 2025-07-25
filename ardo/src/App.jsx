@@ -35,7 +35,7 @@ function App() {
     {
       name: "Legend of Rey", 
       description: strings.projects.legendOfReyDescription,
-      link: "https://github.com/SeIectra/legend-of-rey", 
+      link: "https://github.com/Ardeko/legend-of-rey", 
       emoji: "⚔️", 
     },
     {
@@ -53,7 +53,7 @@ function App() {
     {
       name: "Ardobot - Discord Bot",
       description: strings.projects.ardobotDescription,
-      link: "https://github.com/SeIectra/ardobot",
+      link: "https://github.com/Ardeko/ardobot",
       emoji: "🤖",
     },
     
@@ -74,19 +74,25 @@ function App() {
     {
       name: strings.projects.wordeko,
       description: strings.projects.wordekoDescription,
-      link: "https://github.com/SeIectra/wordeko",
+      link: "https://github.com/Ardeko/wordeko",
       emoji: "📖",
     },
     {
       name: strings.projects.protocolGame,
       description: strings.projects.protocolDescription,
-      link: "https://github.com/SeIectra/protocol",
+      link: "https://github.com/Ardeko/protocol",
       emoji: "🏎️",
+    },
+    {
+       name: "Nebula - Bubble Shooter",
+       description: strings.projects.nebulaDescription,
+       link: "https://github.com/Ardeko/Nebula",
+       emoji: "🌌",
     },
     {
       name: strings.projects.unichain,
       description: strings.projects.unichainDescription,
-      link: "https://github.com/SeIectra/unichain",
+      link: "https://github.com/Ardeko/unichain",
       emoji: "🔗",
     },
 ];
@@ -218,7 +224,7 @@ function App() {
       <p>
         {strings.about.githubCTA}{" "}
         <a
-          href="https://github.com/SeIectra"
+          href="https://github.com/Ardeko"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -293,7 +299,7 @@ function App() {
               />
             </span>
             <a
-              href="https://github.com/SeIectra"
+              href="https://github.com/Ardeko"
               target="_blank"
               rel="noopener noreferrer"
             >
