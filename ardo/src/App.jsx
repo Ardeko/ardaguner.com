@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, lazy, Suspense } from "react";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import "./App.css";
 import { tips } from "./tips";
 import tr from "/locales/tr.json";
 import en from "/locales/en.json";
+
+const CodeLab = lazy(() => import("./CodeLab"));
 
 function Clock() {
   const [time, setTime] = useState(new Date());
@@ -117,6 +119,7 @@ function App() {
             <li>
               <a href="#contact">{strings.nav.contact}</a>
             </li>
+            <li><Link to="/codelab">Code Lab</Link></li>
           </ul>
         </nav>
         <div className="language-switcher">
@@ -258,6 +261,14 @@ function App() {
             </>
           }
         />
+        <Route
+      path="/codelab"
+      element={
+      <Suspense fallback={<div style={{color:"#fff", padding:"2rem"}}>Loading Code Lab…</div>}>
+       <CodeLab lang={language} strings={strings} />
+       </Suspense>
+        }
+      />
       </Routes>
 
        {/* Footer */}
