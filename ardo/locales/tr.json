@@ -18,16 +18,18 @@
     "title": "Hakkımda",
     "description": "Merhaba, ben Arda Güner. Yazılım geliştirme yolculuğumda JavaScript ile başladım ve modern teknolojilere yönelik projeler geliştirdim.",
     "detailedDescription": [
-      "Merhaba, ben Arda Güner. Yazılım geliştirme yolculuğumda JavaScript ile başladım ve bu alanda kendimi geliştirdim. Modern web teknolojilerini kullanarak yaratıcı ve etkili çözümler üretmekten keyif alıyorum. Özellikle React ve Node.js gibi JavaScript ekosistemindeki araçlarla projeler geliştirmek benim için hem bir iş hem de bir tutku.",
-      "Flutter ve Dart sayesinde mobil uygulama geliştirme alanında da deneyim sahibiyim. Kullanıcı dostu ve performanslı mobil uygulamalar tasarlamak en güçlü yönlerimden biri. Öte yandan, Kotlin konusunda hala öğrenme sürecindeyim ve bu alanda eksikliklerimi kapatmak için çaba sarf ediyorum."
-    ],
+     "Merhaba, ben Arda Güner. Yazılım geliştirme yolculuğuma JavaScript ile başladım ve zaman içinde modern web teknolojileri üzerine uzmanlaşarak bu alanda güçlü bir teknik altyapı edindim. React ve Node.js başta olmak üzere JavaScript ekosistemindeki araçlarla sürdürülebilir, performanslı ve kullanıcı odaklı web uygulamaları geliştiriyorum. Yazılımı yalnızca bir iş değil, sürekli gelişen bir problem çözme disiplini olarak görüyorum.",
+     "Mobil uygulama geliştirme alanında Flutter ve Dart ile kullanıcı deneyimi yüksek ve ölçeklenebilir uygulamalar geliştirdim. Kotlin konusunda ise aktif bir öğrenme sürecindeyim ve mobil platformlardaki teknik yetkinliğimi sürekli ileri taşımayı hedefliyorum. Gelişen teknolojileri yakından takip eden, öğrenmeye ve kendini güncel tutmaya önem veren bir yazılım geliştiriciyim.",
+     "Teknik çalışmalarımın yanında bilişim ve kodlama eğitmeni olarak çocuklara algoritmik düşünme ve problem çözme becerileri kazandırıyorum. Scratch tabanlı eğitimlerde odak noktam, yalnızca kod yazdırmak değil; sistematik düşünmeyi, adım adım çözüm üretmeyi ve üretken bir bakış açısı geliştirmeyi öğretmek."
+  ],
     "workExperience": "Çalışma Hayatım",
     "education": "Eğitim",
     "educationDetails": "2018-2023: Altınbaş Üniversitesi, Yazılım Mühendisliği",
     "jobs": [
       "2019-2021: DNY, Teknik Destek Stajyeri",
       "2023: Fit Bilişim ve Danışmanlık, Ağ İzleme Stajyeri",
-      "2023 - 2025: TAC A.Ş., Yazılım Geliştirme Uzmanı"
+      "2023-2025: TAC A.Ş., Yazılım Geliştirme Uzmanı",
+      "2025-Günümüz: Üsküdar Ünalan Çocuk Üniversitesi, Bilişim ve Kodlama Eğitmeni"
     ],
     "skills": "Yeteneklerim",
     "languages": "Programlama Dilleri: C++, C#, Python, JavaScript",

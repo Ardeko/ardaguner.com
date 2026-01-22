@@ -18,16 +18,18 @@
     "title": "About Me",
     "description": "Hi, I'm Arda Güner. I started my software journey with JavaScript and developed projects in modern technologies.",
     "detailedDescription": [
-      "Hi, I'm Arda Güner. I started my software journey with JavaScript and developed my skills in this field. I enjoy producing creative and effective solutions using modern web technologies. Especially, developing projects with tools in the JavaScript ecosystem like React and Node.js is both a job and a passion for me.",
-      "Thanks to Flutter and Dart, I also have experience in mobile app development. Designing user-friendly and high-performance mobile applications is one of my strongest suits. On the other hand, I am still in the learning phase with Kotlin and striving to fill my gaps in this area."
+    "Hello, I’m Arda Güner. I started my software development journey with JavaScript and over time specialized in modern web technologies, building a strong technical foundation in this field. I develop sustainable, high-performance, and user-focused web applications using tools from the JavaScript ecosystem, especially React and Node.js. I see software not just as a job, but as a continuously evolving problem-solving discipline.",
+    "In mobile application development, I have built user-friendly and scalable applications using Flutter and Dart. I am currently deepening my knowledge of Kotlin and actively working to improve my technical expertise on mobile platforms. I closely follow emerging technologies and place strong importance on continuous learning and staying up to date.",
+    "Alongside my technical work, I work as a coding and computer science instructor, helping children develop algorithmic thinking and problem-solving skills. In Scratch-based workshops, my focus is not only on teaching how to code, but on building systematic thinking, step-by-step reasoning, and a creative, productive mindset."
     ],
     "workExperience": "Work Experience",
     "education": "Education",
     "educationDetails": "2018-2023: Altınbaş University, Software Engineering",
     "jobs": [
-      "2019-2021: DNY, Technical Support Intern",
-      "2023: Fit Computing and Consulting, Network Monitoring Intern",
-      "2023 - 2025: TAC A.Ş., Software Developer"
+    "2019-2021: DNY, Technical Support Intern",
+    "2023: Fit Computing and Consulting, Network Monitoring Intern",
+    "2023-2025: TAC A.Ş., Software Development Specialist",
+    "2025-Present:  Üsküdar Ünalan Children’s University, Coding and Computer Science Instructor"
     ],
     "skills": "My Skills",
     "languages": "Programming Languages: C++, C#, Python, JavaScript",
