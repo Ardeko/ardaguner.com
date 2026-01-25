@@ -151,14 +151,13 @@ function App() {
               <section id="hero" className="hero">
   <h1>{strings.hero.title}</h1>
   <p>{strings.hero.subtitle}</p>
-<a
-  href="https://ardaguner.online"
-  target="_blank"
-  rel="noopener noreferrer"
-  className="revo-button"
+<button
+  className="revo-button disabled"
+  disabled
+  style={{ cursor: "not-allowed", opacity: 0.6 }}
 >
-  {language === "tr" ? "REVO ile Sohbet Et" : "Chat with REVO"}
-</a>
+  🚧 {language === "tr" ? "REVO Bakımda" : "REVO Under Maintenance"}
+</button>
 
   {/* Daily Software Tip */}
   <div className="daily-tip-widget">
