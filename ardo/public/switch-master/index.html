@@ -2,6 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
 <title>Switch Master</title>
 <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.js"></script>
 
@@ -15,6 +16,7 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
+    touch-action: none; /* Mobilde kaydırmayı engeller */
   }
 
   #gameWrapper {
@@ -26,10 +28,11 @@
     align-items: center;
   }
 
+  /* HTML ARAYÜZLERİ */
   .ui-screen {
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.85);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -45,7 +48,8 @@
     text-align: center;
     box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
     color: white;
-    min-width: 300px;
+    width: 80%;
+    max-width: 400px;
   }
 
   .modal-box h2 {
@@ -55,15 +59,8 @@
     text-shadow: 0 0 10px rgba(255, 68, 68, 0.5);
   }
 
-  .modal-box.start h2 {
-    color: #00ff88;
-    text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
-  }
-
-  .modal-box p {
-    font-size: 20px;
-    margin-bottom: 20px;
-  }
+  .modal-box.start h2 { color: #00ff88; text-shadow: 0 0 10px rgba(0, 255, 136, 0.5); }
+  .modal-box p { font-size: 18px; margin-bottom: 20px; }
 
   input[type="text"] {
     width: 80%;
@@ -76,11 +73,6 @@
     border-radius: 6px;
     text-align: center;
     outline: none;
-  }
-
-  input[type="text"]:focus {
-    border-color: #00ff88;
-    box-shadow: 0 0 8px rgba(0, 255, 136, 0.5);
   }
 
   button {
@@ -96,33 +88,73 @@
     margin: 5px;
   }
 
-  button:hover {
-    background: #00cc6a;
-    transform: scale(1.05);
-  }
+  button:hover { background: #00cc6a; transform: scale(1.05); }
 
+  /* LEADERBOARD (Mobilde biraz küçültüldü) */
   #leaderboardUI {
     position: absolute; 
-    top: 20px; 
-    right: 20px; 
+    top: 10px; 
+    right: 10px; 
     background: rgba(34, 34, 34, 0.9); 
     border: 2px solid #00ccff; 
     color: white; 
-    padding: 15px 25px; 
+    padding: 10px 15px; 
     border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    z-index: 50;
+    pointer-events: none; /* Oyuncunun tıklamasını engellememesi için */
+  }
+  #leaderboardUI h3 { margin-top: 0; margin-bottom: 5px; color: #00ccff; text-align: center; font-size: 16px;}
+  #scoreList { padding-left: 15px; margin-bottom: 0; font-size: 14px;}
+
+  /* TAM EKRAN BUTONU (Mobiller için) */
+  #fullscreenBtn {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(0, 255, 136, 0.7);
+    border: none;
+    border-radius: 5px;
+    color: black;
+    font-size: 20px;
+    padding: 5px 10px;
+    cursor: pointer;
     z-index: 50;
   }
-  #leaderboardUI h3 { margin-top: 0; color: #00ccff; text-align: center; }
-  #scoreList { padding-left: 20px; margin-bottom: 0; }
-  #scoreList li { margin-bottom: 5px; font-size: 16px; }
+
+  /* TELEFONU YAN ÇEVİR UYARISI */
+  #rotateWarning {
+    display: none;
+    background: #111;
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+    z-index: 9999;
+  }
+  #rotateWarning h2 { color: #ffeb3b; }
+
+  /* EĞER EKRAN DİK (PORTRAIT) İSE OYUNU GİZLE, UYARIYI GÖSTER */
+  @media screen and (orientation: portrait) {
+    #gameWrapper { display: none !important; }
+    #rotateWarning {
+      display: flex !important;
+      position: absolute; top:0; left:0; width:100%; height:100%;
+      flex-direction: column; justify-content: center; align-items: center;
+    }
+  }
 
   .hidden { display: none !important; }
 </style>
 </head>
 <body>
 
+<div id="rotateWarning">
+  <h2>🔄 Lütfen Telefonunu Yan Çevir</h2>
+  <p>Switch Master yatay ekranda oynanmak üzere tasarlandı.</p>
+</div>
+
 <div id="gameWrapper">
+  <button id="fullscreenBtn" onclick="toggleFullScreen()">⛶</button>
+
   <div id="leaderboardUI">
     <h3>Top 5 Masters</h3>
     <ol id="scoreList">Yükleniyor...</ol>
@@ -132,7 +164,7 @@
     <div class="modal-box start">
       <h2>🚂 Switch Master</h2>
       <p>Rayları değiştir, treni kurtar!</p>
-      <button onclick="startGame()">START GAME</button>
+      <button onclick="startGame()">OYUNA BAŞLA</button>
     </div>
   </div>
 
@@ -144,16 +176,33 @@
       <div id="scoreInputArea" class="hidden">
         <input type="text" id="playerNameInput" placeholder="İsmini gir..." maxlength="12" autocomplete="off" />
         <br>
-        <button onclick="submitScoreAndRestart()">Kaydet ve Tekrar Oyna</button>
+        <button onclick="submitScoreAndRestart()">Kaydet & Tekrar Oyna</button>
       </div>
 
       <button id="justRestartBtn" onclick="restartGame()">Tekrar Oyna</button>
     </div>
   </div>
-
 </div>
 
 <script>
+// --- TAM EKRAN (FULLSCREEN) YÖNETİMİ ---
+function toggleFullScreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(err => {
+      console.log("Tam ekran hatası:", err.message);
+    });
+  } else {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    }
+  }
+}
+
+// "F" Tuşu desteği hala bilgisayarlar için kalsın
+document.addEventListener("keydown", (e) => {
+  if (e.key === "f" || e.key === "F") toggleFullScreen();
+});
+
 // --- KODLA ÜRETİLEN RETRO SES EFEKTLERİ ---
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -249,7 +298,7 @@ const config = {
   type: Phaser.AUTO,
   width: 800, 
   height: 600, 
-  backgroundColor: "#87CEEB", // Gündüz rengiyle başlar
+  backgroundColor: "#87CEEB", 
   parent: 'gameWrapper', 
   scene: { create, update },
   scale: {
@@ -281,13 +330,12 @@ let currentAngle = 0;
 const pathA = [ {x:100,y:300},{x:300,y:300},{x:500,y:200},{x:700,y:200} ];
 const pathB = [ {x:100,y:300},{x:300,y:300},{x:500,y:400},{x:700,y:400} ];
 
-let gameScene; // Kamera efektleri için referans tutucu
+let gameScene; 
 
 function create(){
   gameScene = this;
   graphics = this.add.graphics();
   
-  // Bonus Altın (Coin)
   coin = this.add.container(0, 0);
   let coinBody = this.add.circle(0, 0, 12, 0xffd700);
   let coinBorder = this.add.circle(0, 0, 12).setStrokeStyle(2, 0xb8860b);
@@ -297,7 +345,6 @@ function create(){
 
   train = this.add.container(100,300);
 
-  // Far Işığı (Sadece gece yanacak)
   headlight = this.add.graphics();
   headlight.fillStyle(0xffffff, 0.15);
   headlight.fillTriangle(10, 0, 250, -80, 250, 80);
@@ -316,12 +363,13 @@ function create(){
 
   switchLever = this.add.rectangle(300,280,10,40,0xaaaaaa);
 
+  // DOKUNMATİK VE TIKLAMA OLAYI
   this.input.on("pointerdown", ()=>{
     if(!gameStarted || isGameOver) return; 
 
     playSound('switch');
-    spawnSparks(); // Makas değişiminde kıvılcımlar
-    this.cameras.main.shake(100, 0.005); // Hafif kamera sarsıntısı
+    spawnSparks(); 
+    this.cameras.main.shake(100, 0.005); 
 
     switchState = switchState==="A"?"B":"A";
 
@@ -341,30 +389,27 @@ function update(){
 
   pulse += 0.05;
   
-  // Gece - Gündüz ve Hız Döngüsü
   if(score < 5) {
-      gameScene.cameras.main.setBackgroundColor('#87CEEB'); // Gündüz
+      gameScene.cameras.main.setBackgroundColor('#87CEEB'); 
       headlight.setVisible(false);
   } else if (score < 10) {
-      gameScene.cameras.main.setBackgroundColor('#fc7b03'); // Gün batımı
+      gameScene.cameras.main.setBackgroundColor('#fc7b03'); 
       headlight.setVisible(false);
   } else {
-      gameScene.cameras.main.setBackgroundColor('#111122'); // Gece
-      headlight.setVisible(true); // Farlar açılır
+      gameScene.cameras.main.setBackgroundColor('#111122'); 
+      headlight.setVisible(true); 
   }
 
-  // Altın Animasyonu ve Toplama Mantığı
   if(coin.visible) {
-    coin.scale = 1 + Math.sin(pulse * 4) * 0.1; // Parlama/Nabız efekti
+    coin.scale = 1 + Math.sin(pulse * 4) * 0.1; 
     let cx = coin.x - train.x;
     let cy = coin.y - train.y;
-    if(Math.sqrt(cx*cx + cy*cy) < 25) { // Çarpışma algılama
+    if(Math.sqrt(cx*cx + cy*cy) < 25) { 
         coin.setVisible(false);
-        score += 3; // Altın bonusu
+        score += 3; 
         scoreText.setText("Score: " + score);
         playSound('coin');
         
-        // Skoru yeşil parlatma efekti
         gameScene.tweens.add({
             targets: scoreText,
             scale: 1.5,
@@ -408,7 +453,6 @@ function update(){
         resetTrain();
         setNewCorrectPath();
         
-        // %40 ihtimalle yola altın koy
         if(Math.random() > 0.6) {
             let activePath = correctPath === "A" ? pathA : pathB;
             coin.x = activePath[2].x;
@@ -431,50 +475,12 @@ function update(){
   }
 }
 
-// Görsel Fonksiyonlar ve Partiküller
-function spawnSmoke(){ 
-    if(Math.random() > 0.5) return;
-    smokeParticles.push({ x: train.x - 10, y: train.y - 20, alpha: 1, size: Phaser.Math.Between(4,8) }); 
-}
-function updateSmoke(){ 
-    for(let i=smokeParticles.length-1;i>=0;i--){ 
-        let p = smokeParticles[i]; 
-        p.y -= 0.5; p.alpha -= 0.015; 
-        graphics.fillStyle(0xdddddd, p.alpha); 
-        graphics.fillCircle(p.x,p.y,p.size); 
-        if(p.alpha<=0) smokeParticles.splice(i,1); 
-    } 
-}
-function spawnSparks() {
-    for(let i=0; i<8; i++) {
-        sparkParticles.push({
-            x: train.x, y: train.y + 10,
-            vx: (Math.random() - 0.5) * 4,
-            vy: (Math.random() - 0.5) * 4,
-            life: 1.0
-        });
-    }
-}
-function updateSparks() {
-    for(let i=sparkParticles.length-1;i>=0;i--){ 
-        let p = sparkParticles[i]; 
-        p.x += p.vx; p.y += p.vy; p.life -= 0.05; 
-        graphics.fillStyle(0xffaa00, p.life); 
-        graphics.fillCircle(p.x,p.y, 3 * p.life); 
-        if(p.life<=0) sparkParticles.splice(i,1); 
-    } 
-}
-
-function drawRails(){ 
-    graphics.clear(); 
-    drawRailSegment(100,300,300,300); 
-    drawRailBranch(pathA); 
-    drawRailBranch(pathB); 
-    let active = switchState==="A"?pathA:pathB; 
-    highlightRail(active,0x00ccff); 
-    let wrong = correctPath==="A"?pathB:pathA; 
-    drawWarning(wrong); 
-}
+// GÖRSEL EFEKTLER (Değişmedi)
+function spawnSmoke(){ if(Math.random() > 0.5) return; smokeParticles.push({ x: train.x - 10, y: train.y - 20, alpha: 1, size: Phaser.Math.Between(4,8) }); }
+function updateSmoke(){ for(let i=smokeParticles.length-1;i>=0;i--){ let p = smokeParticles[i]; p.y -= 0.5; p.alpha -= 0.015; graphics.fillStyle(0xdddddd, p.alpha); graphics.fillCircle(p.x,p.y,p.size); if(p.alpha<=0) smokeParticles.splice(i,1); } }
+function spawnSparks() { for(let i=0; i<8; i++) { sparkParticles.push({ x: train.x, y: train.y + 10, vx: (Math.random() - 0.5) * 4, vy: (Math.random() - 0.5) * 4, life: 1.0 }); } }
+function updateSparks() { for(let i=sparkParticles.length-1;i>=0;i--){ let p = sparkParticles[i]; p.x += p.vx; p.y += p.vy; p.life -= 0.05; graphics.fillStyle(0xffaa00, p.life); graphics.fillCircle(p.x,p.y, 3 * p.life); if(p.life<=0) sparkParticles.splice(i,1); } }
+function drawRails(){ graphics.clear(); drawRailSegment(100,300,300,300); drawRailBranch(pathA); drawRailBranch(pathB); let active = switchState==="A"?pathA:pathB; highlightRail(active,0x00ccff); let wrong = correctPath==="A"?pathB:pathA; drawWarning(wrong); }
 function drawRailSegment(x1,y1,x2,y2){ drawRailLine(x1,y1,x2,y2); drawSleepers(x1,y1,x2,y2); }
 function drawRailBranch(path){ for(let i=1;i<path.length-1;i++){ drawRailSegment(path[i].x,path[i].y,path[i+1].x,path[i+1].y); } }
 function drawRailLine(x1,y1,x2,y2){ let dx=x2-x1, dy=y2-y1; let len=Math.sqrt(dx*dx+dy*dy); let nx=-dy/len*4, ny=dx/len*4; graphics.lineStyle(3,0x777777); graphics.beginPath(); graphics.moveTo(x1+nx,y1+ny); graphics.lineTo(x2+nx,y2+ny); graphics.strokePath(); graphics.beginPath(); graphics.moveTo(x1-nx,y1-ny); graphics.lineTo(x2-nx,y2-ny); graphics.strokePath(); }
@@ -507,7 +513,7 @@ function triggerGameOver() {
   isGameOver = true;
   playSound('crash'); 
   
-  gameScene.cameras.main.shake(400, 0.02); // Kaza anında şiddetli sarsıntı
+  gameScene.cameras.main.shake(400, 0.02); 
   
   setTimeout(() => {
     document.getElementById("gameOverScreen").classList.remove("hidden");
@@ -517,12 +523,15 @@ function triggerGameOver() {
       document.getElementById("scoreInputArea").classList.remove("hidden");
       document.getElementById("justRestartBtn").classList.add("hidden");
       document.getElementById("playerNameInput").value = "";
-      document.getElementById("playerNameInput").focus();
+      
+      // Mobilde klavye açıldığında ekran bozulmasın diye minik gecikme ile focus yap
+      setTimeout(() => { document.getElementById("playerNameInput").focus(); }, 100);
+      
     } else {
       document.getElementById("scoreInputArea").classList.add("hidden");
       document.getElementById("justRestartBtn").classList.remove("hidden");
     }
-  }, 400); // Sarsıntı bitene kadar bekle
+  }, 400); 
 }
 
 function restartGame() {
