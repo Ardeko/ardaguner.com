@@ -7,14 +7,13 @@
 <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.js"></script>
 
 <style>
-  /* MOBİL TARAYICILAR İÇİN KESİN ÇÖZÜM BURADA */
   html, body {
     width: 100%;
     height: 100%;
     margin: 0;
     padding: 0;
     overflow: hidden;
-    position: fixed; /* Safari adres çubuğu kaymalarını engeller */
+    position: fixed;
     background: #87CEEB; 
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     touch-action: none; 
@@ -23,15 +22,11 @@
 
   #gameWrapper {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    top: 0; left: 0; right: 0; bottom: 0;
     width: 100%;
     height: 100%;
   }
 
-  /* HTML ARAYÜZLERİ */
   .ui-screen {
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -93,7 +88,6 @@
 
   button:hover { background: #00cc6a; transform: scale(1.05); }
 
-  /* LEADERBOARD */
   #leaderboardUI {
     position: absolute; 
     top: 10px; 
@@ -109,7 +103,6 @@
   #leaderboardUI h3 { margin-top: 0; margin-bottom: 5px; color: #00ccff; text-align: center; font-size: 16px;}
   #scoreList { padding-left: 15px; margin-bottom: 0; font-size: 14px;}
 
-  /* TAM EKRAN BUTONU */
   #fullscreenBtn {
     position: absolute;
     top: 10px;
@@ -290,6 +283,7 @@ function submitScoreAndRestart() {
   }
 }
 
+// --- BURASI DEĞİŞTİ: FPS SABİTLEME EKLENDİ ---
 const config = {
   type: Phaser.AUTO,
   width: 800, 
@@ -300,6 +294,10 @@ const config = {
   scale: {
     mode: Phaser.Scale.FIT, 
     autoCenter: Phaser.Scale.CENTER_BOTH 
+  },
+  fps: {
+    target: 60,
+    forceSetTimeOut: true
   }
 };
 
@@ -543,7 +541,6 @@ function restartGame() {
   setNewCorrectPath();
 }
 
-// Güvenlik önlemi: Ekran boyutu değiştiğinde veya yan döndüğünde oyunu tazele
 window.addEventListener('resize', () => {
   if (game && game.scale) {
     setTimeout(() => { game.scale.refresh(); }, 100);
