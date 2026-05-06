@@ -10,13 +10,14 @@
   body {
     margin: 0;
     overflow: hidden;
-    background: #111;
+    background: #87CEEB; /* Başlangıç rengini oyunun gündüz rengiyle eşitledik */
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    touch-action: none; /* Mobilde kaydırmayı engeller */
+    touch-action: none; 
+    transition: background-color 0.5s ease; /* Renk geçişleri yumuşak olsun diye eklendi */
   }
 
   #gameWrapper {
@@ -90,7 +91,7 @@
 
   button:hover { background: #00cc6a; transform: scale(1.05); }
 
-  /* LEADERBOARD (Mobilde biraz küçültüldü) */
+  /* LEADERBOARD */
   #leaderboardUI {
     position: absolute; 
     top: 10px; 
@@ -101,12 +102,12 @@
     padding: 10px 15px; 
     border-radius: 8px;
     z-index: 50;
-    pointer-events: none; /* Oyuncunun tıklamasını engellememesi için */
+    pointer-events: none; 
   }
   #leaderboardUI h3 { margin-top: 0; margin-bottom: 5px; color: #00ccff; text-align: center; font-size: 16px;}
   #scoreList { padding-left: 15px; margin-bottom: 0; font-size: 14px;}
 
-  /* TAM EKRAN BUTONU (Mobiller için) */
+  /* TAM EKRAN BUTONU */
   #fullscreenBtn {
     position: absolute;
     top: 10px;
@@ -121,7 +122,6 @@
     z-index: 50;
   }
 
-  /* TELEFONU YAN ÇEVİR UYARISI */
   #rotateWarning {
     display: none;
     background: #111;
@@ -132,7 +132,6 @@
   }
   #rotateWarning h2 { color: #ffeb3b; }
 
-  /* EĞER EKRAN DİK (PORTRAIT) İSE OYUNU GİZLE, UYARIYI GÖSTER */
   @media screen and (orientation: portrait) {
     #gameWrapper { display: none !important; }
     #rotateWarning {
@@ -185,7 +184,6 @@
 </div>
 
 <script>
-// --- TAM EKRAN (FULLSCREEN) YÖNETİMİ ---
 function toggleFullScreen() {
   if (!document.fullscreenElement) {
     document.documentElement.requestFullscreen().catch(err => {
@@ -198,12 +196,10 @@ function toggleFullScreen() {
   }
 }
 
-// "F" Tuşu desteği hala bilgisayarlar için kalsın
 document.addEventListener("keydown", (e) => {
   if (e.key === "f" || e.key === "F") toggleFullScreen();
 });
 
-// --- KODLA ÜRETİLEN RETRO SES EFEKTLERİ ---
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 function playSound(type) {
@@ -252,7 +248,6 @@ function playSound(type) {
   }
 }
 
-// --- FIREBASE & LEADERBOARD ---
 const FIREBASE_URL = "https://switch-master-687ff-default-rtdb.europe-west1.firebasedatabase.app/scores.json";
 
 function loadScores() {
@@ -293,7 +288,6 @@ function submitScoreAndRestart() {
   }
 }
 
-// --- PHASER OYUN KODLARI ---
 const config = {
   type: Phaser.AUTO,
   width: 800, 
@@ -363,7 +357,6 @@ function create(){
 
   switchLever = this.add.rectangle(300,280,10,40,0xaaaaaa);
 
-  // DOKUNMATİK VE TIKLAMA OLAYI
   this.input.on("pointerdown", ()=>{
     if(!gameStarted || isGameOver) return; 
 
@@ -389,14 +382,18 @@ function update(){
 
   pulse += 0.05;
   
+  // ARKA PLAN EŞİTLEME (Sorunun çözüldüğü kısım)
   if(score < 5) {
       gameScene.cameras.main.setBackgroundColor('#87CEEB'); 
+      document.body.style.backgroundColor = '#87CEEB'; // HTML arkaplanını da günceller
       headlight.setVisible(false);
   } else if (score < 10) {
       gameScene.cameras.main.setBackgroundColor('#fc7b03'); 
+      document.body.style.backgroundColor = '#fc7b03'; 
       headlight.setVisible(false);
   } else {
       gameScene.cameras.main.setBackgroundColor('#111122'); 
+      document.body.style.backgroundColor = '#111122'; 
       headlight.setVisible(true); 
   }
 
@@ -475,7 +472,6 @@ function update(){
   }
 }
 
-// GÖRSEL EFEKTLER (Değişmedi)
 function spawnSmoke(){ if(Math.random() > 0.5) return; smokeParticles.push({ x: train.x - 10, y: train.y - 20, alpha: 1, size: Phaser.Math.Between(4,8) }); }
 function updateSmoke(){ for(let i=smokeParticles.length-1;i>=0;i--){ let p = smokeParticles[i]; p.y -= 0.5; p.alpha -= 0.015; graphics.fillStyle(0xdddddd, p.alpha); graphics.fillCircle(p.x,p.y,p.size); if(p.alpha<=0) smokeParticles.splice(i,1); } }
 function spawnSparks() { for(let i=0; i<8; i++) { sparkParticles.push({ x: train.x, y: train.y + 10, vx: (Math.random() - 0.5) * 4, vy: (Math.random() - 0.5) * 4, life: 1.0 }); } }
@@ -500,7 +496,6 @@ function resetTrain(){
   lockedChoice=null;
 }
 
-// --- HTML ARAYÜZ YÖNETİMİ ---
 function startGame() {
   if(audioCtx.state === 'suspended') audioCtx.resume();
   document.getElementById("startScreen").classList.add("hidden");
@@ -524,7 +519,6 @@ function triggerGameOver() {
       document.getElementById("justRestartBtn").classList.add("hidden");
       document.getElementById("playerNameInput").value = "";
       
-      // Mobilde klavye açıldığında ekran bozulmasın diye minik gecikme ile focus yap
       setTimeout(() => { document.getElementById("playerNameInput").focus(); }, 100);
       
     } else {
@@ -541,6 +535,10 @@ function restartGame() {
   speed = baseSpeed;
   scoreText.setText("Score: 0");
   coin.setVisible(false);
+  
+  // Arka planı restartta sıfırlayalım ki kaza anında renk takılı kalmasın
+  document.body.style.backgroundColor = '#87CEEB';
+  
   resetTrain();
   setNewCorrectPath();
 }
