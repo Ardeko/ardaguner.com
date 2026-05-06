@@ -23,12 +23,8 @@
 }
 
 @keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -103,12 +99,8 @@
 }
 
 @keyframes glow {
-  from {
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-  }
-  to {
-    text-shadow: 0 0 20px rgba(255, 255, 255, 1);
-  }
+  from { text-shadow: 0 0 10px rgba(255, 255, 255, 0.8); }
+  to { text-shadow: 0 0 20px rgba(255, 255, 255, 1); }
 }
 
 /* Arka plan */
@@ -209,6 +201,7 @@ input:checked + .slider:before {
                0 0 40px rgba(255, 140, 0, 1),
                0 0 60px rgba(255, 69, 0, 1);
 }
+
 .clock {
   font-size: 1.2rem;
   color: #fff;
@@ -226,14 +219,6 @@ input:checked + .slider:before {
   margin-bottom: 30px;
 }
   
-/* Mobil için daha küçük stil */
-@media (max-width: 768px) {
-  .clock {
-    font-size: 1rem;
-    padding: 8px 16px;
-  }
-}
-
 /* PDF Butonu */
 .pdf-button {
   display: inline-block;
@@ -263,8 +248,121 @@ input:checked + .slider:before {
   vertical-align: middle;
 }
 
-/* Mobil Uyumluluk */
+/* Switch Master Alanı */
+.switch-master-wrapper {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+/* ANA KART */
+.switch-master-card {
+  position: relative;
+  padding: 2rem 3rem;
+  border-radius: 16px;
+  background: linear-gradient(145deg, #2b2b2b, #1a1a1a);
+  border: 2px solid #444;
+  box-shadow: 
+    inset 0 0 10px rgba(255,255,255,0.05),
+    0 0 25px rgba(0,0,0,0.8);
+  text-align: center;
+  overflow: hidden;
+}
+
+/* RAY ÇİZGİLERİ EFEKTİ - ÇÖZÜM BURADA */
+.switch-master-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 40px,
+    rgba(255,255,255,0.05) 42px
+  );
+  animation: trackMove 6s linear infinite;
+  pointer-events: none; /* ÖNEMLİ: Tıklamaları engellemesini önler */
+  z-index: 0;
+}
+
+/* BAŞLIK */
+.switch-master-card h2 {
+  position: relative; /* İçeriğin ::before'un üstünde kalmasını sağlar */
+  z-index: 1;
+  font-size: 2.2rem;
+  margin-bottom: 1rem;
+  color: #ddd;
+  text-shadow: 0 0 10px rgba(255,255,255,0.3);
+}
+
+/* AÇIKLAMA */
+.switch-master-card p {
+  position: relative; /* İçeriğin ::before'un üstünde kalmasını sağlar */
+  z-index: 1;
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+  color: #aaa;
+}
+
+/* BUTON - ÇÖZÜM BURADA */
+.play-button {
+  position: relative; /* Tıklanabilir alanın animasyonun üstünde kalması için */
+  z-index: 10; /* Katman önceliğini artırdık */
+  display: inline-block;
+  padding: 1rem 2.5rem;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: white;
+  background: linear-gradient(90deg, #00c853, #009624);
+  text-decoration: none;
+  box-shadow: 0 0 15px rgba(0,255,100,0.6);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.play-button:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 25px rgba(0,255,100,1);
+}
+
+/* SİNYAL BADGE */
+.badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: red;
+  padding: 6px 12px;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  animation: signalBlink 1s infinite;
+  z-index: 1; /* Badge'in de üstte kalmasını sağladık */
+}
+
+/* ANİMASYONLAR */
+@keyframes trackMove {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes signalBlink {
+  0% { background: red; box-shadow: 0 0 10px red; }
+  50% { background: darkred; box-shadow: 0 0 3px red; }
+  100% { background: red; box-shadow: 0 0 10px red; }
+}
+
+/* -------------------------------------- */
+/* MOBİL UYUMLULUK (Birleştirilmiş)       */
+/* -------------------------------------- */
 @media (max-width: 768px) {
+  .clock {
+    font-size: 1rem;
+    padding: 8px 16px;
+  }
+
   .header ul {
     flex-direction: column;
     text-align: center;
@@ -286,21 +384,10 @@ input:checked + .slider:before {
     text-align: center;
   }
 
-  h1 {
-    font-size: 2rem;
-  }
-
-  h2 {
-    font-size: 1.8rem;
-  }
-
-  h3 {
-    font-size: 1.5rem;
-  }
-
-  p {
-    font-size: 1rem;
-  }
+  h1 { font-size: 2rem; }
+  h2 { font-size: 1.8rem; }
+  h3 { font-size: 1.5rem; }
+  p { font-size: 1rem; }
 
   button {
     font-size: 1.2rem;
@@ -319,8 +406,7 @@ input:checked + .slider:before {
     flex-direction: column;
     align-items: center;
   }
-}
-@media (max-width: 768px) {
+
   .about-container {
     display: flex;
     flex-direction: column;
@@ -339,53 +425,3 @@ input:checked + .slider:before {
     max-width: 90%;
   }
 }
-.revo-button {
-  display: inline-block;
-  margin-top: 1.5rem;
-  padding: 0.8rem 2rem;
-  font-size: 1.1rem;
-  font-weight: bold;
-  color: #ffffff;
-  background: linear-gradient(135deg, #00c6ff, #0072ff);
-  border: none;
-  border-radius: 12px;
-  text-decoration: none;
-  text-align: center;
-  box-shadow: 0 0 12px rgba(0, 114, 255, 0.75);
-  transition: all 0.3s ease, box-shadow 0.3s ease;
-  position: relative;
-  z-index: 2; /* Yüksek z-index */
-}
-
-.revo-button::before {
-  content: "";
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(0,255,255,0.2), transparent 60%);
-  animation: pulseGlow 3s infinite ease-in-out;
-  z-index: 0; /* Önceki değeri koruduk */
-}
-
-.revo-button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 20px rgba(0, 174, 255, 0.9), 0 0 40px rgba(0, 174, 255, 0.6);
-}
-
-@keyframes pulseGlow {
-  0% {
-    transform: scale(1);
-    opacity: 0.5;
-  }
-  50% {
-    transform: scale(1.2);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 0.5;
-  }
-}
-

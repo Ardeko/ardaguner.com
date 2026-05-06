@@ -151,14 +151,33 @@ function App() {
               <section id="hero" className="hero">
   <h1>{strings.hero.title}</h1>
   <p>{strings.hero.subtitle}</p>
-<button
-  className="revo-button disabled"
-  disabled
-  style={{ cursor: "not-allowed", opacity: 0.6 }}
->
-  🚧 {language === "tr" ? "REVO Bakımda" : "REVO Under Maintenance"}
-</button>
+ {/* 🚂 SWITCH MASTER */}
+                <div className="switch-master-wrapper">
+                  <div className="switch-master-card">
 
+                    <span className="badge">
+                      {language === "tr" ? "YENİ" : "NEW"}
+                    </span>
+
+                    <h2>🚂 Switch Master</h2>
+
+                    <p>
+                      {language === "tr"
+                        ? "🚦 Rayları değiştir, treni kurtar! Reflekslerini test et."
+                        : "🚦 Switch tracks, save the train! Test your reflexes."}
+                    </p>
+
+                    <button
+                      className="play-button"
+                      onClick={() =>
+                        window.open("/switch-master/index.html", "_blank")
+                      }
+                    >
+                      {language === "tr" ? "OYNA 🔥" : "PLAY 🔥"}
+                    </button>
+
+                  </div>
+                </div>
   {/* Daily Software Tip */}
   <div className="daily-tip-widget">
     <h3>{strings.hero.tipTitle}</h3>
