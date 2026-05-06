@@ -7,26 +7,28 @@
 <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.js"></script>
 
 <style>
-  body {
+  /* MOBİL TARAYICILAR İÇİN KESİN ÇÖZÜM BURADA */
+  html, body {
+    width: 100%;
+    height: 100%;
     margin: 0;
+    padding: 0;
     overflow: hidden;
-    background: #87CEEB; /* Başlangıç rengini oyunun gündüz rengiyle eşitledik */
+    position: fixed; /* Safari adres çubuğu kaymalarını engeller */
+    background: #87CEEB; 
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
     touch-action: none; 
-    transition: background-color 0.5s ease; /* Renk geçişleri yumuşak olsun diye eklendi */
+    transition: background-color 0.5s ease; 
   }
 
   #gameWrapper {
-    position: relative;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     width: 100%;
     height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
   }
 
   /* HTML ARAYÜZLERİ */
@@ -382,10 +384,9 @@ function update(){
 
   pulse += 0.05;
   
-  // ARKA PLAN EŞİTLEME (Sorunun çözüldüğü kısım)
   if(score < 5) {
       gameScene.cameras.main.setBackgroundColor('#87CEEB'); 
-      document.body.style.backgroundColor = '#87CEEB'; // HTML arkaplanını da günceller
+      document.body.style.backgroundColor = '#87CEEB'; 
       headlight.setVisible(false);
   } else if (score < 10) {
       gameScene.cameras.main.setBackgroundColor('#fc7b03'); 
@@ -536,12 +537,18 @@ function restartGame() {
   scoreText.setText("Score: 0");
   coin.setVisible(false);
   
-  // Arka planı restartta sıfırlayalım ki kaza anında renk takılı kalmasın
   document.body.style.backgroundColor = '#87CEEB';
   
   resetTrain();
   setNewCorrectPath();
 }
+
+// Güvenlik önlemi: Ekran boyutu değiştiğinde veya yan döndüğünde oyunu tazele
+window.addEventListener('resize', () => {
+  if (game && game.scale) {
+    setTimeout(() => { game.scale.refresh(); }, 100);
+  }
+});
 </script>
 
 </body>
