@@ -139,15 +139,14 @@ function create(){
 
   trainShieldCircle = this.add.circle(0, 0, 42, 0x00ff88, 0.25).setStrokeStyle(3, 0x00ff88, 1); trainShieldCircle.setVisible(false);
 
-  // YENİ: Aerodinamik, Yüksek Teknoloji Buharlı Tren Tasarımı (Vagonlara tam uyumlu)
-  let bodyLower = this.add.rectangle(0, 8, 60, 14, 0x111111); // Siyah alt kasa
-  let bodyUpper = this.add.rectangle(0, -3, 60, 16, 0x2c3e50); // Vagonlarla aynı gece mavisi
+  let bodyLower = this.add.rectangle(0, 8, 60, 14, 0x111111); 
+  let bodyUpper = this.add.rectangle(0, -3, 60, 16, 0x2c3e50); 
   let cabin = this.add.rectangle(12, -15, 24, 16, 0x1a252f).setStrokeStyle(1, 0x111111); 
-  let window = this.add.rectangle(12, -15, 12, 8, 0x00ffff).setBlendMode(Phaser.BlendModes.ADD); // Neon mavi vagon camı
-  let front = this.add.rectangle(-30, 0, 8, 16, 0x111111); // Siyah ızgara burun
-  let bumper = this.add.rectangle(-34, 6, 6, 12, 0x555555); // Çelik tampon
-  let chimneyTex = this.add.rectangle(-20, -15, 8, 12, 0x111111); // Siyah modern baca
-  let stripe = this.add.rectangle(0, 1, 60, 2, 0xffaa00); // Gövdeyi boydan boya kesen efsane altın şerit
+  let window = this.add.rectangle(12, -15, 12, 8, 0x00ffff).setBlendMode(Phaser.BlendModes.ADD); 
+  let front = this.add.rectangle(-30, 0, 8, 16, 0x111111); 
+  let bumper = this.add.rectangle(-34, 6, 6, 12, 0x555555); 
+  let chimneyTex = this.add.rectangle(-20, -15, 8, 12, 0x111111); 
+  let stripe = this.add.rectangle(0, 1, 60, 2, 0xffaa00); 
 
   train.add([farGlow, headlineCore, headlight, trainShieldCircle, bodyLower, bodyUpper, cabin, window, front, bumper, chimneyTex, stripe]);
 
@@ -159,7 +158,6 @@ function create(){
   phaseText = this.add.text(400, 250, "🎟️ ANA HAT KİLİDİ AÇILDI 🎟️\n🔥 3. ŞERİT AKTİF 🔥", { fontSize:"38px", fill:"#ff3300", fontStyle:"bold", align:"center", stroke:"#ffffff", strokeThickness: 6, shadow: { blur: 15, color: '#ffaa00', stroke: true, fill: true } }).setOrigin(0.5).setDepth(100);
   phaseText.setVisible(false);
 
-  // YENİ: Vagon Eklendi Uyarısı
   vagonText = this.add.text(400, 200, "🚂 YENİ VAGON EKLENDİ 🚂", { fontSize:"32px", fill:"#00ffff", fontStyle:"bold", align:"center", stroke:"#000", strokeThickness: 6, shadow: { blur: 15, color: '#00ffff', stroke: true, fill: true } }).setOrigin(0.5).setDepth(100);
   vagonText.setVisible(false);
 
@@ -219,14 +217,13 @@ function update(){
   midTrees.tilePositionX += 0.5 * (speed / baseSpeed) * gameTime.scale;
   pulse += 0.05 * gameTime.scale;
   
-  // YENİ: Vagon Ekleme Sinematiği ve Slow-Mo
   let targetWagonCount = Math.floor(score / 10);
   if (trainWagons.length < targetWagonCount) { 
       trainWagons.push(createWagon()); 
       
-      playSound('ice'); // Havalı bir ses efekti
-      gameScene.cameras.main.flash(600, 0, 255, 255); // Mavi parlama
-      gameTime.scale = 0.3; // %30 Hıza düşen akıcı bir Slow-Mo
+      playSound('ice'); 
+      gameScene.cameras.main.flash(600, 0, 255, 255); 
+      gameTime.scale = 0.3; 
       
       vagonText.setVisible(true);
       vagonText.setScale(0.5);
@@ -234,7 +231,7 @@ function update(){
       
       gameScene.tweens.add({ targets: vagonText, scale: 1.2, duration: 1500, ease: 'Out' });
       gameScene.tweens.add({ targets: vagonText, alpha: 0, duration: 500, delay: 1500 });
-      gameScene.tweens.add({ targets: gameTime, scale: 1.0, duration: 2000, ease: 'Sine.easeIn' }); // Yavaşça normale dönüş
+      gameScene.tweens.add({ targets: gameTime, scale: 1.0, duration: 2000, ease: 'Sine.easeIn' }); 
   }
 
   if(score >= 25 && phase === 1 && pathIndex === 0) {
@@ -296,7 +293,14 @@ function update(){
             if(r < 0.6) { itemType = 1; cBody.fillColor = 0xffd700; cOutline.fillColor = 0xb8860b; cIcon.setText("💰"); cIcon.setColor("#000"); } 
             else if(r < 0.8) { itemType = 2; cBody.fillColor = 0x00bfff; cOutline.fillColor = 0x0000ff; cIcon.setText("❄️"); cIcon.setColor("#fff"); } 
             else { itemType = 3; cBody.fillColor = 0x32cd32; cOutline.fillColor = 0x008000; cIcon.setText("🛡️"); cIcon.setColor("#fff"); }
-            itemGraphic.x = currentPath[2].x + (currentPath[3].x - currentPath[2].x) * 0.6; itemGraphic.y = currentPath[2].y + (currentPath[3].y - currentPath[2].y) * 0.6; itemGraphic.setVisible(true);
+            
+            let spawnPath;
+            if(phase === 1) spawnPath = (correctPathIndex === 0) ? p1Top : p1Bot;
+            else spawnPath = (correctPathIndex === 0) ? p2Top : (correctPathIndex === 1) ? p2Mid : p2Bot;
+            
+            itemGraphic.x = spawnPath[2].x + (spawnPath[3].x - spawnPath[2].x) * 0.6; 
+            itemGraphic.y = spawnPath[2].y + (spawnPath[3].y - spawnPath[2].y) * 0.6; 
+            itemGraphic.setVisible(true);
         } else { itemGraphic.setVisible(false); itemType = 0; }
       }
     }
@@ -327,14 +331,11 @@ function update(){
       }
   }
   
- let maxHist = 50 + (trainWagons.length * 30);
+  let maxHist = 50 + (trainWagons.length * 30);
   if (posHistory.length > maxHist) posHistory.length = maxHist;
 
   for(let i=0; i<trainWagons.length; i++) {
-      // 38: İlk vagonun lokomotife olan uzaklığı (Burayı artırıp azaltarak sadece ilk vagonu ayarlayabilirsin)
-      // 28: Vagonların birbirleri arasındaki kusursuz mesafe
       let tIdx = 38 + (i * 28); 
-      
       if(tIdx < posHistory.length) { 
           trainWagons[i].x = posHistory[tIdx].x; trainWagons[i].y = posHistory[tIdx].y; trainWagons[i].rotation = posHistory[tIdx].rot; 
       } else { 
@@ -348,15 +349,35 @@ function update(){
 
 function spawnObstacle() {
     if(score < 5) return; 
-    if(Math.random() > 0.5) {
-        let obsY = (phase === 1) ? (Math.random() > 0.5 ? 200 : 400) : [150, 300, 450][Math.floor(Math.random()*3)];
+    
+    if(Math.random() > 0.4) {
+        let obsY;
+        if (phase === 1) {
+            obsY = (correctPathIndex === 0) ? 200 : 400; 
+        } else {
+            if (correctPathIndex === 0) {
+                obsY = 150; 
+            } else if (correctPathIndex === 2) {
+                obsY = 450; 
+            } else {
+                obsY = (Math.random() > 0.5) ? 150 : 450;
+            }
+        }
+        
         let obsContainer = gameScene.add.container(900, obsY).setDepth(10);
-        gameScene.physics.add.existing(obsContainer); obsContainer.body.setCircle(20, -20, -20);
-        let cBaseL = gameScene.add.rectangle(0, 5, 35, 10, 0x111111); let cBaseU = gameScene.add.rectangle(0, 0, 35, 10, 0x222222);
+        gameScene.physics.add.existing(obsContainer); 
+        obsContainer.body.setCircle(20, -20, -20);
+        
+        let cBaseL = gameScene.add.rectangle(0, 5, 35, 10, 0x111111); 
+        let cBaseU = gameScene.add.rectangle(0, 0, 35, 10, 0x222222);
         let cCoal = gameScene.add.rectangle(0, -6, 25, 6, 0x000000).setAlpha(0.7);
-        let w1 = gameScene.add.circle(-10, 10, 5, 0x111111).setStrokeStyle(1, 0x555555); let w2 = gameScene.add.circle(10, 10, 5, 0x111111).setStrokeStyle(1, 0x555555);
-        let percin1 = gameScene.add.circle(-12, -4, 1.5, 0x000000).setAlpha(0.5); let percin2 = gameScene.add.circle(12, -4, 1.5, 0x000000).setAlpha(0.5);
-        obsContainer.add([cBaseL, cBaseU, cCoal, w1, w2, percin1, percin2]); obstacles.add(obsContainer);
+        let w1 = gameScene.add.circle(-10, 10, 5, 0x111111).setStrokeStyle(1, 0x555555); 
+        let w2 = gameScene.add.circle(10, 10, 5, 0x111111).setStrokeStyle(1, 0x555555);
+        let percin1 = gameScene.add.circle(-12, -4, 1.5, 0x000000).setAlpha(0.5); 
+        let percin2 = gameScene.add.circle(12, -4, 1.5, 0x000000).setAlpha(0.5);
+        
+        obsContainer.add([cBaseL, cBaseU, cCoal, w1, w2, percin1, percin2]); 
+        obstacles.add(obsContainer);
     }
 }
 
