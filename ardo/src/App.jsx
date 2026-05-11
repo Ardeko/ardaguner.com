@@ -4,6 +4,7 @@ import "./App.css";
 import { tips } from "./tips";
 import tr from "/locales/tr.json";
 import en from "/locales/en.json";
+import PrivacyPolicy from './PrivacyPolicy';
 
 const CodeLab = lazy(() => import("./CodeLab"));
 
@@ -287,6 +288,7 @@ function App() {
        </Suspense>
         }
       />
+      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
       </Routes>
 
        {/* Footer */}
