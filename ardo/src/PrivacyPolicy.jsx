@@ -23,7 +23,7 @@ const PrivacyPolicy = () => {
               1. Giriş
             </h2>
             <p>
-              <strong>Arda Güner</strong> ("biz", "bize" veya "bizim") olarak, gizliliğinize saygı duyuyor ve kişisel verilerinizi korumayı taahhüt ediyoruz. Bu Gizlilik Politikası, mobil uygulamalarımızı, oyunlarımızı ve <span className="text-indigo-600 font-semibold">ardaguner.com</span> web sitemizi kullandığınızda bilgilerinizi nasıl topladığımızı, kullandığımızı ve paylaştığımızı açıklamaktadır.
+              <strong>Arda Güner</strong>olarak, gizliliğinize saygı duyuyor ve kişisel verilerinizi korumayı taahhüt ediyorum. Bu Gizlilik Politikası, mobil uygulamalarımızı, oyunlarımızı ve <span className="text-indigo-600 font-semibold">ardaguner.com</span> web sitemizi kullandığınızda bilgilerinizi nasıl topladığımızı, kullandığımızı ve paylaştığımızı açıklamaktadır.
             </p>
           </section>
 

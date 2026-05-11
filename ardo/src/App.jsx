@@ -337,7 +337,11 @@ function App() {
               GitHub
             </a>
           </li>
-          <li style={{ marginBottom: "1rem" }}></li> {/* Boşluk için */}
+          <li style={{ marginBottom: "1rem", marginTop: "1rem" }}>
+  <Link to="/privacy-policy" style={{ color: "#64b5f6", textDecoration: "underline" }}>
+    {language === "tr" ? "Gizlilik Politikası" : "Privacy Policy"}
+  </Link>
+</li>
         </ul>
 
         {/* Saat ve Tarih */}
