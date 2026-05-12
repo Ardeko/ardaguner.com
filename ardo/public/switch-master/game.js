@@ -626,12 +626,12 @@ function create() {
     brakeBtnObj = this.add.rectangle(700, 540, 140, 70, 0xcc0000, 0.9).setInteractive().setStrokeStyle(3, 0xffaa00).setDepth(100);
     brakeBtnText = this.add.text(700, 540, "FREN", { fontSize: '24px', fontStyle: 'bold', color: '#fff' }).setOrigin(0.5).setDepth(100);
 
-    // ÇOKLU DOKUNMATİK DESTEĞİ İÇİN GÜNCELLENEN KISIM
 
-    // Phaser'ın ek dokunuşları izlediğinden emin olalım
+
+
     this.input.addPointer(2);
 
-    // Fren Butonu Mantığı
+
     brakeBtnObj.on('pointerdown', (pointer) => {
         if (!brakeCooldown && gameStarted && !isGameOver && !isPaused) {
             isBraking = true;
@@ -650,20 +650,20 @@ function create() {
     this.input.keyboard.on('keydown-SPACE', () => {
             if (!brakeCooldown && gameStarted && !isGameOver && !isPaused) {
                 isBraking = true;
-                brakeBtnObj.fillColor = 0x990000; // Butonu da basılı renge çevir
+                brakeBtnObj.fillColor = 0x990000;
             }
         });
 
         this.input.keyboard.on('keyup-SPACE', () => {
             isBraking = false;
-            if (!brakeCooldown) brakeBtnObj.fillColor = 0xcc0000; // Buton rengini normale döndür
+            if (!brakeCooldown) brakeBtnObj.fillColor = 0xcc0000;
         });
 
     // Ekrana Dokunma (Makas Değiştirme) Mantığı
     this.input.on("pointerdown", (pointer, currentlyOver) => {
         if (!gameStarted || isGameOver || isPaused) return;
 
-        // Dokunulan yerin altında UI elemanı (fren butonu) yoksa makası değiştir
+
         if (currentlyOver.length === 0) {
             playSound('switch');
             if (navigator.vibrate) navigator.vibrate(40);
@@ -787,7 +787,7 @@ function update() {
         farGlow.setVisible(true);
     }
 
-    let targetWagonCount = Math.floor(score / 20), 4) ;
+    let targetWagonCount = Math.min(Math.floor(score / 20), 4);
     if (trainWagons.length < targetWagonCount) {
         trainWagons.push(createWagon());
         playSound('ice');
