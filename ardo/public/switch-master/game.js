@@ -173,7 +173,8 @@ function updateMarketUI() {
         }
     }
 }
-    let tunnelsBack, tunnelsFront;
+
+let tunnelsBack, tunnelsFront;
 
 function buyTrain(trainId, price) {
     if (totalCoins >= price && !ownedTrains.includes(trainId)) {
@@ -263,33 +264,17 @@ let itemGraphic, itemType = 0;
 let trainShieldCircle, backgroundGroup, midgroundGroup;
 let farMountains, midTrees, solidGround;
 let brakeBtnObj, brakeBtnText, brakeBarBg, brakeBarFill;
-let isBraking = false,
-    brakeHeat = 0,
-    brakeCooldown = false;
-let gameTime = {
-    scale: 1.0
-};
-let phase = 1,
-    currentPath, pathIndex = 0;
-let baseSpeed = 2.5,
-    speed = baseSpeed,
-    maxSpeed = 12;
-let switchState = 0,
-    correctPathIndex = 0,
-    lockedChoice = null;
-let score = 0,
-    isGameOver = false,
-    gameStarted = false,
-    hasShield = false;
-let pulse = 0,
-    currentAngle = 0;
-let smokeParticles = [],
-    sparkParticles = [],
-    explosionParticles = [];
+let isBraking = false, brakeHeat = 0, brakeCooldown = false, chillTimer = 0;
+let gameTime = { scale: 1.0 };
+let phase = 1, currentPath, pathIndex = 0;
+let baseSpeed = 2.5, speed = baseSpeed, maxSpeed = 12;
+let switchState = 0, correctPathIndex = 0, lockedChoice = null;
+let score = 0, isGameOver = false, gameStarted = false, hasShield = false;
+let pulse = 0, currentAngle = 0;
+let smokeParticles = [], sparkParticles = [], explosionParticles = [];
 let starEmitter, perfectUsed = false;
 let trainWagons = [];
 let posHistory = [];
-
 let currentSkyPhase = 1;
 let classicTrainGroup = [];
 let yhtTrainGroup = [];
@@ -297,39 +282,11 @@ let armoredTrainGroup = [];
 let metalShieldBase, metalShieldSpike1, metalShieldSpike2, metalShieldCrack;
 let shieldDurability = 0;
 
-const p1Top = [
-    { x: -150, y: 300 },
-    { x: 300, y: 300 },
-    { x: 500, y: 200 },
-    { x: 1000, y: 200 }
-];
-
-const p1Bot = [
-    { x: -150, y: 300 },
-    { x: 300, y: 300 },
-    { x: 500, y: 400 },
-    { x: 1000, y: 400 }
-];
-const p2Top = [
-    { x: -150, y: 300 },
-    { x: 300, y: 300 },
-    { x: 500, y: 150 },
-    { x: 1000, y: 150 }
-];
-
-const p2Mid = [
-    { x: -150, y: 300 },
-    { x: 300, y: 300 },
-    { x: 500, y: 300 },
-    { x: 1000, y: 300 }
-];
-
-const p2Bot = [
-    { x: -150, y: 300 },
-    { x: 300, y: 300 },
-    { x: 500, y: 450 },
-    { x: 1000, y: 450 }
-];
+const p1Top = [ { x: -150, y: 300 }, { x: 300, y: 300 }, { x: 500, y: 200 }, { x: 1000, y: 200 } ];
+const p1Bot = [ { x: -150, y: 300 }, { x: 300, y: 300 }, { x: 500, y: 400 }, { x: 1000, y: 400 } ];
+const p2Top = [ { x: -150, y: 300 }, { x: 300, y: 300 }, { x: 500, y: 150 }, { x: 1000, y: 150 } ];
+const p2Mid = [ { x: -150, y: 300 }, { x: 300, y: 300 }, { x: 500, y: 300 }, { x: 1000, y: 300 } ];
+const p2Bot = [ { x: -150, y: 300 }, { x: 300, y: 300 }, { x: 500, y: 450 }, { x: 1000, y: 450 } ];
 let gameScene;
 
 function applyTrainVisuals() {
@@ -375,7 +332,6 @@ function create() {
         if (!tunnelsBack || !tunnelsFront) return;
         tunnelsBack.clear();
         tunnelsFront.clear();
-
         tunnelsBack.setDepth(4);
 
         const drawPipe = (x, y, isRightSide) => {
@@ -422,7 +378,6 @@ function create() {
 
             tunnelsFront.fillStyle(0x333333, 1);
             tunnelsFront.fillRect(rx, archY - radOuter, rw, radOuter - radInner);
-
             tunnelsFront.lineStyle(3, 0x111111);
             tunnelsFront.beginPath();
             tunnelsFront.moveTo(rx, archY - radOuter);
@@ -467,7 +422,6 @@ function create() {
         };
 
         drawPipe(30, 300, false);
-
         if (phase === 1) {
             drawPipe(970, 200, true);
             drawPipe(970, 400, true);
@@ -537,11 +491,10 @@ function create() {
     train.body.setCircle(25, -25, -25);
 
     headlight = this.add.graphics();
-    headlight.blendMode = Phaser.BlendModes.ADD;
-    headlight.fillStyle(0xffffff, 0.08);
+    headlight.fillStyle(0xffffff, 0.15);
     headlight.fillTriangle(30, 0, 280, -80, 280, 80);
-    headlineCore = this.add.circle(30, 0, 6, 0xffffff, 0.5).setBlendMode(Phaser.BlendModes.ADD);
-    farGlow = this.add.circle(30, 0, 15, 0xffaa00, 0.2).setBlendMode(Phaser.BlendModes.ADD);
+    headlineCore = this.add.circle(30, 0, 6, 0xffffff, 0.8);
+    farGlow = this.add.circle(30, 0, 15, 0xffaa00, 0.4);
     headlight.setVisible(false);
     headlineCore.setVisible(false);
     farGlow.setVisible(false);
@@ -552,7 +505,7 @@ function create() {
     let clBodyLower = this.add.rectangle(0, 8, 60, 14, 0x111111);
     let clBodyUpper = this.add.rectangle(0, -3, 60, 16, 0x2c3e50);
     let clCabin = this.add.rectangle(-15, -15, 24, 16, 0x1a252f).setStrokeStyle(1, 0x111111);
-    let clWindow = this.add.rectangle(-15, -15, 12, 8, 0x00ffff).setBlendMode(Phaser.BlendModes.ADD);
+    let clWindow = this.add.rectangle(-15, -15, 12, 8, 0x00ffff);
     let clFront = this.add.rectangle(30, 0, 8, 16, 0x111111);
     let clBumper = this.add.rectangle(34, 6, 6, 12, 0x555555);
     let clChimney = this.add.rectangle(20, -15, 8, 12, 0x111111);
@@ -581,7 +534,7 @@ function create() {
     let arBodyLower = this.add.rectangle(0, 8, 60, 14, 0x222222);
     let arBodyUpper = this.add.rectangle(0, -3, 60, 16, 0x444444);
     let arCabin = this.add.rectangle(-15, -15, 24, 16, 0x333333).setStrokeStyle(1, 0x111111);
-    let arWindow = this.add.rectangle(-15, -15, 12, 8, 0x00ffff).setBlendMode(Phaser.BlendModes.ADD);
+    let arWindow = this.add.rectangle(-15, -15, 12, 8, 0x00ffff);
     let arFront = this.add.rectangle(30, 0, 8, 16, 0x111111);
     let arChimney = this.add.rectangle(20, -15, 8, 12, 0x111111);
     let arStripe = this.add.rectangle(0, 1, 60, 2, 0x00ff88);
@@ -626,11 +579,7 @@ function create() {
     brakeBtnObj = this.add.rectangle(700, 540, 140, 70, 0xcc0000, 0.9).setInteractive().setStrokeStyle(3, 0xffaa00).setDepth(100);
     brakeBtnText = this.add.text(700, 540, "FREN", { fontSize: '24px', fontStyle: 'bold', color: '#fff' }).setOrigin(0.5).setDepth(100);
 
-
-
-
     this.input.addPointer(2);
-
 
     brakeBtnObj.on('pointerdown', (pointer) => {
         if (!brakeCooldown && gameStarted && !isGameOver && !isPaused) {
@@ -648,44 +597,40 @@ function create() {
     brakeBtnObj.on('pointerout', stopBraking);
 
     this.input.keyboard.on('keydown-SPACE', () => {
-            if (!brakeCooldown && gameStarted && !isGameOver && !isPaused) {
-                isBraking = true;
-                brakeBtnObj.fillColor = 0x990000;
-            }
-        });
+        if (!brakeCooldown && gameStarted && !isGameOver && !isPaused) {
+            isBraking = true;
+            brakeBtnObj.fillColor = 0x990000;
+        }
+    });
 
-        this.input.keyboard.on('keyup-SPACE', () => {
-            isBraking = false;
-            if (!brakeCooldown) brakeBtnObj.fillColor = 0xcc0000;
-        });
+    this.input.keyboard.on('keyup-SPACE', () => {
+        isBraking = false;
+        if (!brakeCooldown) brakeBtnObj.fillColor = 0xcc0000;
+    });
 
-    // Ekrana Dokunma (Makas Değiştirme) Mantığı
     this.input.on("pointerdown", (pointer, currentlyOver) => {
-        if (!gameStarted || isGameOver || isPaused) return;
+        if (!gameStarted || isGameOver || isPaused || currentlyOver.length > 0) return;
 
+        playSound('switch');
+        if (navigator.vibrate) navigator.vibrate(40);
+        this.cameras.main.shake(50, 0.002);
 
-        if (currentlyOver.length === 0) {
-            playSound('switch');
-            if (navigator.vibrate) navigator.vibrate(40);
-            this.cameras.main.shake(50, 0.002);
+        let distToSwitch = 300 - train.x;
+        if (pathIndex === 1 && distToSwitch > 0 && distToSwitch < 60 && !perfectUsed) {
+            perfectUsed = true;
+            score += 2;
+            scoreText.setText("Skor: " + score);
+            playSound('perfect');
+            showFloatingText(train.x, train.y - 40, "KUSURSUZ! +2", "#00ffff");
+            starEmitter.emitParticleAt(train.x, train.y, 20);
+        }
 
-            let distToSwitch = 300 - train.x;
-            if (pathIndex === 1 && distToSwitch > 0 && distToSwitch < 60 && !perfectUsed) {
-                perfectUsed = true;
-                score += 2;
-                scoreText.setText("Skor: " + score);
-                playSound('perfect');
-                showFloatingText(train.x, train.y - 40, "KUSURSUZ! +2", "#00ffff");
-                starEmitter.emitParticleAt(train.x, train.y, 20);
-            }
-
-            if (phase === 1) {
-                switchState = (switchState === 0) ? 1 : 0;
-                this.tweens.add({ targets: switchHandle, y: (switchState === 0 ? 280 : 320), duration: 100 });
-            } else {
-                switchState = (switchState + 1) % 3;
-                this.tweens.add({ targets: switchHandle, y: (275 + (switchState * 25)), duration: 100 });
-            }
+        if (phase === 1) {
+            switchState = (switchState === 0) ? 1 : 0;
+            this.tweens.add({ targets: switchHandle, y: (switchState === 0 ? 280 : 320), duration: 100 });
+        } else {
+            switchState = (switchState + 1) % 3;
+            this.tweens.add({ targets: switchHandle, y: (275 + (switchState * 25)), duration: 100 });
         }
     });
 
@@ -704,6 +649,7 @@ function setNewCorrectPath() {
         refreshTunnels();
     }
 }
+
 function handleCollision(obs) {
     if (hasShield) {
         playSound('shield_break');
@@ -742,8 +688,8 @@ function createWagon() {
         let base = gameScene.add.rectangle(0, 5, 50, 14, 0x222222);
         let body = gameScene.add.rectangle(0, -5, 48, 16, 0x444444);
         let roof = gameScene.add.rectangle(0, -15, 50, 6, 0x555555);
-        let window1 = gameScene.add.rectangle(-10, -5, 12, 8, 0x00ffff).setBlendMode(Phaser.BlendModes.ADD);
-        let window2 = gameScene.add.rectangle(10, -5, 12, 8, 0x00ffff).setBlendMode(Phaser.BlendModes.ADD);
+        let window1 = gameScene.add.rectangle(-10, -5, 12, 8, 0x00ffff);
+        let window2 = gameScene.add.rectangle(10, -5, 12, 8, 0x00ffff);
         let w1 = gameScene.add.circle(-15, 12, 6, 0x111).setStrokeStyle(1, 0x000);
         let w2 = gameScene.add.circle(15, 12, 6, 0x111).setStrokeStyle(1, 0x000);
         w.add([base, body, roof, w1, w2, window1, window2]);
@@ -751,8 +697,8 @@ function createWagon() {
         let base = gameScene.add.rectangle(0, 5, 50, 14, 0x111111);
         let body = gameScene.add.rectangle(0, -5, 48, 16, 0x2c3e50);
         let roof = gameScene.add.rectangle(0, -15, 50, 6, 0x888888);
-        let window1 = gameScene.add.rectangle(-10, -5, 12, 8, 0x00ffff).setBlendMode(Phaser.BlendModes.ADD);
-        let window2 = gameScene.add.rectangle(10, -5, 12, 8, 0x00ffff).setBlendMode(Phaser.BlendModes.ADD);
+        let window1 = gameScene.add.rectangle(-10, -5, 12, 8, 0x00ffff);
+        let window2 = gameScene.add.rectangle(10, -5, 12, 8, 0x00ffff);
         let w1 = gameScene.add.circle(-15, 12, 6, 0x333).setStrokeStyle(1, 0x000);
         let w2 = gameScene.add.circle(15, 12, 6, 0x333).setStrokeStyle(1, 0x000);
         w.add([base, body, roof, w1, w2, window1, window2]);
@@ -791,8 +737,7 @@ function update() {
     if (trainWagons.length < targetWagonCount) {
         trainWagons.push(createWagon());
         playSound('ice');
-        gameScene.cameras.main.flash(600, 0, 255, 255);
-        gameTime.scale = 0.3;
+        gameScene.cameras.main.flash(300, 0, 255, 255);
         vagonText.setVisible(true).setScale(0.5).setAlpha(1);
         gameScene.tweens.add({
             targets: vagonText,
@@ -805,12 +750,6 @@ function update() {
             alpha: 0,
             duration: 500,
             delay: 1500
-        });
-        gameScene.tweens.add({
-            targets: gameTime,
-            scale: 1.0,
-            duration: 2000,
-            ease: 'Sine.easeIn'
         });
     }
     if (score >= 25 && phase === 1 && pathIndex === 0) {
@@ -855,6 +794,7 @@ function update() {
     if (trainUpgrades[upgradeKey]) {
         baseHeatRate = 0.8;
     }
+
     if (isBraking) {
         speed = 0.5;
         brakeHeat += (baseHeatRate * gameTime.scale);
@@ -866,6 +806,19 @@ function update() {
             brakeBtnObj.fillColor = 0x555555;
             brakeBtnText.setText("AŞIRI ISI");
             playSound('shield_break');
+        }
+    } else if (chillTimer > 0) {
+        chillTimer -= gameTime.scale;
+        let targetSpeed = 1.2;
+        speed += (targetSpeed - speed) * 0.1 * gameTime.scale;
+        if (brakeHeat > 0) {
+            brakeHeat -= (1.5 * gameTime.scale);
+            if (brakeHeat <= 0) {
+                brakeHeat = 0;
+                brakeCooldown = false;
+                brakeBtnObj.fillColor = 0xcc0000;
+                brakeBtnText.setText("FREN");
+            }
         }
     } else {
         let tSpeed = baseSpeed + (score * 0.2);
@@ -882,6 +835,7 @@ function update() {
             }
         }
     }
+
     brakeBarFill.width = (brakeHeat / 100) * 120;
     if (brakeHeat > 80) brakeBarFill.fillColor = 0xff0000;
     else if (brakeHeat > 50) brakeBarFill.fillColor = 0xffa500;
@@ -907,7 +861,11 @@ function update() {
                 });
             } else if (itemType === 2) {
                 showFloatingText(train.x, train.y - 40, "SOĞUTMA! ❄️", "#00ffff");
-                speed = 1.0;
+                chillTimer = 180;
+                brakeHeat = 0;
+                brakeCooldown = false;
+                brakeBtnObj.fillColor = 0xcc0000;
+                brakeBtnText.setText("FREN");
                 playSound('ice');
                 gameScene.cameras.main.flash(300, 0, 255, 255);
             } else if (itemType === 3) {
@@ -1185,15 +1143,18 @@ function updateExplosions() {
 function drawRails() {
     graphics.clear();
     graphics.lineStyle(2, 0x555555, 0.4);
+
     if (phase === 1) {
-            drawRailSegment(-500, 200, 1500, 200);
-            drawRailSegment(-500, 400, 1500, 400);
-        } else {
-            drawRailSegment(-500, 150, 1500, 150);
-            drawRailSegment(-500, 300, 1500, 300);
-            drawRailSegment(-500, 450, 1500, 450);
-        }
+        drawRailSegment(-500, 200, 1500, 200);
+        drawRailSegment(-500, 400, 1500, 400);
+    } else {
+        drawRailSegment(-500, 150, 1500, 150);
+        drawRailSegment(-500, 300, 1500, 300);
+        drawRailSegment(-500, 450, 1500, 450);
+    }
+
     drawRailSegment(-50, 300, 300, 300);
+
     if (phase === 1) {
         drawRailBranch(p1Top);
         drawRailBranch(p1Bot);
@@ -1223,25 +1184,27 @@ function drawRailBranch(path) {
 }
 
 function drawRailLine(x1, y1, x2, y2) {
-    let dx = x2 - x1,
-        dy = y2 - y1;
+    let dx = x2 - x1, dy = y2 - y1;
     let len = Math.sqrt(dx * dx + dy * dy);
-    let nx = -dy / len * 4,
-        ny = dx / len * 4;
+    let nx = -dy / len * 4, ny = dx / len * 4;
+
     graphics.lineStyle(4, 0x444444);
     graphics.beginPath();
     graphics.moveTo(x1 + nx, y1 + ny);
     graphics.lineTo(x2 + nx, y2 + ny);
     graphics.strokePath();
+
     graphics.beginPath();
     graphics.moveTo(x1 - nx, y1 - ny);
     graphics.lineTo(x2 - nx, y2 - ny);
     graphics.strokePath();
+
     graphics.lineStyle(1.5, 0xaaaaaa, 0.5);
     graphics.beginPath();
     graphics.moveTo(x1 + nx, y1 + ny - 1);
     graphics.lineTo(x2 + nx, y2 + ny - 1);
     graphics.strokePath();
+
     graphics.beginPath();
     graphics.moveTo(x1 - nx, y1 - ny - 1);
     graphics.lineTo(x2 - nx, y2 - ny - 1);
@@ -1249,32 +1212,35 @@ function drawRailLine(x1, y1, x2, y2) {
 }
 
 function drawSleepers(x1, y1, x2, y2) {
-    let dx = x2 - x1,
-        dy = y2 - y1;
+    let dx = x2 - x1, dy = y2 - y1;
     let len = Math.sqrt(dx * dx + dy * dy);
     let steps = Math.floor(len / 40);
+
+    graphics.lineStyle(2, 0x3a2e2e, 0.9);
+    graphics.beginPath();
+
     for (let i = 0; i < steps; i++) {
         let t = i / steps;
         let x = x1 + dx * t;
         let y = y1 + dy * t;
-        let nx = -dy / len * 6,
-            ny = dx / len * 6;
-        graphics.lineStyle(2, 0x3a2e2e, 0.9);
-        graphics.beginPath();
+        let nx = -dy / len * 6, ny = dx / len * 6;
         graphics.moveTo(x - nx, y - ny);
         graphics.lineTo(x + nx, y + ny);
-        graphics.strokePath();
     }
+
+    graphics.strokePath();
 }
 
 function highlightRail(path, color) {
     graphics.lineStyle(6, color, 0.4);
+    graphics.beginPath();
+
     for (let i = 1; i < path.length - 1; i++) {
-        graphics.beginPath();
         graphics.moveTo(path[i].x, path[i].y);
         graphics.lineTo(path[i + 1].x, path[i + 1].y);
-        graphics.strokePath();
     }
+
+    graphics.strokePath();
 }
 
 function drawWarning(path) {
@@ -1283,6 +1249,7 @@ function drawWarning(path) {
     graphics.fillRect(p.x - 3, p.y + 10, 6, 25);
     graphics.fillStyle(0x000000, 0.5);
     graphics.fillRect(p.x + 3, p.y + 13, 6, 25);
+
     graphics.fillStyle(0x000000, 0.5);
     graphics.beginPath();
     graphics.moveTo(p.x + 3, p.y - 22);
@@ -1291,6 +1258,7 @@ function drawWarning(path) {
     graphics.lineTo(p.x - 19, p.y - 0);
     graphics.closePath();
     graphics.fillPath();
+
     graphics.fillStyle(0xcc0000);
     graphics.lineStyle(3, 0xffffff);
     graphics.beginPath();
@@ -1301,6 +1269,7 @@ function drawWarning(path) {
     graphics.closePath();
     graphics.fillPath();
     graphics.strokePath();
+
     graphics.lineStyle(4, 0xffffff);
     graphics.beginPath();
     graphics.moveTo(p.x - 8, p.y - 11);
@@ -1317,6 +1286,7 @@ function resetTrain(isFullReset = false) {
     currentAngle = 0;
     pathIndex = 0;
     perfectUsed = false;
+
     if (isFullReset) {
         if (activeTrain === 'armored') {
             shieldDurability = 2;
@@ -1333,7 +1303,9 @@ function resetTrain(isFullReset = false) {
             farGlow.setVisible(false);
         }
     }
+
     applyTrainVisuals();
+
     if (phase === 1) {
         switchState = 0;
         switchHandle.y = 280;
@@ -1343,6 +1315,7 @@ function resetTrain(isFullReset = false) {
         switchHandle.y = 300;
         currentPath = p2Mid;
     }
+
     lockedChoice = null;
     spawnObstacle();
 }
@@ -1395,8 +1368,10 @@ function returnToMenu() {
     document.getElementById("pauseScreen").classList.add("hidden");
     document.getElementById("startScreen").classList.remove("hidden");
     document.getElementById("pauseBtn").classList.add("hidden");
+
     let mC = document.getElementById("menuCoinDisplay");
     if (mC) mC.innerText = totalCoins;
+
     gameStarted = false;
     isGameOver = false;
     isPaused = false;
@@ -1406,7 +1381,9 @@ function returnToMenu() {
     brakeHeat = 0;
     isBraking = false;
     brakeCooldown = false;
+    chillTimer = 0;
     gameTime.scale = 1.0;
+
     brakeBtnObj.fillColor = 0xcc0000;
     brakeBtnText.setText("FREN");
     scoreText.setText("Skor: 0");
@@ -1415,13 +1392,21 @@ function returnToMenu() {
     itemGraphic.setVisible(false);
     itemType = 0;
     vagonText.setVisible(false);
+
+    if (gameScene && gameScene.tweens) {
+        gameScene.tweens.killAll();
+    }
+
     obstacles.clear(true, true);
     trainWagons.forEach(w => w.destroy());
     trainWagons = [];
     posHistory = [];
     resetTrain(true);
     setNewCorrectPath();
-    if (game.scene.isPaused('PlayScene')) game.scene.resume('PlayScene');
+
+    if (game.scene.isPaused('PlayScene')) {
+        game.scene.resume('PlayScene');
+    }
 }
 
 const config = {
