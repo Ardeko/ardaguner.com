@@ -4,175 +4,471 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Switch Master</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght=700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.js"></script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-<div id="splashScreen" class="splash-screen">
-  <div class="logo-container">
-    <img src="logo.png" id="studioLogo" alt="Ardeko Studios">
-    <h2 class="game-title-splash">SWITCH MASTER</h2>
-
-    <div class="loading-bar-container">
-      <div class="loading-bar-fill"></div>
-      <p style="color: #00ff88; font-size: 11px; margin-top: 10px; letter-spacing: 2px; font-family: sans-serif;">SİSTEMLER BAŞLATILIYOR...</p>
-    </div>
+  <div id="devoriaLivesHUD" class="hidden">
+    <div class="dl-label">💀</div>
+    <div class="dl-orb" id="dlOrb1"></div>
+    <div class="dl-orb" id="dlOrb2"></div>
+    <div class="dl-orb" id="dlOrb3"></div>
   </div>
-  <audio id="splashAudio" src="splash-sound.mp3" preload="auto"></audio>
-</div>
-
-<div id="rotateWarning">
-  <h2>🔄 Lütfen Telefonunu Yan Çevir</h2>
-  <p>Switch Master yatay ekranda oynanmak üzere tasarlandı.</p>
-</div>
-
-<div id="gameWrapper">
-  <button id="pauseBtn" class="hidden" onclick="pauseGame(event)">⏸</button>
-
-  <div id="leaderboardUI">
-    <h3>EN İYİ 5!</h3>
-    <ol id="scoreList">Yükleniyor...</ol>
+  <canvas id="snowCanvas"></canvas>
+  <div id="fogOverlay"></div>
+  <div id="brakeBlast"></div>
+  <div id="ch2PhaseBanner">
+    <div class="ch2-phase-title" id="ch2PhaseTitle"></div>
+    <div class="ch2-phase-sub" id="ch2PhaseSub"></div>
   </div>
-
-  <div id="startScreen" class="ui-screen hidden-at-start">
-    <div class="modal-box start">
-      <h2>🚂 SWITCH MASTER</h2>
-
-      <div class="coin-bar" style="color: #ffd700; font-weight: bold; margin-bottom: 10px;">
-        Mevcut Altın: <span id="menuCoinDisplay">0</span> 💰
-      </div>
-
-      <div class="how-to-play">
-        <p>👆 <b>Ekrana Dokun:</b> Ray makaslarını değiştirerek trenleri yönlendirin.</p>
-        <p>🛑 <b>Fren Butonu:</b> Treni yavaşlatır (Aşırı ısıtmaya dikkat!).</p>
-        <p>🎁 <b>Sürpriz Kutular:</b> Puan, Altın(💰), Yavaşla (❄️) veya Kalkan (🛡️) verir.</p>
-        <p>🔥 <b>Ana Hat:</b> 25 puana ulaştığında 3. zorlu şerit açılır!</p>
-        <p>⚠️ <b>Serseri Vagon:</b> Karşı raylardan gelen vagonlara çarpmayın!</p>
-      </div>
-
-      <div class="button-container">
-        <button onclick="startGame()">OYUNA BAŞLA</button>
-        <button onclick="openMarket()" style="color: #ffaa00; border-color: #775500;">MARKET</button>
+  <div id="splashScreen" class="splash-screen">
+    <div class="logo-container">
+      <img src="logo.png" id="studioLogo" alt="Ardeko Studios">
+      <h2 class="splash-title">SWITCH MASTER</h2>
+      <div class="loading-bar-container">
+        <div class="loading-bar-fill"></div>
       </div>
     </div>
+    <audio id="splashAudio" src="splash-sound.mp3" preload="auto"></audio>
   </div>
-
-  <div id="marketScreen" class="ui-screen hidden">
-    <div class="modal-box market-modal">
-      <h2 class="market-title">🛠️ GARAJ & MARKET</h2>
-
-      <div class="market-balance">
-        <span class="balance-icon">💰</span>
-        <span id="marketCoinDisplay">0</span>
-      </div>
-
-      <div class="market-grid">
-        <div class="item-card train-card">
-          <div class="card-icon">🚂</div>
-          <div class="card-info">
-            <h4>Klasik Banliyö</h4>
-            <p>Güvenilir eski dost.</p>
-          </div>
-          <button class="buy-btn" onclick="selectTrain('classic')">SEÇ</button>
-        </div>
-
-        <div class="item-card train-card" id="card-speedster">
-          <div class="card-icon">⚡</div>
-          <div class="card-info">
-            <h4>YHT Stark</h4>
-            <p>Maksimum hız, minimum fren.</p>
-          </div>
-          <button class="buy-btn" onclick="if(buyTrain('speedster', 3000)) updateMarketUI(); else selectTrain('speedster')">3000 💰</button>
-        </div>
-
-        <div class="item-card train-card" id="card-armored">
-          <div class="card-icon">🛡️</div>
-          <div class="card-info">
-            <h4>Zırhlı Tren</h4>
-            <p>Çarpışmalara dayanıklı (2 Kalkan).</p>
-          </div>
-          <button class="buy-btn" onclick="if(buyTrain('armored', 5000)) updateMarketUI(); else selectTrain('armored')">5000 💰</button>
-        </div>
-
-        <div class="item-card upgrade-card" id="upgrade-classic">
-          <div class="card-icon">❄️</div>
-          <div class="card-info">
-            <h4>Standart Soğutucu</h4>
-            <p>Klasik tren için geç ısınan frenler.</p>
-          </div>
-          <button class="buy-btn" onclick="buyUpgrade('classic', 2000)">2000 💰</button>
-        </div>
-
-        <div class="item-card upgrade-card" id="upgrade-speedster">
-          <div class="card-icon">❄️</div>
-          <div class="card-info">
-            <h4>Stark Soğutucu</h4>
-            <p>YHT için üst düzey fren sistemi.</p>
-          </div>
-          <button class="buy-btn" onclick="buyUpgrade('speedster', 2500)">2500 💰</button>
+  <div id="rotateWarning">
+    <h2>🔄 Lütfen Telefonunu Yan Çevir</h2>
+    <p>Switch Master yatay ekranda oynanmak üzere tasarlandı.</p>
+  </div>
+  <div id="gameWrapper">
+    <div id="highScoreScreen" class="ui-screen hidden">
+      <div class="modal-box leaderboard-modal">
+        <button class="close-market-btn" onclick="closeHighScores()">✖</button>
+        <h2 class="leaderboard-title">EN İYİLER</h2>
+        <div class="leaderboard-container">
+          <ol id="mainScoreList" class="modern-score-list">
+            <div class="loading-pulse">Veriler Çekiliyor...</div>
+          </ol>
         </div>
       </div>
-
-      <button class="close-market-btn" onclick="closeMarket()">◀ GARAJDAN ÇIK</button>
     </div>
-  </div>
-
-  <div id="pauseScreen" class="ui-screen hidden">
-    <div class="modal-box">
-      <h2>DURAKLATILDI</h2>
-      <button onclick="resumeGame(event)">▶️ DEVAM ET</button>
-      <br>
-      <button onclick="quitToMenuFromPause(event)" style="background: #ff4444; width: 100%; margin-top: 10px;">🏠 ANA MENÜ</button>
+    <button id="pauseBtn" class="hidden" onclick="pauseGame(event)">⏸</button>
+    <div id="startScreen" class="ui-screen hidden-at-start">
+      <div class="menu-bg-rails">
+        <div class="rail-line"></div>
+        <div class="rail-line"></div>
+        <div class="rail-line"></div>
+        <div class="rail-sleeper-track"></div>
+      </div>
+      <div class="menu-particles">
+        <div class="mp mp1"></div>
+        <div class="mp mp2"></div>
+        <div class="mp mp3"></div>
+        <div class="mp mp4"></div>
+        <div class="mp mp5"></div>
+        <div class="mp mp6"></div>
+      </div>
+      <button class="menu-corner-btn menu-corner-info" onclick="openInfo()">?</button>
+      <button class="menu-corner-btn menu-corner-settings" onclick="openSettings()">⚙</button>
+      <div class="menu-layout">
+        <div class="menu-header">
+          <div class="menu-train-icon">
+            <div class="mti-wheel mti-wheel-1"></div>
+            <div class="mti-wheel mti-wheel-2"></div>
+            <div class="mti-body"></div>
+            <div class="mti-cab"></div>
+            <div class="mti-smoke-puff sp1"></div>
+            <div class="mti-smoke-puff sp2"></div>
+          </div>
+          <h1 class="menu-game-title" id="menuMainTitle" onclick="clickMenuTitle()">
+            <span class="title-switch">SWITCH</span>
+            <span class="title-master">MASTER</span>
+          </h1>
+          <div class="menu-tagline">RAY MAKASI USTASI</div>
+        </div>
+        <div class="menu-coin-badge">
+          <span class="coin-badge-icon">💰</span>
+          <span id="menuCoinDisplay">0</span>
+          <span class="coin-badge-label">ALTIN</span>
+        </div>
+        <div class="menu-btn-capsule">
+          <div class="menu-btn-grid">
+            <button class="menu-game-btn btn-primary" onclick="startEndlessMode()">
+              <span class="btn-icon-wrap"><span class="btn-icon">∞</span></span>
+              <span class="btn-text-wrap">
+                <span class="btn-title">SONSUZ</span>
+                <span class="btn-sub">Sonsuza Koş</span>
+              </span>
+            </button>
+            <button class="menu-game-btn btn-adventure" onclick="openStoryMenu()">
+              <span class="btn-badge-new">YENİ</span>
+              <span class="btn-icon-wrap"><span class="btn-icon">🗺</span></span>
+              <span class="btn-text-wrap">
+                <span class="btn-title">MACERA</span>
+                <span class="btn-sub">Hikaye Modu</span>
+              </span>
+            </button>
+            <button class="menu-game-btn btn-garage" onclick="openMarket()">
+              <span class="btn-icon-wrap"><span class="btn-icon">🛠</span></span>
+              <span class="btn-text-wrap">
+                <span class="btn-title">GARAJ</span>
+                <span class="btn-sub">Trenler & Market</span>
+              </span>
+            </button>
+            <button class="menu-game-btn btn-leaderboard" onclick="openHighScores()">
+              <span class="btn-icon-wrap"><span class="btn-icon">🏆</span></span>
+              <span class="btn-text-wrap">
+                <span class="btn-title">EN İYİLER</span>
+                <span class="btn-sub">Skor Tablosu</span>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div id="storyEventBanner" class="story-event-banner hidden">
+        <span id="storyBannerIcon"></span>
+        <span id="storyBannerText"></span>
+      </div>
     </div>
-  </div>
-
-  <div id="gameOverScreen" class="ui-screen hidden">
-    <div class="modal-box">
-      <h2>KAZA!</h2>
-      <p id="finalScoreDisplay">Skor: 0</p>
-      <p id="earnedCoinDisplay">+0 💰</p>
-
-      <div id="scoreInputArea" class="hidden">
-        <input type="text" id="playerNameInput" placeholder="İsmini gir..." maxlength="12" autocomplete="off" />
+    <div id="settingsScreen" class="ui-screen hidden">
+      <div class="modal-box">
+        <h2>⚙️ AYARLAR</h2>
+        <div class="settings-group">
+          <label for="volumeSlider">Oyun Sesi</label>
+          <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="1" onchange="changeVolume(this.value)">
+        </div>
+        <button onclick="closeSettings()" style="margin-top: 20px;">KAPAT</button>
+      </div>
+    </div>
+    <div id="infoScreen" class="ui-screen hidden">
+      <div class="modal-box info-modal">
+        <h2>NASIL OYNANIR?</h2>
+        <div class="how-to-play">
+          <p>👆 <b>Yönlendirme:</b> Ekrana dokunarak ray makaslarını değiştirin.</p>
+          <p>🛑 <b>Fren:</b> Butona basarak treni yavaşlatın. Aşırı ısıtmaya dikkat!</p>
+          <p>⚡ <b>Nitro:</b> Satın alındığında sol butona basarak treni uçurun!</p>
+          <p>🔥 <b>Ana Hat:</b> 25 puana ulaştığında 3. zorlu şerit açılır.</p>
+          <div class="bonus-section">
+            <h3>🎁 Bonus Kutuları</h3>
+            <p>💰 <b>Altın:</b> +50 altın verir. Markette harcayabilirsin.</p>
+            <p>❄️ <b>Overclock:</b> Fren ve Nitro ısılarını sıfırlar, bir süre limitsiz kullanım sağlar!</p>
+            <p>🛡️ <b>Kalkan:</b> Seni bir sonraki kaza ihtimalinden korur.</p>
+            <p>💥 <b>Buldozer:</b> Serseri vagonu parçala, anında +5 kazan!</p>
+          </div>
+        </div>
+        <button onclick="closeInfo()">ANLADIM</button>
+      </div>
+    </div>
+    <div id="marketScreen" class="ui-screen hidden">
+      <div class="modal-box market-modal">
+        <button class="close-market-btn" onclick="closeMarket()">✖</button>
+        <h2 class="market-title">🛠️ GARAJ & MARKET</h2>
+        <div class="market-balance">
+          <span class="balance-icon">💰</span>
+          <span id="marketCoinDisplay">0</span>
+        </div>
+        <div class="market-tabs">
+          <button id="btn-tab-trains" class="active-tab" onclick="switchMarketTab('trains')">TRENLER</button>
+          <button id="btn-tab-upgrades" onclick="switchMarketTab('upgrades')">YÜKSELTMELER</button>
+        </div>
+        <div id="tab-trains" class="market-grid">
+          <div class="item-card train-card train-card-classic" id="card-classic">
+            <div class="card-train-visual classic-visual">
+              <div class="clv-smoke" style="--d: 0s;"></div>
+              <div class="clv-smoke" style="--d: 0.7s;"></div>
+              <div class="clv-wagon"></div>
+              <div class="clv-loco"></div>
+            </div>
+            <div class="card-info">
+              <h4>KLASİK BANLİYÖ</h4>
+              <div class="trait-badge trait-classic">🛠️ Standart Sistem</div>
+              <p>Güvenilir eski dost.</p>
+            </div>
+            <button class="buy-btn" onclick="selectTrain('classic')">SEÇ</button>
+          </div>
+          <div class="item-card train-card train-card-speedster" id="card-speedster">
+            <div class="card-train-visual speedster-visual">
+              <div class="spv-line" style="top: 8px; animation-duration: 0.5s;"></div>
+              <div class="spv-line" style="top: 22px; animation-duration: 0.3s;"></div>
+              <div class="spv-line" style="top: 36px; animation-duration: 0.7s;"></div>
+              <div class="spv-wagon"></div>
+              <div class="spv-loco"></div>
+            </div>
+            <div class="card-info">
+              <h4 class="speedster-name">YHT STARK</h4>
+              <div class="trait-badge trait-speed">💨 Aerodinamik Kasa</div>
+              <p>Maksimum hız, minimum fren.</p>
+            </div>
+            <button class="buy-btn" onclick="if(buyTrain('speedster', 3000)) updateMarketUI(); else selectTrain('speedster')">3000 💰</button>
+          </div>
+          <div class="item-card train-card train-card-armored" id="card-armored">
+            <div class="card-train-visual armored-visual">
+              <div class="arv-shield"></div>
+              <div class="arv-wagon"></div>
+              <div class="arv-loco"></div>
+            </div>
+            <div class="card-info">
+              <h4>ZIRHLI TREN</h4>
+              <div class="trait-badge trait-armor">🛡️ Çarpışma Zırhı × 2</div>
+              <p>Çarpışmalara dayanıklı.</p>
+            </div>
+            <button class="buy-btn" onclick="if(buyTrain('armored', 5000)) updateMarketUI(); else selectTrain('armored')">5000 💰</button>
+          </div>
+          <div class="item-card train-card train-card-tsunami" id="card-tsunami">
+            <div class="card-train-visual tsunami-visual">
+              <div class="tsv-wave1"></div>
+              <div class="tsv-wave2"></div>
+              <div class="tsv-wagon"></div>
+              <div class="tsv-loco"></div>
+            </div>
+            <div class="card-info">
+              <h4 class="tsunami-name">FlowLinqell</h4>
+              <div class="trait-badge trait-water">🌊 Soğuk Fren Sistemi</div>
+              <p>Hiçbir fren ısısı onu durduramaz.</p>
+            </div>
+            <button class="buy-btn" id="btn-tsunami" onclick="if(buyTrain('tsunami',6000))updateMarketUI();else selectTrain('tsunami')">6000 💰</button>
+          </div>
+          <div class="item-card train-card train-card-cyber" id="card-cyber">
+            <div class="card-train-visual cyber-visual">
+              <div class="cyv-scan"></div>
+              <div class="cyv-grid"></div>
+              <div class="cyv-wagon"></div>
+              <div class="cyv-loco"></div>
+              <div class="cyv-neon-top"></div>
+              <div class="cyv-neon-bot"></div>
+            </div>
+            <div class="card-info">
+              <h4 class="cyber-name">CYBER TİTAN</h4>
+              <div class="trait-badge trait-cyber">⚡ Makas Drift İvmesi</div>
+              <p>Her makas geçişi yakıt enjeksiyonudur.</p>
+            </div>
+            <button class="buy-btn" id="btn-cyber" onclick="if(buyTrain('cyber',7500))updateMarketUI();else selectTrain('cyber')">7500 💰</button>
+          </div>
+          <div class="item-card train-card train-card-devoria" id="card-devoria">
+            <div class="card-train-visual devoria-visual">
+              <div class="dtv-glow"></div>
+              <div class="dtv-wagon"></div>
+              <div class="dtv-loco"></div>
+              <div class="dtv-ember" style="--ex:22%;--ey:35%;--ed:0.1s"></div>
+              <div class="dtv-ember" style="--ex:55%;--ey:60%;--ed:0.5s"></div>
+              <div class="dtv-ember" style="--ex:75%;--ey:25%;--ed:0.9s"></div>
+            </div>
+            <div class="card-info">
+              <h4 class="devoria-name">DEVORIA</h4>
+              <div class="trait-badge trait-fire">🔥 Patlama Zırhı × 3</div>
+              <p>Cehennemden geçen yıkılmaz ekspres.</p>
+            </div>
+            <button class="buy-btn" id="btn-devoria" onclick="if(buyTrain('devoria',10000))updateMarketUI();else selectTrain('devoria')">10000 💰</button>
+          </div>
+        </div>
+        <div id="tab-upgrades" class="market-grid hidden">
+          <div class="item-card upgrade-card upgrade-card-nitro" id="upgrade-nitro">
+            <div class="card-upgrade-visual nitro-visual">
+              <div class="nv-ring"></div>
+              <div class="nv-core"></div>
+              <div class="nv-sparkles"></div>
+            </div>
+            <div class="card-info">
+              <h4 class="nitro-name">PLAZMA NİTRO</h4>
+              <div class="trait-badge trait-cyber">⚡ Tüm Trenler</div>
+              <p>Yüksek voltaj itici mavi alev gücü.</p>
+            </div>
+            <button class="buy-btn" onclick="buyNitro()">800 💰</button>
+          </div>
+          <div class="item-card upgrade-card upgrade-card-classic" id="upgrade-classic">
+            <div class="card-upgrade-visual cooler-classic-visual">
+              <div class="ccv-frost"></div>
+              <div class="ccv-fan-container">
+                <div class="ccv-blade-1"></div>
+                <div class="ccv-blade-2"></div>
+              </div>
+              <div class="ccv-grill"></div>
+            </div>
+            <div class="card-info">
+              <h4 class="cc-name">STANDART SOĞUTUCU</h4>
+              <div class="trait-badge trait-classic">❄️ Klasik Banliyö</div>
+              <p>Geç ısınan dayanıklı fren balataları.</p>
+            </div>
+            <button class="buy-btn" onclick="buyUpgrade('classic', 2000)">2000 💰</button>
+          </div>
+          <div class="item-card upgrade-card upgrade-card-speedster" id="upgrade-speedster">
+            <div class="card-upgrade-visual cooler-stark-visual">
+              <div class="csv-hex"></div>
+              <div class="csv-fan-container">
+                <div class="csv-blade-1"></div>
+                <div class="csv-blade-2"></div>
+                <div class="csv-blade-3"></div>
+              </div>
+            </div>
+            <div class="card-info">
+              <h4 class="sc-name">STARK SOĞUTUCU</h4>
+              <div class="trait-badge trait-speed">❄️ YHT Stark</div>
+              <p>Kriyojenik üst düzey fren sistemi.</p>
+            </div>
+            <button class="buy-btn" onclick="buyUpgrade('speedster', 2500)">2500 💰</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="storyMenuScreen" class="ui-screen hidden">
+      <div class="modal-box story-modal">
+        <button class="close-market-btn" onclick="closeStoryMenu()">✖</button>
+        <h2 class="story-title">MACERA MODU</h2>
+        <div class="level-grid">
+          <div class="play-level-btn" onclick="startStoryMode()">
+            <div class="level-icon">🚂</div>
+            <div class="level-info">
+              <h4>Bölüm 1: Banliyö Çıkışı</h4>
+              <p>İlk yolculuk</p>
+            </div>
+            <div class="play-indicator">▶</div>
+          </div>
+          <div class="play-level-btn level-card ch2-unlocked" onclick="startStoryMode2()">
+            <div class="level-icon">🌙</div>
+            <div class="level-info">
+              <h4>Bölüm 2: Gece Seferi</h4>
+              <p>Sis, kar ve fren patlaması</p>
+            </div>
+            <div class="play-indicator">▶</div>
+          </div>
+          <div class="level-card locked">
+            <div class="level-icon">🔒</div>
+            <div class="level-info">
+              <h4>Bölüm 3: Hassas Kargo</h4>
+              <p>Seviye 3 Yakında</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="storyCutsceneScreen" class="ui-screen hidden">
+      <div class="cutscene-rails"></div>
+      <div class="cutscene-header">
+        <span class="cutscene-chapter-badge">BÖLÜM 1</span>
+        <span class="cutscene-chapter-name">Banliyö Çıkışı</span>
+      </div>
+      <div class="cutscene-dialogue">
+        <div class="cutscene-avatar-wrap">
+          <div class="cutscene-avatar-ring"><span id="cutsceneAvatar">👴</span></div>
+          <div class="cutscene-avatar-glow"></div>
+        </div>
+        <div class="cutscene-text-wrap">
+          <div class="cutscene-speaker" id="cutsceneSpeaker">KONDÜKTÖR</div>
+          <div class="cutscene-body" id="cutsceneBody"></div>
+        </div>
+      </div>
+      <div class="cutscene-footer">
+        <div class="cutscene-dots" id="cutsceneDots">
+          <span class="cdot"></span>
+          <span class="cdot"></span>
+          <span class="cdot"></span>
+        </div>
+        <button class="cutscene-btn" id="cutsceneContinueBtn">DEVAM ▶</button>
+      </div>
+    </div>
+    <div id="storyCutsceneScreen2" class="ui-screen hidden cutscene-ch2">
+      <div class="cutscene-rails"></div>
+      <div class="cutscene-header">
+        <span class="cutscene-chapter-badge">BÖLÜM 2</span>
+        <span class="cutscene-chapter-name">Gece Seferi</span>
+      </div>
+      <div class="cutscene-dialogue">
+        <div class="cutscene-avatar-wrap">
+          <div class="cutscene-avatar-ring"><span id="cutsceneAvatar2">👴</span></div>
+          <div class="cutscene-avatar-glow"></div>
+        </div>
+        <div class="cutscene-text-wrap">
+          <div class="cutscene-speaker" id="cutsceneSpeaker2">KONDÜKTÖR</div>
+          <div class="cutscene-body" id="cutsceneBody2"></div>
+        </div>
+      </div>
+      <div class="cutscene-footer">
+        <div class="cutscene-dots" id="cutsceneDots2">
+          <span class="cdot"></span>
+          <span class="cdot"></span>
+          <span class="cdot"></span>
+          <span class="cdot"></span>
+        </div>
+        <button class="cutscene-btn" id="cutsceneContinueBtn2">DEVAM ▶</button>
+      </div>
+    </div>
+    <div id="pauseScreen" class="ui-screen hidden">
+      <div class="modal-box">
+        <h2>DURAKLATILDI</h2>
+        <button onclick="resumeGame(event)">▶️ DEVAM ET</button>
         <br>
-        <button onclick="submitScoreAndReturn()">Kaydet & Ana Menü</button>
+        <button onclick="quitToMenuFromPause(event)" style="background: rgba(255, 68, 68, 0.1); color: #ff4444; border: 1px solid rgba(255, 68, 68, 0.3); width: 100%; margin-top: 15px;">🏠 ANA MENÜ</button>
       </div>
-
-      <button id="justRestartBtn" onclick="returnToMenu()">Ana Menüye Dön</button>
+    </div>
+    <div id="gameOverScreen" class="ui-screen hidden">
+      <div class="modal-box game-over-modal">
+        <h2 id="gameOverTitle">KAZA!</h2>
+        <p id="finalScoreDisplay" style="font-size: 22px; margin: 10px 0;">Skor: 0</p>
+        <p id="earnedCoinDisplay" style="font-size: 20px; color: #ffd700; margin: 5px 0;">+0 💰</p>
+        <div id="scoreInputArea" class="hidden">
+          <p style="color: #00ffff; font-size: 14px; margin: 15px 0 10px 0; font-weight: 600;">🎉 EN İYİ 5'E GİRDİN! 🎉</p>
+          <input type="text" id="playerNameInput" placeholder="İsmini gir..." maxlength="12" autocomplete="off" />
+          <br>
+          <button onclick="submitScoreAndReturn()">Kaydet & Ana Menü</button>
+        </div>
+        <button id="justRestartBtn" onclick="returnToMenu()" style="margin-top: 15px;">Ana Menüye Dön</button>
+        <div id="leaderboardUI">
+          <h3>EN İYİ 5!</h3>
+          <ol id="scoreList">Yükleniyor...</ol>
+        </div>
+      </div>
+    </div>
+    <div id="levelCompleteScreen" class="ui-screen hidden">
+      <div class="modal-box level-complete-modal">
+        <div class="lc-title-row">İSTASYONA VARILDI! 🚉</div>
+        <div class="lc-stars-row" id="lcStars"></div>
+        <div class="lc-divider"></div>
+        <div class="lc-stats-grid">
+          <div class="lc-stat">
+            <span class="lc-stat-icon">⏱</span>
+            <span class="lc-stat-val" id="lcTime">--</span>
+            <span class="lc-stat-lbl">SÜRE</span>
+          </div>
+          <div class="lc-stat">
+            <span class="lc-stat-icon">🔀</span>
+            <span class="lc-stat-val" id="lcSwitches">--</span>
+            <span class="lc-stat-lbl">MAKAS</span>
+          </div>
+          <div class="lc-stat">
+            <span class="lc-stat-icon">💰</span>
+            <span class="lc-stat-val lc-gold" id="lcCoins">+200</span>
+            <span class="lc-stat-lbl">KAZANILAN</span>
+          </div>
+        </div>
+        <button onclick="returnToMenuFromLevelComplete()" class="lc-home-btn">🏠 ANA MENÜ</button>
+      </div>
     </div>
   </div>
-</div>
-<script src="game.js"></script>
-
-<script>
-  function handleStart() {
-    const splash = document.getElementById('splashScreen');
-    const startScreen = document.getElementById('startScreen');
-
-    // Phaser motorunu intro bittikten sonra başlatıyoruz
-    if (typeof initPhaserGame === 'function') {
+  <div id="dailyRewardScreen" class="ui-screen hidden">
+    <div class="modal-box">
+      <h2>GÜNLÜK ÖDÜL</h2>
+      <p style="font-size: 16px; color: #ccc;">Hoş geldin! Günlük giriş ödülünü kazandın.</p>
+      <div style="font-size: 36px; color: #ffd700; font-weight: bold; margin: 20px 0;">+100 💰</div>
+      <button onclick="claimDailyReward()">AL VE BAŞLA</button>
+    </div>
+  </div>
+  <script src="game.js"></script>
+  <script>
+    function handleStart() {
+      const splash = document.getElementById('splashScreen');
+      const startScreen = document.getElementById('startScreen');
+      if (typeof initPhaserGame === 'function') {
         initPhaserGame();
-        console.log("Phaser performansı korumak için intro sonrası başlatıldı.");
-    }
-
-    splash.classList.add('splash-hidden');
-    setTimeout(() => {
+      }
+      splash.classList.add('splash-hidden');
+      setTimeout(() => {
         splash.style.display = 'none';
         startScreen.classList.remove('hidden-at-start');
-    }, 1000);
-  }
-
-  window.addEventListener('load', () => {
-    const splashAudio = document.getElementById('splashAudio');
-
-    if(splashAudio) {
-        splashAudio.play().catch(e => console.log("Ses politikası gereği engellendi."));
+      }, 1000);
     }
-    setTimeout(handleStart, 3500);
-  });
-</script>
-
+    window.addEventListener('load', () => {
+      const splashAudio = document.getElementById('splashAudio');
+      if (splashAudio) {
+        splashAudio.play().catch(e => {});
+      }
+      setTimeout(handleStart, 3500);
+    });
+  </script>
 </body>
 </html>
