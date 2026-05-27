@@ -4,7 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Switch Master</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght=700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.js"></script>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -80,7 +82,7 @@
             <span class="title-switch">SWITCH</span>
             <span class="title-master">MASTER</span>
           </h1>
-          <div class="menu-tagline">RAY MAKASI USTASI</div>
+          <div class="menu-tagline">RAILWAY</div>
         </div>
         <div class="menu-coin-badge">
           <span class="coin-badge-icon">💰</span>
@@ -158,17 +160,22 @@
     <div id="marketScreen" class="ui-screen hidden">
       <div class="modal-box market-modal">
         <button class="close-market-btn" onclick="closeMarket()">✖</button>
-        <h2 class="market-title">🛠️ GARAJ & MARKET</h2>
-        <div class="market-balance">
-          <span class="balance-icon">💰</span>
-          <span id="marketCoinDisplay">0</span>
-        </div>
-        <div class="market-tabs">
-          <button id="btn-tab-trains" class="active-tab" onclick="switchMarketTab('trains')">TRENLER</button>
-          <button id="btn-tab-upgrades" onclick="switchMarketTab('upgrades')">YÜKSELTMELER</button>
+        <button class="market-nav-arrow" data-dir="prev" onclick="marketNav('prev')" aria-label="Önceki">‹</button>
+        <button class="market-nav-arrow" data-dir="next" onclick="marketNav('next')" aria-label="Sonraki">›</button>
+        <div class="market-header">
+          <h2 class="market-title">GARAJ</h2>
+          <div class="market-tabs">
+            <button id="btn-tab-trains" class="active-tab" onclick="switchMarketTab('trains')">TRENLER</button>
+            <button id="btn-tab-upgrades" onclick="switchMarketTab('upgrades')">YÜKSELTMELER</button>
+          </div>
+          <div class="market-balance">
+            <span class="balance-icon">💰</span>
+            <span id="marketCoinDisplay">0</span>
+          </div>
         </div>
         <div id="tab-trains" class="market-grid">
-          <div class="item-card train-card train-card-classic" id="card-classic">
+          <div class="carousel-rotor" data-carousel="trains">
+          <div class="item-card train-card train-card-classic" id="card-classic" data-train="classic">
             <div class="card-train-visual classic-visual">
               <div class="clv-smoke" style="--d: 0s;"></div>
               <div class="clv-smoke" style="--d: 0.7s;"></div>
@@ -182,7 +189,7 @@
             </div>
             <button class="buy-btn" onclick="selectTrain('classic')">SEÇ</button>
           </div>
-          <div class="item-card train-card train-card-speedster" id="card-speedster">
+          <div class="item-card train-card train-card-speedster" id="card-speedster" data-train="speedster">
             <div class="card-train-visual speedster-visual">
               <div class="spv-line" style="top: 8px; animation-duration: 0.5s;"></div>
               <div class="spv-line" style="top: 22px; animation-duration: 0.3s;"></div>
@@ -191,26 +198,26 @@
               <div class="spv-loco"></div>
             </div>
             <div class="card-info">
-              <h4 class="speedster-name">YHT STARK</h4>
-              <div class="trait-badge trait-speed">💨 Aerodinamik Kasa</div>
+              <h4 class="speedster-name">STARK</h4>
+              <div class="trait-badge trait-speed">💨 YHT Aerodinamik Kasa</div>
               <p>Maksimum hız, minimum fren.</p>
             </div>
             <button class="buy-btn" onclick="if(buyTrain('speedster', 3000)) updateMarketUI(); else selectTrain('speedster')">3000 💰</button>
           </div>
-          <div class="item-card train-card train-card-armored" id="card-armored">
+          <div class="item-card train-card train-card-armored" id="card-armored" data-train="armored">
             <div class="card-train-visual armored-visual">
               <div class="arv-shield"></div>
               <div class="arv-wagon"></div>
               <div class="arv-loco"></div>
             </div>
             <div class="card-info">
-              <h4>ZIRHLI TREN</h4>
+              <h4>HERMES</h4>
               <div class="trait-badge trait-armor">🛡️ Çarpışma Zırhı × 2</div>
-              <p>Çarpışmalara dayanıklı.</p>
+              <p>Kalkanlı ve dayanıklı.</p>
             </div>
             <button class="buy-btn" onclick="if(buyTrain('armored', 5000)) updateMarketUI(); else selectTrain('armored')">5000 💰</button>
           </div>
-          <div class="item-card train-card train-card-tsunami" id="card-tsunami">
+          <div class="item-card train-card train-card-tsunami" id="card-tsunami" data-train="tsunami">
             <div class="card-train-visual tsunami-visual">
               <div class="tsv-wave1"></div>
               <div class="tsv-wave2"></div>
@@ -218,13 +225,13 @@
               <div class="tsv-loco"></div>
             </div>
             <div class="card-info">
-              <h4 class="tsunami-name">FlowLinqell</h4>
+              <h4 class="tsunami-name">FLOWLINQELL</h4>
               <div class="trait-badge trait-water">🌊 Soğuk Fren Sistemi</div>
               <p>Hiçbir fren ısısı onu durduramaz.</p>
             </div>
             <button class="buy-btn" id="btn-tsunami" onclick="if(buyTrain('tsunami',6000))updateMarketUI();else selectTrain('tsunami')">6000 💰</button>
           </div>
-          <div class="item-card train-card train-card-cyber" id="card-cyber">
+          <div class="item-card train-card train-card-cyber" id="card-cyber" data-train="cyber">
             <div class="card-train-visual cyber-visual">
               <div class="cyv-scan"></div>
               <div class="cyv-grid"></div>
@@ -234,13 +241,13 @@
               <div class="cyv-neon-bot"></div>
             </div>
             <div class="card-info">
-              <h4 class="cyber-name">CYBER TİTAN</h4>
+              <h4 class="cyber-name">CYBERDRAMA</h4>
               <div class="trait-badge trait-cyber">⚡ Makas Drift İvmesi</div>
               <p>Her makas geçişi yakıt enjeksiyonudur.</p>
             </div>
             <button class="buy-btn" id="btn-cyber" onclick="if(buyTrain('cyber',7500))updateMarketUI();else selectTrain('cyber')">7500 💰</button>
           </div>
-          <div class="item-card train-card train-card-devoria" id="card-devoria">
+          <div class="item-card train-card train-card-devoria" id="card-devoria" data-train="devoria">
             <div class="card-train-visual devoria-visual">
               <div class="dtv-glow"></div>
               <div class="dtv-wagon"></div>
@@ -256,9 +263,11 @@
             </div>
             <button class="buy-btn" id="btn-devoria" onclick="if(buyTrain('devoria',10000))updateMarketUI();else selectTrain('devoria')">10000 💰</button>
           </div>
+          </div>
         </div>
         <div id="tab-upgrades" class="market-grid hidden">
-          <div class="item-card upgrade-card upgrade-card-nitro" id="upgrade-nitro">
+          <div class="carousel-rotor" data-carousel="upgrades">
+          <div class="item-card upgrade-card upgrade-card-nitro" id="upgrade-nitro" data-upgrade="nitro">
             <div class="card-upgrade-visual nitro-visual">
               <div class="nv-ring"></div>
               <div class="nv-core"></div>
@@ -271,7 +280,7 @@
             </div>
             <button class="buy-btn" onclick="buyNitro()">800 💰</button>
           </div>
-          <div class="item-card upgrade-card upgrade-card-classic" id="upgrade-classic">
+          <div class="item-card upgrade-card upgrade-card-classic" id="upgrade-classic" data-upgrade="classic">
             <div class="card-upgrade-visual cooler-classic-visual">
               <div class="ccv-frost"></div>
               <div class="ccv-fan-container">
@@ -287,7 +296,7 @@
             </div>
             <button class="buy-btn" onclick="buyUpgrade('classic', 2000)">2000 💰</button>
           </div>
-          <div class="item-card upgrade-card upgrade-card-speedster" id="upgrade-speedster">
+          <div class="item-card upgrade-card upgrade-card-speedster" id="upgrade-speedster" data-upgrade="speedster">
             <div class="card-upgrade-visual cooler-stark-visual">
               <div class="csv-hex"></div>
               <div class="csv-fan-container">
@@ -302,6 +311,7 @@
               <p>Kriyojenik üst düzey fren sistemi.</p>
             </div>
             <button class="buy-btn" onclick="buyUpgrade('speedster', 2500)">2500 💰</button>
+          </div>
           </div>
         </div>
       </div>
@@ -453,13 +463,23 @@
     function handleStart() {
       const splash = document.getElementById('splashScreen');
       const startScreen = document.getElementById('startScreen');
-      if (typeof initPhaserGame === 'function') {
-        initPhaserGame();
-      }
+
+      // Önce startScreen'i görünür yap — splash hala en üstte, kullanıcı görmüyor.
+      // Bu sayede splash fade-out olurken altında menünün bg resmi gözükür,
+      // boş gameWrapper canvas'ı yerine.
+      startScreen.classList.remove('hidden-at-start');
+
+      // Splash fade-out başlat
       splash.classList.add('splash-hidden');
+
+      // Fade tamamlanınca splash'ı tamamen kaldır ve Phaser'ı init et.
+      // Phaser'ı bu noktaya kadar başlatmıyoruz — aksi takdirde canvas
+      // splash arkasında çizilip fade-out sırasında ortaya çıkıyor.
       setTimeout(() => {
         splash.style.display = 'none';
-        startScreen.classList.remove('hidden-at-start');
+        if (typeof initPhaserGame === 'function') {
+          initPhaserGame();
+        }
       }, 1000);
     }
     window.addEventListener('load', () => {

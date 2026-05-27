@@ -1,5 +1,27 @@
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
+// Yetersiz para — 3'lü "bıp bıp bıp" pattern (her bip ~75ms, arada ~110ms boşluk)
+function playInsufficientFundsBeep() {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const startTime = audioCtx.currentTime;
+    const beepDur = 0.075;
+    const gap = 0.110;
+    for (let i = 0; i < 3; i++) {
+        const t = startTime + i * (beepDur + gap);
+        const osc = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        osc.connect(g); g.connect(audioCtx.destination);
+        osc.type = 'square';
+        // İkinci ve üçüncüde frekans biraz düşsün — daha "uyarı" hissi
+        osc.frequency.setValueAtTime(i === 0 ? 880 : i === 1 ? 740 : 620, t);
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(0.22, t + 0.008);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + beepDur);
+        osc.start(t);
+        osc.stop(t + beepDur + 0.01);
+    }
+}
+
 function playSound(type) {
     if (audioCtx.state === 'suspended') audioCtx.resume();
     const osc = audioCtx.createOscillator();
@@ -118,7 +140,7 @@ window.closeHighScores = function() {
     document.getElementById("startScreen").classList.remove("hidden");
 };
 
-function submitScoreAndReturn() {
+window.submitScoreAndReturn = function() {
     const nameInput = document.getElementById("playerNameInput");
     const name = nameInput ? nameInput.value.trim() : "";
     if (name !== "") {
@@ -205,13 +227,224 @@ function saveMarketData() {
     localStorage.setItem('sm_trainUpgrades', JSON.stringify(trainUpgrades));
 }
 
-function openMarket() {
+// ── 3D KARUSEL CONTROLLER ─────────────────────────────────
+// Tüm market sekmelerini sanal bir çemberin etrafında dizer.
+// Sürükle/yön tuşları/noktalar ile aktif kart değişir.
+const Carousel = {
+    instances: {},
+
+    init(key) {
+        const tab = document.getElementById('tab-' + key);
+        if (!tab) return;
+        const rotor = tab.querySelector('.carousel-rotor');
+        if (!rotor) return;
+
+        // Kartları topla (yalnızca direkt çocuklar)
+        const cards = Array.from(rotor.children).filter(c => c.classList.contains('item-card'));
+        if (!cards.length) return;
+
+        const total = cards.length;
+        const step = 360 / total;
+
+        // Yarıçap kart genişliğinden orantılı hesaplanır → ekran küçüldükçe
+        // kartlar da küçülür, dağılım her zaman düzgün kalır.
+        // Kart sayısı arttıkça komşuların üst üste binmemesi için faktör de artar.
+        const cardW = rotor.offsetWidth || 160;
+        const factor = total <= 3 ? 1.05 : total <= 4 ? 1.25 : total <= 5 ? 1.45 : 1.65;
+        const radius = Math.round(cardW * factor);
+
+        // Her kartı çemberin etrafına yerleştir
+        cards.forEach((c, i) => {
+            c.style.setProperty('--card-angle', `${i * step}deg`);
+            c.style.setProperty('--carousel-radius', `${radius}px`);
+        });
+
+        // Noktaları oluştur
+        const dotsContainer = tab.querySelector('.carousel-dots');
+        if (dotsContainer) {
+            dotsContainer.innerHTML = '';
+            for (let i = 0; i < total; i++) {
+                const d = document.createElement('button');
+                d.className = 'carousel-dot';
+                d.dataset.index = i;
+                d.addEventListener('click', () => Carousel.setIndex(key, i));
+                dotsContainer.appendChild(d);
+            }
+        }
+
+        // Yön ok düğmeleri
+        tab.querySelectorAll('.carousel-arrow').forEach(a => {
+            const dir = a.dataset.dir;
+            a.onclick = () => {
+                const inst = Carousel.instances[key];
+                if (!inst) return;
+                Carousel.setIndex(key, inst.index + (dir === 'next' ? 1 : -1));
+            };
+        });
+
+        // Yan kartlara tıklayınca o karta odaklan
+        cards.forEach((c, i) => {
+            c.addEventListener('click', (e) => {
+                const inst = Carousel.instances[key];
+                if (!inst) return;
+                if (inst.hasMoved) { e.stopPropagation(); e.preventDefault(); return; }
+                if (i !== inst.index) {
+                    e.stopPropagation();
+                    Carousel.setIndex(key, i);
+                }
+            }, true);
+        });
+
+        // Önceki instance varsa (resize/re-init senaryosu) index'i koru
+        const prevIndex = (this.instances[key] && this.instances[key].index) || 0;
+
+        // Instance
+        const instance = {
+            tab, rotor, cards, total, step, dotsContainer,
+            index: 0, isDragging: false, startX: 0, startAngle: 0, hasMoved: false
+        };
+        this.instances[key] = instance;
+
+        // Sürükleme dinleyicileri (önceki varsa eklemeyelim — re-init durumu için)
+        if (!rotor.dataset.carouselBound) {
+            rotor.dataset.carouselBound = '1';
+            rotor.addEventListener('pointerdown',   e => this.onDown(key, e), { passive: false });
+            rotor.addEventListener('pointermove',   e => this.onMove(key, e), { passive: false });
+            rotor.addEventListener('pointerup',     e => this.onUp(key, e));
+            rotor.addEventListener('pointercancel', e => this.onUp(key, e));
+            // pointerleave KALDIRILDI — setPointerCapture varken zaten gereksiz,
+            // ve mobilde parmağın hafif kayması rotor sınırına çıkınca drag'i iptal ediyordu.
+        }
+
+        this.setIndex(key, prevIndex, true);
+    },
+
+    setIndex(key, i, immediate = false) {
+        const inst = this.instances[key];
+        if (!inst) return;
+        i = ((i % inst.total) + inst.total) % inst.total;
+
+        // Target açı her zaman tam -i*step olmalı (kart TAM ortalansın).
+        // Sadece 360°'lik tur sayısını mevcut açıya yakın seçerek "kısa yön"den döner.
+        const currentAngle = parseFloat(inst.rotor.style.getPropertyValue('--rotor-angle')) || 0;
+        let targetAngle = -i * inst.step;
+        while (targetAngle - currentAngle > 180)  targetAngle -= 360;
+        while (targetAngle - currentAngle < -180) targetAngle += 360;
+
+        if (immediate) {
+            inst.rotor.style.transition = 'none';
+            inst.rotor.style.setProperty('--rotor-angle', `${targetAngle}deg`);
+            // Force reflow then restore transition
+            void inst.rotor.offsetWidth;
+            inst.rotor.style.transition = '';
+        } else {
+            inst.rotor.style.setProperty('--rotor-angle', `${targetAngle}deg`);
+        }
+
+        const prevIdx = inst.index;
+        inst.index = i;
+        inst.cards.forEach((c, idx) => c.classList.toggle('card-active', idx === i));
+
+        // Trenler karuselinde: önde kalan kart sahip olunan bir trense, OTOMATİK SEÇ.
+        // Upgrades için seçim kavramı yok; o yüzden sadece trains.
+        if (key === 'trains' && !immediate && prevIdx !== i) {
+            const trainId = inst.cards[i].dataset.train;
+            if (trainId && typeof window.selectTrain === 'function' && trainId !== activeTrain) {
+                // selectTrain() owned değilse sessizce false döner — güvenli.
+                window.selectTrain(trainId);
+            }
+        }
+
+        if (navigator.vibrate && !immediate) navigator.vibrate(10);
+    },
+
+    snapToId(key, id) {
+        const inst = this.instances[key];
+        if (!inst || !id) return;
+        const attr = key === 'trains' ? 'train' : 'upgrade';
+        const idx = inst.cards.findIndex(c => c.dataset[attr] === id);
+        if (idx >= 0) this.setIndex(key, idx, true);
+    },
+
+    onDown(key, e) {
+        const inst = this.instances[key];
+        if (!inst) return;
+        // Buy butonu üzerinde drag başlatma — tıklama olsun
+        if (e.target.closest('.buy-btn')) return;
+        // preventDefault → tarayıcı tıklama/zoom tetiklemesin, anında drag başlasın
+        if (e.cancelable) e.preventDefault();
+        inst.isDragging = true;
+        inst.hasMoved = false;
+        inst.startX = e.clientX;
+        inst.startAngle = parseFloat(inst.rotor.style.getPropertyValue('--rotor-angle')) || (-inst.index * inst.step);
+        inst.rotor.classList.add('dragging');
+        try { inst.rotor.setPointerCapture(e.pointerId); } catch (_) {}
+    },
+
+    onMove(key, e) {
+        const inst = this.instances[key];
+        if (!inst || !inst.isDragging) return;
+        if (e.cancelable) e.preventDefault();
+        const dx = e.clientX - inst.startX;
+        if (Math.abs(dx) > 4) inst.hasMoved = true;
+        // Çarpan 0.4 → 0.7: mobilde daha az parmak hareketi yetsin, akıcı hissetsin
+        const angle = inst.startAngle + dx * 0.7;
+        inst.rotor.style.setProperty('--rotor-angle', `${angle}deg`);
+    },
+
+    onUp(key, e) {
+        const inst = this.instances[key];
+        if (!inst || !inst.isDragging) return;
+        inst.isDragging = false;
+        inst.rotor.classList.remove('dragging');
+        try { inst.rotor.releasePointerCapture(e.pointerId); } catch (_) {}
+
+        const cur = parseFloat(inst.rotor.style.getPropertyValue('--rotor-angle')) || 0;
+        const nearestIdx = Math.round(-cur / inst.step);
+        this.setIndex(key, nearestIdx);
+
+        // Tıklama olaylarının yanlışlıkla tetiklenmesini engellemek için kısa bir bekleme
+        if (inst.hasMoved) {
+            setTimeout(() => { inst.hasMoved = false; }, 50);
+        }
+    }
+};
+
+window.openMarket = function() {
     document.getElementById("startScreen").classList.add("hidden");
     document.getElementById("marketScreen").classList.remove("hidden");
     updateMarketUI();
+    // Karuselleri hidden tab dahil başlat — DOM yerleşimi bittikten sonra
+    requestAnimationFrame(() => {
+        Carousel.init('trains');
+        Carousel.init('upgrades');
+        Carousel.snapToId('trains', activeTrain);
+    });
 }
 
-function closeMarket() {
+// Modal kenarındaki ok düğmeleri — hangi tab aktifse onun karuselini gezdirir
+window.marketNav = function(dir) {
+    const trainsHidden = document.getElementById('tab-trains').classList.contains('hidden');
+    const key = trainsHidden ? 'upgrades' : 'trains';
+    const inst = Carousel.instances[key];
+    if (!inst) return;
+    Carousel.setIndex(key, inst.index + (dir === 'next' ? 1 : -1));
+};
+
+// Pencere yeniden boyutlandırılırsa (cihaz döndürme dahil) kart yarıçapını
+// yeni boyutlara göre tekrar hesapla — kartlar her zaman ekrana sığsın.
+let _marketResizeTimer = null;
+window.addEventListener('resize', () => {
+    if (document.getElementById('marketScreen').classList.contains('hidden')) return;
+    clearTimeout(_marketResizeTimer);
+    _marketResizeTimer = setTimeout(() => {
+        // Re-init mevcut index'i korur (Carousel.init içinde prevIndex bakılır)
+        Carousel.init('trains');
+        Carousel.init('upgrades');
+    }, 150);
+});
+
+window.closeMarket = function() {
     document.getElementById("marketScreen").classList.add("hidden");
     document.getElementById("startScreen").classList.remove("hidden");
     let mC = document.getElementById("menuCoinDisplay");
@@ -258,10 +491,12 @@ function triggerInsufficientFunds() {
         balanceDiv.classList.remove('shake-red');
         void balanceDiv.offsetWidth;
         balanceDiv.classList.add('shake-red');
+        // Animasyon biter bitmez sınıfı kaldır (1.4s = flash duration)
+        setTimeout(() => balanceDiv.classList.remove('shake-red'), 1500);
     }
 
-    if (navigator.vibrate) navigator.vibrate(50);
-    playSound('shield_break');
+    if (navigator.vibrate) navigator.vibrate([50, 60, 50, 60, 50]);
+    playInsufficientFundsBeep();
 }
 
 window.buyNitro = function() {
@@ -279,7 +514,7 @@ window.buyNitro = function() {
     }
 };
 
-function buyTrain(trainId, price) {
+window.buyTrain = function(trainId, price) {
     if (ownedTrains.includes(trainId)) return false;
 
     if (totalCoins >= price) {
@@ -294,7 +529,7 @@ function buyTrain(trainId, price) {
     }
 }
 
-function buyUpgrade(trainId, price) {
+window.buyUpgrade = function(trainId, price) {
     let upgradeKey = trainId + "_brake";
 
     if (trainUpgrades[upgradeKey]) return false;
@@ -313,7 +548,7 @@ function buyUpgrade(trainId, price) {
 }
 
 // --- market kodunun tamamı ---
-function updateMarketUI() {
+window.updateMarketUI = function() {
     let mD = document.getElementById("marketCoinDisplay");
     if (mD) mD.innerText = totalCoins;
 
@@ -383,7 +618,7 @@ function updateMarketUI() {
     setupUpgradeBtn("#upgrade-nitro", trainUpgrades['nitro_system'], "800");
 }
 
-function selectTrain(trainId) {
+window.selectTrain = function(trainId) {
     if (ownedTrains.includes(trainId)) {
         activeTrain = trainId;
         saveMarketData();
@@ -402,7 +637,8 @@ let progressBarBg, progressBarFill, progressText;
 let storyEventsFired = {};
 let storyBrakeOverheated = false;
 let storyStartTime = 0;
-function pauseGame(e) {
+let storyPauseStart = 0; // Pause başlangıç timestamp'i — duraklamada geçen süre 3-yıldız hesabında sayılmaz
+window.pauseGame = function(e) {
     if (e) {
         e.preventDefault();
         e.stopPropagation();
@@ -410,25 +646,40 @@ function pauseGame(e) {
     if (!game || !gameStarted || isGameOver || isPaused) return;
 
     isPaused = true;
+    storyPauseStart = Date.now();
     game.scene.pause('PlayScene');
     if (gameScene && gameScene.playerTrainSnd) gameScene.playerTrainSnd.pause();
     document.getElementById("pauseScreen").classList.remove("hidden");
     document.getElementById("pauseBtn").classList.add("hidden");
 }
 
-function resumeGame(e) {
+window.resumeGame = function(e) {
     if (e) e.stopPropagation();
     if (!isPaused) return;
     isPaused = false;
+    // Pause süresince geçen wall-clock süresini storyStartTime'a aktar —
+    // 3-yıldız zaman sınırı sadece aktif oynanan süreyi sayar.
+    if (storyPauseStart > 0) {
+        storyStartTime += (Date.now() - storyPauseStart);
+        storyPauseStart = 0;
+    }
     game.scene.resume('PlayScene');
     if (gameScene && gameScene.playerTrainSnd) gameScene.playerTrainSnd.resume();
     document.getElementById("pauseScreen").classList.add("hidden");
     document.getElementById("pauseBtn").classList.remove("hidden");
 }
 
-function quitToMenuFromPause(e) {
+window.quitToMenuFromPause = function(e) {
     if (e) e.stopPropagation();
-    resumeGame();
+    // Pause durumunu doğrudan toparla — resumeGame() çağırmak pause butonunu
+    // bir an görünür yapıp returnToMenu'nün tekrar gizlemesine yol açıyordu.
+    if (isPaused) {
+        isPaused = false;
+        storyPauseStart = 0;
+        if (game && game.scene.isPaused('PlayScene')) game.scene.resume('PlayScene');
+        if (gameScene && gameScene.playerTrainSnd) gameScene.playerTrainSnd.resume();
+        document.getElementById("pauseScreen").classList.add("hidden");
+    }
     returnToMenu();
 }
 
@@ -493,7 +744,6 @@ let story2Phase = 0;
 let story2EventsFired = {};
 let story2BrakeOverheat = false;
 let brakeBlastPenaltyTimer = 0;
-let story2SwitchCount = 0;
 
 const p1Top = [ { x: -150, y: 300 }, { x: 300, y: 300 }, { x: 500, y: 200 }, { x: 1000, y: 200 } ];
 const p1Bot = [ { x: -150, y: 300 }, { x: 300, y: 300 }, { x: 500, y: 400 }, { x: 1000, y: 400 } ];
@@ -1063,6 +1313,42 @@ function setNewCorrectPath() {
     }
 }
 
+// Çarpışma absorbsiyon mantığı — kalkan/zırh/devoria/gameover branching'i tek noktadan.
+// Döndürür: 'shield' | 'armored' | 'devoria' | 'gameover'
+function absorbHit() {
+    if (hasShield) {
+        playSound('shield_break');
+        if (navigator.vibrate) navigator.vibrate(100);
+        hasShield = false;
+        showFloatingText(train.x, train.y - 40, "ZIRH KIRILDI!", "#ff4444");
+        gameScene.cameras.main.shake(200, 0.015);
+        return 'shield';
+    }
+    if (activeTrain === 'armored' && shieldDurability > 0) {
+        shieldDurability--;
+        playSound('shield_break');
+        if (navigator.vibrate) navigator.vibrate(100);
+        showFloatingText(train.x, train.y - 40, "ZIRH HASAR ALDI!", "#ff4444");
+        gameScene.cameras.main.shake(200, 0.015);
+        applyTrainVisuals();
+        return 'armored';
+    }
+    if (activeTrain === 'devoria' && devoriaLives > 0) {
+        devoriaLives--;
+        playSound('shield_break');
+        if (navigator.vibrate) navigator.vibrate([80, 40, 80]);
+        showFloatingText(train.x, train.y - 42, "CAN −1! 💀", "#ff3300");
+        gameScene.cameras.main.shake(260, 0.018);
+        gameScene.cameras.main.flash(180, 200, 0, 0);
+        triggerOrbLoss(3 - devoriaLives);
+        syncDevoriaHUD();
+        applyTrainVisuals();
+        return 'devoria';
+    }
+    triggerGameOver();
+    return 'gameover';
+}
+
 function handleCollision(obs) {
     if (obs.sound) obs.sound.stop();
     if (bulldozerTimer > 0) {
@@ -1077,37 +1363,12 @@ function handleCollision(obs) {
         return;
     }
 
-    if (hasShield) {
-        playSound('shield_break');
-        if (navigator.vibrate) navigator.vibrate(100);
-        hasShield = false;
-        showFloatingText(train.x, train.y - 40, "ZIRH KIRILDI!", "#ff4444");
-        createExplosion(obs.x, obs.y);
-        obs.destroy();
-        gameScene.cameras.main.shake(200, 0.015);
-    } else if (activeTrain === 'armored' && shieldDurability > 0) {
-        shieldDurability--;
-        playSound('shield_break');
-        if (navigator.vibrate) navigator.vibrate(100);
-        showFloatingText(train.x, train.y - 40, "ZIRH HASAR ALDI!", "#ff4444");
-        createExplosion(obs.x, obs.y);
-        obs.destroy();
-        gameScene.cameras.main.shake(200, 0.015);
-        applyTrainVisuals();
-    } else if (activeTrain === 'devoria' && devoriaLives > 0) {
-        devoriaLives--;
-        playSound('shield_break');
-        if (navigator.vibrate) navigator.vibrate([80,40,80]);
-        showFloatingText(train.x, train.y - 42, "CAN −1! 💀", "#ff3300");
-        createDevoriaExplosion(obs.x, obs.y);
-        obs.destroy();
-        gameScene.cameras.main.shake(260, 0.018);
-        gameScene.cameras.main.flash(180, 200, 0, 0);
-        triggerOrbLoss(3 - devoriaLives);
-        syncDevoriaHUD();
-    } else {
-        triggerGameOver();
-    }
+    const result = absorbHit();
+    if (result === 'gameover') return;
+
+    if (result === 'devoria') createDevoriaExplosion(obs.x, obs.y);
+    else createExplosion(obs.x, obs.y);
+    obs.destroy();
 }
 
 function createWagon() {
@@ -1395,6 +1656,7 @@ if (isStoryMode2 && brakeBlastPenaltyTimer > 0) {
         if (brakeHeat >= 100) {
             brakeHeat = 100;
              if (isStoryMode) storyBrakeOverheated = true;
+             if (isStoryMode2) story2BrakeOverheat = true;
             isBraking = false;
             brakeCooldown = true;
             brakeBtnObj.setTexture('btnCooldown');
@@ -1547,41 +1809,13 @@ if (itemGraphic.visible) {
         }
         if (pathIndex >= currentPath.length) {
             if (lockedChoice !== correctPathIndex) {
-                if (hasShield) {
-                    playSound('shield_break');
-                    if (navigator.vibrate) navigator.vibrate(100);
-                    hasShield = false;
-                    showFloatingText(train.x, train.y - 40, "ZIRH KIRILDI!", "#ff4444");
-                    gameScene.cameras.main.shake(200, 0.015);
+                const result = absorbHit();
+                if (result !== 'gameover') {
                     resetTrain(false);
                     setNewCorrectPath();
-                } else if (activeTrain === 'armored' && shieldDurability > 0) {
-                    shieldDurability--;
-                    playSound('shield_break');
-                    if (navigator.vibrate) navigator.vibrate(100);
-                    showFloatingText(train.x, train.y - 40, "ZIRH HASAR ALDI!", "#ff4444");
-                    gameScene.cameras.main.shake(200, 0.015);
-                    applyTrainVisuals();
-                    resetTrain(false);
-                    setNewCorrectPath();
-                  } else if (activeTrain === 'devoria' && devoriaLives > 0) {
-                    devoriaLives--;
-                    playSound('shield_break');
-                    if (navigator.vibrate) navigator.vibrate([80,40,80]);
-                    showFloatingText(train.x, train.y - 42, "CAN −1! 💀", "#ff3300");
-                    gameScene.cameras.main.shake(260, 0.018);
-                    gameScene.cameras.main.flash(180, 200, 0, 0);
-                    triggerOrbLoss(3 - devoriaLives);
-                    syncDevoriaHUD();
-                    applyTrainVisuals();
-                    resetTrain(false);
-                    setNewCorrectPath();
-                  } else {
-                    triggerGameOver();
                 }
             } else {
                 score++;
-                if (isStoryMode2) story2SwitchCount++;
                 scoreText.setText("🏆 " + score);
                 playSound('score');
 
@@ -2071,7 +2305,7 @@ function manageTrainSounds() {
     gameScene.playerTrainSnd.play();
 }
 
-function startEndlessMode() {
+window.startEndlessMode = function() {
     if (audioCtx.state === 'suspended') audioCtx.resume();
     document.getElementById("startScreen").classList.add("hidden");
     document.getElementById("pauseBtn").classList.remove("hidden");
@@ -2084,7 +2318,7 @@ function startEndlessMode() {
     manageTrainSounds();
 }
 
-function startStoryMode() {
+window.startStoryMode = function() {
     if (audioCtx.state === 'suspended') audioCtx.resume();
     document.getElementById("storyMenuScreen").classList.add("hidden");
     showStoryCutscene(function() {
@@ -2097,6 +2331,7 @@ function startStoryMode() {
         storyEventsFired = {};
         storyBrakeOverheated = false;
         storyStartTime = Date.now();
+        storyPauseStart = 0;
         resetTrain(true);
         setNewCorrectPath();
         manageTrainSounds();
@@ -2200,7 +2435,7 @@ function triggerLevelComplete() {
     }, 700);
 }
 
-function returnToMenu() {
+window.returnToMenu = function() {
     document.getElementById("gameOverScreen").classList.add("hidden");
     if (gameScene && gameScene.playerTrainSnd) gameScene.playerTrainSnd.stop();
     obstacles.getChildren().forEach(obs => { if (obs.sound) obs.sound.stop(); });
@@ -2544,139 +2779,17 @@ function createAmbientSmoke(x, y, rectWidth) {
     document.body.appendChild(smoke);
     setTimeout(() => smoke.remove(), 2200);
 }
-function showStoryCutscene(callback) {
-    const steps = [
-        {
-            speaker: "KONDÜKTÖR",
-            avatar: "👴",
-            text: "Merkeze bildiriyorum! Banliyö hattında tanımlanamayan bir sinyal arızası tespit edildi."
-        },
-        {
-            speaker: "KONDÜKTÖR",
-            avatar: "👴",
-            text: "Makasları dikkatli değiştir. Freni aşırı ısıtma, her saniye önemli. İstasyona güvenli ulaş!"
-        },
-        {
-            speaker: "MİSYON HEDEFİ",
-            avatar: "🎯",
-            text: "İstasyona ulaş. Fren ısısını aşma ve 90 saniyenin altında tamamla → 3 Yıldız."
-        }
-    ];
-
+// Ortak cutscene mantığı — showStoryCutscene ve showStoryCutscene2 için tek noktadan
+function runCutscene(config, callback) {
+    const steps = config.steps;
     let currentStep = 0;
     let twTimer = null;
 
-    const screen = document.getElementById("storyCutsceneScreen");
-    const speakerEl = document.getElementById("cutsceneSpeaker");
-    const avatarEl = document.getElementById("cutsceneAvatar");
-    const bodyEl = document.getElementById("cutsceneBody");
-    const btn = document.getElementById("cutsceneContinueBtn");
-    const dots = screen.querySelectorAll(".cdot");
-
-    screen.classList.remove("hidden");
-
-    function typeText(text, el, speed) {
-        el.textContent = '';
-        el.classList.add("typing");
-        let i = 0;
-        if (twTimer) clearInterval(twTimer);
-        twTimer = setInterval(function() {
-            el.textContent = text.slice(0, i + 1);
-            i++;
-            if (i >= text.length) {
-                clearInterval(twTimer);
-                twTimer = null;
-                el.classList.remove("typing");
-            }
-        }, speed || 28);
-    }
-
-    function showStep(index) {
-        const s = steps[index];
-        speakerEl.textContent = s.speaker;
-        avatarEl.textContent = s.avatar;
-        dots.forEach(function(d, i) { d.classList.toggle("active", i === index); });
-        btn.textContent = index < steps.length - 1 ? "DEVAM ▶" : "BAŞLA ▶";
-        typeText(s.text, bodyEl, 28);
-    }
-
-    showStep(0);
-
-    btn.onclick = function() {
-        if (twTimer) {
-            clearInterval(twTimer);
-            twTimer = null;
-            bodyEl.textContent = steps[currentStep].text;
-            bodyEl.classList.remove("typing");
-            return;
-        }
-        currentStep++;
-        if (currentStep >= steps.length) {
-            screen.classList.add("cutscene-exit");
-            setTimeout(function() {
-                screen.classList.add("hidden");
-                screen.classList.remove("cutscene-exit");
-                btn.onclick = null;
-                callback();
-            }, 480);
-        } else {
-            showStep(currentStep);
-        }
-    };
-}
-
-function applyWinterTheme() {
-    if (!gameScene) return;
-    
-    // Gökyüzünü ve HTML arkaplanını kasvetli gece/kış rengine çevir
-    document.body.style.backgroundColor = '#1a202c';
-    gameScene.cameras.main.setBackgroundColor('#1a202c');
-
-    // Ağaçları, dağları ve zemini soğuk, donuk renklere boya (YENİ GÖRSEL GEREKTİRMEZ)
-    if (farMountains) farMountains.setTint(0x4a5568);
-    if (midTrees) midTrees.setTint(0x2d3748); 
-    if (solidGround) solidGround.fillColor = 0x1a202c;
-
-    // Ortam karanlık olduğu için tren farlarını baştan aç
-    if (headlight) {
-        headlight.setVisible(true);
-        headlineCore.setVisible(true);
-        farGlow.setVisible(true);
-    }
-}
-
-function showStoryCutscene2(callback) {
-    const steps = [
-        {
-            speaker: "KONDÜKTÖR",
-            avatar: "👴",
-            text: "Gece seferi başlıyor. Dışarıda sis ve kar var, görüş mesafesi çok düşük."
-        },
-        {
-            speaker: "KONDÜKTÖR",
-            avatar: "👴",
-            text: "Fren sistemine dikkat et, soğuk havada ısınması zorlaşıyor. Kontrollü sür!"
-        },
-        {
-            speaker: "MİSYON HEDEFİ",
-            avatar: "🎯",
-            text: "Gece istasyonuna ulaş. Fren patlamasını önle ve 120 saniyenin altında tamamla → 3 Yıldız."
-        },
-        {
-            speaker: "SİSTEM",
-            avatar: "⚠️",
-            text: "Uyarı: Karlı zemin frenleme mesafesini artırır. Ekstra dikkatli ol!"
-        }
-    ];
-
-    let currentStep = 0;
-    let twTimer = null;
-
-    const screen = document.getElementById('storyCutsceneScreen2');
-    const speakerEl = document.getElementById('cutsceneSpeaker2');
-    const avatarEl = document.getElementById('cutsceneAvatar2');
-    const bodyEl = document.getElementById('cutsceneBody2');
-    const btn = document.getElementById('cutsceneContinueBtn2');
+    const screen = document.getElementById(config.screenId);
+    const speakerEl = document.getElementById(config.speakerId);
+    const avatarEl = document.getElementById(config.avatarId);
+    const bodyEl = document.getElementById(config.bodyId);
+    const btn = document.getElementById(config.btnId);
     const dots = screen.querySelectorAll('.cdot');
 
     screen.classList.remove('hidden');
@@ -2729,6 +2842,57 @@ function showStoryCutscene2(callback) {
             showStep(currentStep);
         }
     };
+}
+
+function showStoryCutscene(callback) {
+    runCutscene({
+        screenId:  'storyCutsceneScreen',
+        speakerId: 'cutsceneSpeaker',
+        avatarId:  'cutsceneAvatar',
+        bodyId:    'cutsceneBody',
+        btnId:     'cutsceneContinueBtn',
+        steps: [
+            { speaker: 'KONDÜKTÖR',     avatar: '👴', text: 'Merkeze bildiriyorum! Banliyö hattında tanımlanamayan bir sinyal arızası tespit edildi.' },
+            { speaker: 'KONDÜKTÖR',     avatar: '👴', text: 'Makasları dikkatli değiştir. Freni aşırı ısıtma, her saniye önemli. İstasyona güvenli ulaş!' },
+            { speaker: 'MİSYON HEDEFİ', avatar: '🎯', text: 'İstasyona ulaş. Fren ısısını aşma ve 90 saniyenin altında tamamla → 3 Yıldız.' }
+        ]
+    }, callback);
+}
+
+function applyWinterTheme() {
+    if (!gameScene) return;
+    
+    // Gökyüzünü ve HTML arkaplanını kasvetli gece/kış rengine çevir
+    document.body.style.backgroundColor = '#1a202c';
+    gameScene.cameras.main.setBackgroundColor('#1a202c');
+
+    // Ağaçları, dağları ve zemini soğuk, donuk renklere boya (YENİ GÖRSEL GEREKTİRMEZ)
+    if (farMountains) farMountains.setTint(0x4a5568);
+    if (midTrees) midTrees.setTint(0x2d3748); 
+    if (solidGround) solidGround.fillColor = 0x1a202c;
+
+    // Ortam karanlık olduğu için tren farlarını baştan aç
+    if (headlight) {
+        headlight.setVisible(true);
+        headlineCore.setVisible(true);
+        farGlow.setVisible(true);
+    }
+}
+
+function showStoryCutscene2(callback) {
+    runCutscene({
+        screenId:  'storyCutsceneScreen2',
+        speakerId: 'cutsceneSpeaker2',
+        avatarId:  'cutsceneAvatar2',
+        bodyId:    'cutsceneBody2',
+        btnId:     'cutsceneContinueBtn2',
+        steps: [
+            { speaker: 'KONDÜKTÖR',     avatar: '👴', text: 'Gece seferi başlıyor. Dışarıda sis ve kar var, görüş mesafesi çok düşük.' },
+            { speaker: 'KONDÜKTÖR',     avatar: '👴', text: 'Fren sistemine dikkat et, soğuk havada ısınması zorlaşıyor. Kontrollü sür!' },
+            { speaker: 'MİSYON HEDEFİ', avatar: '🎯', text: 'Gece istasyonuna ulaş. Fren patlamasını önle ve 120 saniyenin altında tamamla → 3 Yıldız.' },
+            { speaker: 'SİSTEM',        avatar: '⚠️', text: 'Uyarı: Karlı zemin frenleme mesafesini artırır. Ekstra dikkatli ol!' }
+        ]
+    }, callback);
 }
 
 function showStoryEventBanner(icon, text, type) {
@@ -2845,7 +3009,9 @@ function updateStory2Logic(dt) {
         story2EventsFired['blast'] = true;
         triggerBrakeBlast();
         brakeBlastPenaltyTimer = 90;
-        story2BrakeOverheat = true;
+        // story2BrakeOverheat burada SET EDİLMEZ — bu senaryo gereği bir olay,
+        // oyuncu hatası değil. Aşırı ısı bayrağı yalnızca oyuncu freni gerçekten
+        // 100'e dayadığında setlenmeli, aksi takdirde 3 yıldız imkansız hale gelirdi.
         showStoryEventBanner('💥', 'Fren patlaması! Hız geçici olarak düşüyor.', 'danger');
     }
     if (!story2EventsFired['e80'] && story2Progress >= 80) {
@@ -2877,12 +3043,12 @@ window.startStoryMode2 = function() {
         isStoryMode2 = true;
         story2Progress = 0;
         story2Phase = 0;
-        story2SwitchCount = 0;
         isLevelComplete = false;
         story2EventsFired = {};
         story2BrakeOverheat = false;
         brakeBlastPenaltyTimer = 0;
         storyStartTime = Date.now();
+        storyPauseStart = 0;
         resetTrain(true);
         applyWinterTheme();
         setNewCorrectPath();
@@ -2898,15 +3064,6 @@ window.returnToMenuFromLevelComplete = function() {
     document.getElementById("levelCompleteScreen").classList.add("hidden");
     returnToMenu();
 };
-document.querySelectorAll('.button-container button').forEach(btn => {
-  btn.addEventListener('mousedown', (e) => {
-    const rect = btn.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-    btn.style.setProperty('--rx', `${x}%`);
-    btn.style.setProperty('--ry', `${y}%`);
-  });
-});
 let ambientTimer = 0;
 setInterval(() => {
     const title = document.getElementById('menuMainTitle');
