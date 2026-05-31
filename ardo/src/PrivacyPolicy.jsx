@@ -23,7 +23,7 @@ const PrivacyPolicy = () => {
               1. Giriş
             </h2>
             <p>
-              <strong>Arda Güner</strong>olarak, gizliliğinize saygı duyuyor ve kişisel verilerinizi korumayı taahhüt ediyorum. Bu Gizlilik Politikası, mobil uygulamalarımızı, oyunlarımızı ve <span className="text-indigo-600 font-semibold">ardaguner.com</span> web sitemizi kullandığınızda bilgilerinizi nasıl topladığımızı, kullandığımızı ve paylaştığımızı açıklamaktadır.
+              <strong>Arda Güner (Ardeko Studios)</strong> olarak, gizliliğinize saygı duyuyor ve kişisel verilerinizi korumayı taahhüt ediyorum. Bu Gizlilik Politikası, Google Play Mağazası'nda yer alan <strong>Switch Master: Railway</strong> mobil uygulamamızı/oyunumuzu ve <span className="text-indigo-600 font-semibold">ardaguner.com</span> web sitemizi kullandığınızda bilgilerinizi nasıl topladığımızı, kullandığımızı ve paylaştığımızı açıklamaktadır.
             </p>
           </section>
 
@@ -31,7 +31,7 @@ const PrivacyPolicy = () => {
             <h2 className="text-2xl font-bold text-slate-900 mb-4 border-b border-slate-100 pb-2">
               2. Topladığımız Bilgiler
             </h2>
-            <p className="mb-4">Uygulamalarımızı kullandığınızda aşağıdaki türde bilgileri toplayabiliriz:</p>
+            <p className="mb-4"><strong>Switch Master: Railway</strong> oyunumuzu ve uygulamalarımızı kullandığınızda aşağıdaki türde bilgileri toplayabiliriz:</p>
             <ul className="list-disc pl-5 space-y-2">
               <li><strong className="text-slate-800">Cihaz Bilgileri:</strong> Cihaz modeli, işletim sistemi sürümü, benzersiz cihaz tanımlayıcıları (ör. reklam kimlikleri) ve mobil ağ bilgileri.</li>
               <li><strong className="text-slate-800">Kullanım Verileri:</strong> Uygulama içindeki etkileşimleriniz, oynama süreleriniz, tıklanan bağlantılar ve hata/çökme raporları.</li>
@@ -59,7 +59,7 @@ const PrivacyPolicy = () => {
             </h2>
             <p className="mb-4">Topladığımız bilgileri temel olarak şu amaçlarla kullanırız:</p>
             <ul className="list-disc pl-5 space-y-2">
-              <li>Uygulamalarımızın düzgün çalışmasını sağlamak ve iyileştirmek.</li>
+              <li><strong>Switch Master: Railway</strong> oyununun düzgün çalışmasını sağlamak ve iyileştirmek.</li>
               <li>Karşılaşılan teknik sorunları tespit edip çözmek.</li>
               <li>Kullanıcı deneyimini kişiselleştirmek ve geliştirmek.</li>
               <li>Eğer kullanılıyorsa, size uygun reklamlar sunmak.</li>
