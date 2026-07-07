@@ -54,31 +54,69 @@ let minHighScore = 0;
 let totalScoreCount = 0;
 
 function loadScores() {
-    const scoreList = document.getElementById("scoreList");
-    if (!scoreList) return;
-    scoreList.innerHTML = "Yükleniyor...";
+    const scoreListGameOver = document.getElementById("scoreList");
+    const scoreListMain = document.getElementById("mainScoreList");
+
+    if (scoreListGameOver) scoreListGameOver.innerHTML = "Yükleniyor...";
+    if (scoreListMain) scoreListMain.innerHTML = "<div class='loading-pulse'>Veriler Çekiliyor...</div>";
+
     fetch(FIREBASE_URL).then(res => res.json()).then(data => {
         if (!data) {
-            scoreList.innerHTML = "Henüz skor yok!";
+            if (scoreListGameOver) scoreListGameOver.innerHTML = "Henüz skor yok!";
+            if (scoreListMain) scoreListMain.innerHTML = "<div class='empty-state'>Henüz skor yok!</div>";
             minHighScore = 0;
             totalScoreCount = 0;
             return;
         }
+
         let allScores = Object.values(data).sort((a, b) => b.score - a.score);
         totalScoreCount = allScores.length;
+
         if (allScores.length >= 5) {
             minHighScore = allScores[4].score;
         } else {
             minHighScore = 0;
         }
+
         let scoresArray = allScores.slice(0, 5);
         let listHTML = "";
-        scoresArray.forEach(entry => {
+        let mainListHTML = "";
+
+        scoresArray.forEach((entry, index) => {
             listHTML += `<li><b>${entry.name}</b>: ${entry.score}</li>`;
+
+            let delay = index * 0.1;
+            let rankClass = index === 0 ? 'rank-first' : index === 1 ? 'rank-second' : index === 2 ? 'rank-third' : '';
+            
+            mainListHTML += `
+            <li class="score-item ${rankClass}" style="animation-delay: ${delay}s">
+                <div class="score-rank">#${index + 1}</div>
+                <div class="score-name">${entry.name}</div>
+                <div class="score-value">${entry.score}</div>
+            </li>`;
         });
-        scoreList.innerHTML = listHTML;
+
+        if (scoreListGameOver) scoreListGameOver.innerHTML = listHTML;
+        if (scoreListMain) scoreListMain.innerHTML = mainListHTML;
     }).catch(err => console.error(err));
 }
+
+window.openHighScores = function() {
+    if (navigator.vibrate) {
+        navigator.vibrate(40);
+    }
+    document.getElementById("startScreen").classList.add("hidden");
+    document.getElementById("highScoreScreen").classList.remove("hidden");
+    loadScores();
+};
+
+window.closeHighScores = function() {
+    if (navigator.vibrate) {
+        navigator.vibrate(25);
+    }
+    document.getElementById("highScoreScreen").classList.add("hidden");
+    document.getElementById("startScreen").classList.remove("hidden");
+};
 
 function submitScoreAndReturn() {
     const nameInput = document.getElementById("playerNameInput");
@@ -98,7 +136,29 @@ function submitScoreAndReturn() {
         returnToMenu();
     }
 }
+let globalVolume = parseFloat(localStorage.getItem('sm_volume'));
+if (isNaN(globalVolume)) globalVolume = 1.0;
 
+window.openSettings = function() {
+    if (navigator.vibrate) navigator.vibrate(25);
+    document.getElementById("startScreen").classList.add("hidden");
+    document.getElementById("settingsScreen").classList.remove("hidden");
+    document.getElementById("volumeSlider").value = globalVolume;
+};
+
+window.closeSettings = function() {
+    if (navigator.vibrate) navigator.vibrate(25);
+    document.getElementById("settingsScreen").classList.add("hidden");
+    document.getElementById("startScreen").classList.remove("hidden");
+};
+
+window.changeVolume = function(val) {
+    globalVolume = parseFloat(val);
+    localStorage.setItem('sm_volume', globalVolume);
+    if (game && game.sound) {
+        game.sound.volume = globalVolume;
+    }
+};
 let totalCoins = parseInt(localStorage.getItem('sm_totalCoins')) || 0;
 let ownedTrains = JSON.parse(localStorage.getItem('sm_ownedTrains')) || ['classic'];
 let activeTrain = localStorage.getItem('sm_activeTrain') || 'classic';
@@ -146,6 +206,33 @@ window.openInfo = function() {
 
 window.closeInfo = function() {
     document.getElementById("infoScreen").classList.add("hidden");
+};
+
+window.openStoryMenu = function() {
+    if (navigator.vibrate) {
+        navigator.vibrate(40);
+    }
+    document.getElementById("startScreen").classList.add("hidden");
+    document.getElementById("storyMenuScreen").classList.remove("hidden");
+};
+
+window.closeStoryMenu = function() {
+    if (navigator.vibrate) {
+        navigator.vibrate(25);
+    }
+    document.getElementById("storyMenuScreen").classList.add("hidden");
+    document.getElementById("startScreen").classList.remove("hidden");
+};
+
+window.buyNitro = function() {
+    if (totalCoins >= 800 && !trainUpgrades['nitro_system']) {
+        totalCoins -= 800;
+        trainUpgrades['nitro_system'] = true;
+        saveMarketData();
+        updateMarketUI();
+        return true;
+    }
+    return false;
 };
 
 function updateMarketUI() {
@@ -201,6 +288,20 @@ function updateMarketUI() {
             upSpd.disabled = false;
         }
     }
+
+    let upNit = document.querySelector("#upgrade-nitro button");
+    if (upNit) {
+        if (trainUpgrades['nitro_system']) {
+            upNit.innerText = "AKTİF";
+            upNit.disabled = true;
+            upNit.style.background = "transparent";
+            upNit.style.color = "#888";
+            upNit.style.border = "1px solid #555";
+        } else {
+            upNit.innerText = "800 💰";
+            upNit.disabled = false;
+        }
+    }
 }
 
 let tunnelsBack, tunnelsFront;
@@ -249,6 +350,7 @@ function pauseGame(e) {
 
     isPaused = true;
     game.scene.pause('PlayScene');
+    if (gameScene && gameScene.playerTrainSnd) gameScene.playerTrainSnd.pause(); 
     document.getElementById("pauseScreen").classList.remove("hidden");
     document.getElementById("pauseBtn").classList.add("hidden");
 }
@@ -258,6 +360,7 @@ function resumeGame(e) {
     if (!isPaused) return;
     isPaused = false;
     game.scene.resume('PlayScene');
+    if (gameScene && gameScene.playerTrainSnd) gameScene.playerTrainSnd.resume(); 
     document.getElementById("pauseScreen").classList.add("hidden");
     document.getElementById("pauseBtn").classList.remove("hidden");
 }
@@ -290,17 +393,20 @@ function showFloatingText(x, y, message, colorStr) {
 let train, graphics, scoreText, phaseText, vagonText, obstacles;
 let switchBase, switchHandle, headlight, headlineCore, farGlow;
 let itemGraphic, itemType = 0;
-let trainShieldCircle, backgroundGroup, midgroundGroup;
+let trainShieldCircle, backgroundGroup, bulldozerAura, midgroundGroup; 
 let farMountains, midTrees, solidGround;
 let brakeBtnObj, brakeBtnText, brakeBarBg, brakeBarFill;
 let isBraking = false, brakeHeat = 0, brakeCooldown = false, chillTimer = 0;
+let nitroBtnObj, nitroBtnText, nitroBarBg, nitroBarFill;
+let isNitro = false, nitroHeat = 0, nitroCooldown = false;
 let gameTime = { scale: 1.0 };
 let phase = 1, currentPath, pathIndex = 0;
 let baseSpeed = 2.5, speed = baseSpeed, maxSpeed = 12;
 let switchState = 0, correctPathIndex = 0, lockedChoice = null;
 let score = 0, isGameOver = false, gameStarted = false, hasShield = false;
+let bulldozerTimer = 0;
 let pulse = 0, currentAngle = 0;
-let smokeParticles = [], sparkParticles = [], explosionParticles = [];
+let smokeParticles = [], sparkParticles = [], explosionParticles = [], nitroParticles = [];
 let starEmitter, perfectUsed = false;
 let trainWagons = [];
 let posHistory = [];
@@ -345,6 +451,9 @@ function applyTrainVisuals() {
 
 function create() {
     gameScene = this;
+    if (typeof globalVolume !== 'undefined') {
+        gameScene.sound.volume = globalVolume;
+    }
     gameScene.cameras.main.setBackgroundColor('#87CEEB');
     graphics = this.add.graphics();
     graphics.setDepth(5);
@@ -529,8 +638,21 @@ function create() {
     farGlow.setVisible(false);
     trainShieldCircle = this.add.circle(0, 0, 42, 0x00ff88, 0.25).setStrokeStyle(3, 0x00ff88, 1);
     trainShieldCircle.setVisible(false);
-    train.add([farGlow, headlineCore, headlight, trainShieldCircle]);
-
+    bulldozerAura = this.add.graphics();
+    bulldozerAura.lineStyle(4, 0xffaa00, 1);
+    bulldozerAura.fillStyle(0xff4400, 0.5);
+    bulldozerAura.beginPath();
+    for (let i = 0; i < 24; i++) {
+        let radius = i % 2 === 0 ? 55 : 35;
+        let angle = (i / 24) * Math.PI * 2;
+        if (i === 0) bulldozerAura.moveTo(Math.cos(angle) * radius, Math.sin(angle) * radius);
+        else bulldozerAura.lineTo(Math.cos(angle) * radius, Math.sin(angle) * radius);
+    }
+    bulldozerAura.closePath();
+    bulldozerAura.fillPath();
+    bulldozerAura.strokePath();
+    bulldozerAura.setVisible(false);
+    train.add([farGlow, headlineCore, headlight, trainShieldCircle, bulldozerAura]);
     let clBodyLower = this.add.rectangle(0, 8, 60, 14, 0x111111);
     let clBodyUpper = this.add.rectangle(0, -3, 60, 16, 0x2c3e50);
     let clCabin = this.add.rectangle(-15, -15, 24, 16, 0x1a252f).setStrokeStyle(1, 0x111111);
@@ -602,23 +724,27 @@ function create() {
     phaseText.setVisible(false);
     vagonText = this.add.text(400, 200, "🚂 YENİ VAGON EKLENDİ 🚂", { fontSize: "32px", fill: "#00ffff", fontStyle: "bold", align: "center", stroke: "#000", strokeThickness: 6 }).setOrigin(0.5).setDepth(100);
     vagonText.setVisible(false);
-    brakeBarBg = this.add.rectangle(700, 490, 120, 15, 0x222222).setOrigin(0.5).setStrokeStyle(2, 0xffffff).setDepth(100);
-    brakeBarFill = this.add.rectangle(640, 490, 0, 15, 0xffeb3b).setOrigin(0, 0.5).setDepth(100);
+    
+    brakeBarBg = this.add.rectangle(900, 490, 120, 15, 0x222222).setOrigin(0.5).setStrokeStyle(2, 0xffffff).setDepth(100);
+    brakeBarFill = this.add.rectangle(840, 490, 0, 15, 0xffeb3b).setOrigin(0, 0.5).setDepth(100);
 
-  // MODERN BUTON DOKULARINI ÇİZ
+    nitroBarBg = this.add.rectangle(100, 490, 120, 15, 0x222222).setOrigin(0.5).setStrokeStyle(2, 0xffffff).setDepth(100);
+    nitroBarFill = this.add.rectangle(40, 490, 0, 15, 0x00ccff).setOrigin(0, 0.5).setDepth(100);
+    nitroBarBg.setVisible(false);
+    nitroBarFill.setVisible(false);
+
     let btnGraphics = this.make.graphics({ x: 0, y: 0, add: false });
-    // Normal Durum
     btnGraphics.fillStyle(0x1a1a1a, 0.8);
     btnGraphics.fillRoundedRect(0, 0, 140, 60, 30);
     btnGraphics.lineStyle(2, 0xff3333, 0.9);
     btnGraphics.strokeRoundedRect(0, 0, 140, 60, 30);
     btnGraphics.generateTexture('btnIdle', 140, 60);
-    // Basılı Durum
+
     btnGraphics.clear();
     btnGraphics.fillStyle(0xcc0000, 0.9);
     btnGraphics.fillRoundedRect(0, 0, 140, 60, 30);
     btnGraphics.generateTexture('btnDown', 140, 60);
-    // Aşırı Isı Durumu
+
     btnGraphics.clear();
     btnGraphics.fillStyle(0x2a2a2a, 0.8);
     btnGraphics.fillRoundedRect(0, 0, 140, 60, 30);
@@ -626,16 +752,41 @@ function create() {
     btnGraphics.strokeRoundedRect(0, 0, 140, 60, 30);
     btnGraphics.generateTexture('btnCooldown', 140, 60);
 
-    // BUTONU EKRANA EKLE
-    brakeBtnObj = this.add.image(700, 540, 'btnIdle').setInteractive().setDepth(100);
-    brakeBtnText = this.add.text(700, 540, "FREN", { 
-        fontFamily: 'system-ui, -apple-system, sans-serif', 
-        fontSize: '20px', fontStyle: 'bold', color: '#ff3333', letterSpacing: 2 
+    btnGraphics.clear();
+    btnGraphics.fillStyle(0x1a1a1a, 0.8);
+    btnGraphics.fillRoundedRect(0, 0, 140, 60, 30);
+    btnGraphics.lineStyle(2, 0x00ccff, 0.9);
+    btnGraphics.strokeRoundedRect(0, 0, 140, 60, 30);
+    btnGraphics.generateTexture('btnNitroIdle', 140, 60);
+
+    btnGraphics.clear();
+    btnGraphics.fillStyle(0x0066cc, 0.9);
+    btnGraphics.fillRoundedRect(0, 0, 140, 60, 30);
+    btnGraphics.generateTexture('btnNitroDown', 140, 60);
+
+    btnGraphics.clear();
+    btnGraphics.fillStyle(0x2a2a2a, 0.8);
+    btnGraphics.fillRoundedRect(0, 0, 140, 60, 30);
+    btnGraphics.lineStyle(2, 0x555555, 0.8);
+    btnGraphics.strokeRoundedRect(0, 0, 140, 60, 30);
+    btnGraphics.generateTexture('btnNitroCooldown', 140, 60);
+
+    brakeBtnObj = this.add.image(900, 540, 'btnIdle').setInteractive().setDepth(100);
+    brakeBtnText = this.add.text(900, 540, "FREN", { 
+    fontFamily: 'system-ui, -apple-system, sans-serif', 
+    fontSize: '20px', fontStyle: 'bold', color: '#ff3333', letterSpacing: 2 
     }).setOrigin(0.5).setDepth(100);
 
-    this.input.addPointer(2);
+    nitroBtnObj = this.add.image(100, 540, 'btnNitroIdle').setInteractive().setDepth(100);
+    nitroBtnText = this.add.text(100, 540, "NİTRO", { 
+        fontFamily: 'system-ui, -apple-system, sans-serif', 
+        fontSize: '20px', fontStyle: 'bold', color: '#00ccff', letterSpacing: 2 
+    }).setOrigin(0.5).setDepth(100);
+    nitroBtnObj.setVisible(false);
+    nitroBtnText.setVisible(false);
 
-    // DOKUNMATİK EKRAN ETKİLEŞİMLERİ
+    this.input.addPointer(3);
+
     brakeBtnObj.on('pointerdown', (pointer) => {
         if (!brakeCooldown && gameStarted && !isGameOver && !isPaused) {
             isBraking = true;
@@ -659,7 +810,29 @@ function create() {
     brakeBtnObj.on('pointerup', stopBraking);
     brakeBtnObj.on('pointerout', stopBraking);
 
-    // KLAVYE (SPACE) ETKİLEŞİMLERİ
+    nitroBtnObj.on('pointerdown', (pointer) => {
+        if (!nitroCooldown && gameStarted && !isGameOver && !isPaused && trainUpgrades['nitro_system']) {
+            isNitro = true;
+            nitroBtnObj.setTexture('btnNitroDown');
+            nitroBtnText.setColor('#ffffff');
+            nitroBtnObj.setScale(0.92);
+            nitroBtnText.setScale(0.92);
+        }
+    });
+
+    const stopNitro = () => {
+        isNitro = false;
+        nitroBtnObj.setScale(1);
+        nitroBtnText.setScale(1);
+        if (!nitroCooldown) {
+            nitroBtnObj.setTexture('btnNitroIdle');
+            nitroBtnText.setColor('#00ccff');
+        }
+    };
+
+    nitroBtnObj.on('pointerup', stopNitro);
+    nitroBtnObj.on('pointerout', stopNitro);
+
     this.input.keyboard.on('keydown-SPACE', () => {
         if (!brakeCooldown && gameStarted && !isGameOver && !isPaused) {
             isBraking = true;
@@ -670,14 +843,19 @@ function create() {
         }
     });
 
-    this.input.keyboard.on('keyup-SPACE', () => {
-        stopBraking();
+    this.input.keyboard.on('keyup-SPACE', stopBraking);
+
+    this.input.keyboard.on('keydown-SHIFT', () => {
+        if (!nitroCooldown && gameStarted && !isGameOver && !isPaused && trainUpgrades['nitro_system']) {
+            isNitro = true;
+            nitroBtnObj.setTexture('btnNitroDown');
+            nitroBtnText.setColor('#ffffff');
+            nitroBtnObj.setScale(0.92);
+            nitroBtnText.setScale(0.92);
+        }
     });
 
-    this.input.keyboard.on('keyup-SPACE', () => {
-        isBraking = false;
-        if (!brakeCooldown) brakeBtnObj.fillColor = 0xcc0000;
-    });
+    this.input.keyboard.on('keyup-SHIFT', stopNitro);
 
     this.input.on("pointerdown", (pointer, currentlyOver) => {
         if (!gameStarted || isGameOver || isPaused || currentlyOver.length > 0) return;
@@ -722,6 +900,19 @@ function setNewCorrectPath() {
 }
 
 function handleCollision(obs) {
+    if (obs.sound) obs.sound.stop();
+    if (bulldozerTimer > 0) {
+        playSound('explosion');
+        if (navigator.vibrate) navigator.vibrate(50);
+        showFloatingText(obs.x, obs.y - 40, "PARÇALANDI! +5", "#ff4400");
+        createExplosion(obs.x, obs.y);
+        obs.destroy();
+        score += 5;
+        if (scoreText) scoreText.setText("Skor: " + score);
+        gameScene.cameras.main.shake(100, 0.01);
+        return;
+    }
+    
     if (hasShield) {
         playSound('shield_break');
         if (navigator.vibrate) navigator.vibrate(100);
@@ -780,8 +971,45 @@ function createWagon() {
     return w;
 }
 
+function spawnNitroFlames() {
+    for (let i = 0; i < 4; i++) {
+        nitroParticles.push({
+            x: train.x - 28,
+            y: train.y + Phaser.Math.Between(-8, 8),
+            vx: -Phaser.Math.FloatBetween(5, 12),
+            vy: Phaser.Math.FloatBetween(-2, 2),
+            alpha: 1.0,
+            size: Phaser.Math.Between(8, 14),
+            color: Math.random() > 0.25 ? 0x00ccff : 0x0044ff
+        });
+    }
+}
+
+function updateNitroFlames() {
+    for (let i = nitroParticles.length - 1; i >= 0; i--) {
+        let p = nitroParticles[i];
+        p.x += p.vx * gameTime.scale;
+        p.y += p.vy * gameTime.scale;
+        p.alpha -= 0.05 * gameTime.scale;
+        p.size -= 0.25 * gameTime.scale;
+        graphics.fillStyle(p.color, p.alpha);
+        graphics.fillCircle(p.x, p.y, Math.max(0.1, p.size));
+        if (p.alpha <= 0 || p.size <= 0) {
+            nitroParticles.splice(i, 1);
+        }
+    }
+}
+
 function update() {
     if (!gameStarted || isGameOver || isPaused) return;
+    
+
+    if (gameScene && gameScene.playerTrainSnd && gameScene.playerTrainSnd.isPlaying) {
+        let pitchRate = 0.6 + (speed / maxSpeed) * 0.8; 
+        gameScene.playerTrainSnd.setRate(pitchRate);
+    }
+
+
     farMountains.tilePositionX += 0.1 * (speed / baseSpeed) * gameTime.scale;
     midTrees.tilePositionX += 0.5 * (speed / baseSpeed) * gameTime.scale;
     pulse += 0.05 * gameTime.scale;
@@ -862,13 +1090,25 @@ function update() {
     } else {
         trainShieldCircle.setVisible(false);
     }
+    if (bulldozerTimer > 0) {
+        bulldozerTimer -= gameTime.scale;
+        bulldozerAura.rotation += 0.3 * gameTime.scale;
+        bulldozerAura.setScale(1 + Math.sin(pulse * 25) * 0.1);
+        bulldozerAura.setAlpha(0.6 + Math.sin(pulse * 30) * 0.4);
+
+        if (bulldozerTimer <= 0) {
+            bulldozerTimer = 0;
+            bulldozerAura.setVisible(false); 
+        }
+    }
+
     let baseHeatRate = 1.5;
     let upgradeKey = activeTrain + "_brake";
     if (trainUpgrades[upgradeKey]) {
         baseHeatRate = 0.8;
     }
 
-if (isBraking) {
+    if (isBraking) {
         speed = 0.5;
         brakeHeat += (baseHeatRate * gameTime.scale);
         spawnBrakeSparks();
@@ -881,6 +1121,23 @@ if (isBraking) {
             brakeBtnText.setScale(1);
             brakeBtnText.setText("AŞIRI ISI");
             brakeBtnText.setColor('#888888');
+            playSound('shield_break');
+        }
+    } else if (isNitro && trainUpgrades['nitro_system']) {
+        let tSpeed = baseSpeed + (score * 0.2) + 6.0;
+        if (activeTrain === 'speedster') tSpeed += 2;
+        speed = Math.min(maxSpeed + 4, tSpeed);
+        nitroHeat += (2.2 * gameTime.scale);
+        spawnNitroFlames();
+        if (nitroHeat >= 100) {
+            nitroHeat = 100;
+            isNitro = false;
+            nitroCooldown = true;
+            nitroBtnObj.setTexture('btnNitroCooldown');
+            nitroBtnObj.setScale(1);
+            nitroBtnText.setScale(1);
+            nitroBtnText.setText("AŞIRI ISI");
+            nitroBtnText.setColor('#888888');
             playSound('shield_break');
         }
     } else if (chillTimer > 0) {
@@ -914,10 +1171,29 @@ if (isBraking) {
         }
     }
 
+    if (!isNitro && nitroHeat > 0) {
+        nitroHeat -= (1.2 * gameTime.scale);
+        if (nitroHeat <= 0) {
+            nitroHeat = 0;
+            nitroCooldown = false;
+            nitroBtnObj.setTexture('btnNitroIdle');
+            nitroBtnText.setText("NİTRO");
+            nitroBtnText.setColor('#00ccff');
+        }
+    }
+
     brakeBarFill.width = (brakeHeat / 100) * 120;
     if (brakeHeat > 80) brakeBarFill.fillColor = 0xff0000;
     else if (brakeHeat > 50) brakeBarFill.fillColor = 0xffa500;
     else brakeBarFill.fillColor = 0xffeb3b;
+
+    if (trainUpgrades['nitro_system'] && nitroBarFill) {
+        nitroBarFill.width = (nitroHeat / 100) * 120;
+        if (nitroHeat > 80) nitroBarFill.fillColor = 0xff0055;
+        else if (nitroHeat > 50) nitroBarFill.fillColor = 0x0066ff;
+        else nitroBarFill.fillColor = 0x00ccff;
+    }
+
     if (itemGraphic.visible) {
         itemGraphic.scale = 1 + Math.sin(pulse * 4) * 0.1;
         let cx = itemGraphic.x - train.x;
@@ -942,14 +1218,21 @@ if (isBraking) {
                 chillTimer = 180;
                 brakeHeat = 0;
                 brakeCooldown = false;
-                brakeBtnObj.fillColor = 0xcc0000;
+                brakeBtnObj.setTexture('btnIdle');
                 brakeBtnText.setText("FREN");
+                brakeBtnText.setColor('#ff3333');
                 playSound('ice');
                 gameScene.cameras.main.flash(300, 0, 255, 255);
             } else if (itemType === 3) {
                 showFloatingText(train.x, train.y - 40, "KALKAN! 🛡️", "#00ff88");
                 hasShield = true;
                 playSound('shield');
+            } else if (itemType === 4) {
+                showFloatingText(train.x, train.y - 40, "BULDOZER! PARÇALA +5", "#ff4400");
+                bulldozerTimer = 480; 
+                bulldozerAura.setVisible(true); 
+                playSound('explosion');
+                gameScene.cameras.main.shake(300, 0.02);
             }
             itemType = 0;
         }
@@ -958,6 +1241,7 @@ if (isBraking) {
     updateSmoke();
     updateSparks();
     updateExplosions();
+    updateNitroFlames();
     let target = currentPath[pathIndex];
     let dx = target.x - train.x;
     let dy = target.y - train.y;
@@ -1005,23 +1289,29 @@ if (isBraking) {
                     let cOutline = itemGraphic.list[0];
                     let cBody = itemGraphic.list[1];
                     let cIcon = itemGraphic.list[2];
-                    if (r < 0.6) {
+                    if (r < 0.30) {
                         itemType = 1;
                         cBody.fillColor = 0xffd700;
                         cOutline.fillColor = 0xb8860b;
                         cIcon.setText("💰");
                         cIcon.setColor("#000");
-                    } else if (r < 0.8) {
+                    } else if (r < 0.40) {
                         itemType = 2;
                         cBody.fillColor = 0x00bfff;
                         cOutline.fillColor = 0x0000ff;
                         cIcon.setText("❄️");
                         cIcon.setColor("#fff");
-                    } else {
+                    } else if (r < 0.70) {
                         itemType = 3;
                         cBody.fillColor = 0x32cd32;
                         cOutline.fillColor = 0x008000;
                         cIcon.setText("🛡️");
+                        cIcon.setColor("#fff");
+                    } else {
+                        itemType = 4;
+                        cBody.fillColor = 0xff4400;
+                        cOutline.fillColor = 0xcc0000;
+                        cIcon.setText("💥");
                         cIcon.setColor("#fff");
                     }
                     let spawnPath;
@@ -1090,9 +1380,12 @@ if (isBraking) {
             trainWagons[i].rotation = last.rot;
         }
     }
-    obstacles.getChildren().forEach(obs => {
+ obstacles.getChildren().forEach(obs => {
         obs.x -= (4 + (score * 0.05)) * gameTime.scale;
-        if (obs.x < -100) obs.destroy();
+        if (obs.x < -100) {
+            if (obs.sound) obs.sound.stop(); 
+            obs.destroy();
+        }
         spawnBlackSmoke(obs.x, obs.y);
     });
 }
@@ -1123,6 +1416,15 @@ function spawnObstacle() {
         let percin1 = gameScene.add.circle(-12, -4, 1.5, 0x000000).setAlpha(0.5);
         let percin2 = gameScene.add.circle(12, -4, 1.5, 0x000000).setAlpha(0.5);
         obsContainer.add([cBaseL, cBaseU, cCoal, w1, w2, percin1, percin2]);
+        
+
+        if (gameScene && gameScene.sound) {
+            let obsSnd = gameScene.sound.add('snd_rogue', { loop: true, volume: 0.4 });
+            obsSnd.play();
+            obsContainer.sound = obsSnd;
+        }
+
+
         obstacles.add(obsContainer);
     }
 }
@@ -1380,12 +1682,18 @@ function resetTrain(isFullReset = false) {
     perfectUsed = false;
 
     if (isFullReset) {
+        document.body.style.backgroundColor = "#87CEEB";
+        if (gameScene) gameScene.cameras.main.setBackgroundColor('#87CEEB');
+
         if (activeTrain === 'armored') {
             shieldDurability = 2;
         } else {
             shieldDurability = 0;
         }
         hasShield = false;
+        bulldozerTimer = 0;
+        if (bulldozerAura) bulldozerAura.setVisible(false); 
+        
         currentSkyPhase = 1;
         if (gameScene.overlaySunset) gameScene.overlaySunset.setAlpha(0);
         if (gameScene.overlayNight) gameScene.overlayNight.setAlpha(0);
@@ -1394,6 +1702,21 @@ function resetTrain(isFullReset = false) {
             headlineCore.setVisible(false);
             farGlow.setVisible(false);
         }
+    }
+
+    let hasNitro = !!trainUpgrades['nitro_system'];
+    if (nitroBtnObj) nitroBtnObj.setVisible(hasNitro);
+    if (nitroBtnText) nitroBtnText.setVisible(hasNitro);
+    if (nitroBarBg) nitroBarBg.setVisible(hasNitro);
+    if (nitroBarFill) nitroBarFill.setVisible(hasNitro);
+
+    isNitro = false;
+    nitroHeat = 0;
+    nitroCooldown = false;
+    if (nitroBtnObj && !nitroCooldown) {
+        nitroBtnObj.setTexture('btnNitroIdle');
+        nitroBtnText.setText("NİTRO");
+        nitroBtnText.setColor('#00ccff');
     }
 
     applyTrainVisuals();
@@ -1412,18 +1735,30 @@ function resetTrain(isFullReset = false) {
     spawnObstacle();
 }
 
-function startGame() {
+function manageTrainSounds() {
+    if (!gameScene || !gameScene.sound) return;
+    if (gameScene.playerTrainSnd) gameScene.playerTrainSnd.stop();
+
+    let sndKey = (activeTrain === 'speedster') ? 'snd_speedster' : 'snd_classic';
+    gameScene.playerTrainSnd = gameScene.sound.add(sndKey, { loop: true, volume: 0.3 });
+    gameScene.playerTrainSnd.play();
+}
+
+function startEndlessMode() {
     if (audioCtx.state === 'suspended') audioCtx.resume();
     document.getElementById("startScreen").classList.add("hidden");
     document.getElementById("pauseBtn").classList.remove("hidden");
     gameStarted = true;
     resetTrain(true);
     setNewCorrectPath();
+    manageTrainSounds(); 
 }
 
 function triggerGameOver() {
     if (isGameOver) return;
     isGameOver = true;
+    if (gameScene && gameScene.playerTrainSnd) gameScene.playerTrainSnd.stop();
+    obstacles.getChildren().forEach(obs => { if (obs.sound) obs.sound.stop(); });
     playSound('crash');
     document.getElementById("pauseBtn").classList.add("hidden");
 
@@ -1462,6 +1797,8 @@ function triggerGameOver() {
 
 function returnToMenu() {
     document.getElementById("gameOverScreen").classList.add("hidden");
+    if (gameScene && gameScene.playerTrainSnd) gameScene.playerTrainSnd.stop();
+    obstacles.getChildren().forEach(obs => { if (obs.sound) obs.sound.stop(); });
     document.getElementById("pauseScreen").classList.add("hidden");
     document.getElementById("startScreen").classList.remove("hidden");
     document.getElementById("pauseBtn").classList.add("hidden");
@@ -1479,12 +1816,28 @@ function returnToMenu() {
     brakeHeat = 0;
     isBraking = false;
     brakeCooldown = false;
+    isNitro = false;
+    nitroHeat = 0;
+    nitroCooldown = false;
     chillTimer = 0;
     gameTime.scale = 1.0;
 
     brakeBtnObj.setTexture('btnIdle');
     brakeBtnText.setText("FREN");
     brakeBtnText.setColor('#ff3333');
+
+    if (nitroBtnObj) {
+        nitroBtnObj.setTexture('btnNitroIdle');
+        nitroBtnObj.setVisible(false);
+    }
+    if (nitroBtnText) {
+        nitroBtnText.setText("NİTRO");
+        nitroBtnText.setColor('#00ccff');
+        nitroBtnText.setVisible(false);
+    }
+    if (nitroBarBg) nitroBarBg.setVisible(false);
+    if (nitroBarFill) nitroBarFill.setVisible(false);
+
     scoreText.setText("Skor: 0");
     scoreText.setColor("#ffaa00");
     phaseText.setVisible(false);
@@ -1508,6 +1861,27 @@ function returnToMenu() {
     }
 }
 
+function preload() {
+    this.load.audio('snd_classic', 'classic-sound.wav');
+    this.load.audio('snd_speedster', 'yht-sound.wav');
+    this.load.audio('snd_rogue', 'rogue-sound.wav');
+}
+
+const PlayScene = {
+    key: 'PlayScene',
+    preload: preload,
+    create: create, 
+    update: update  
+};
+
+const StoryScene = {
+    key: 'StoryScene',
+    create: function() {
+        this.add.text(400, 300, "MACERA MODU - BÖLÜM 1", { fontSize: '32px', fill: '#fff' }).setOrigin(0.5);
+    },
+    update: function() {}
+};
+
 const config = {
     type: Phaser.AUTO,
     backgroundColor: "#87CEEB",
@@ -1524,11 +1898,7 @@ const config = {
             debug: false
         }
     },
-    scene: {
-        key: 'PlayScene',
-        create: create,
-        update: update
-    },
+    scene: [PlayScene, StoryScene], 
     fps: {
         target: 60,
         forceSetTimeOut: true
@@ -1542,3 +1912,111 @@ function initPhaserGame() {
         game = new Phaser.Game(config);
     }
 }
+
+let menuHeat = 0;
+const maxHeat = 100;
+
+window.clickMenuTitle = function() {
+    menuHeat = Math.min(maxHeat, menuHeat + 15);
+    
+    const title = document.getElementById('menuMainTitle');
+    if (!title) return;
+
+    const rect = title.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    const sparkCount = Math.floor(menuHeat / 4) + 15; 
+    for (let i = 0; i < sparkCount; i++) {
+        createMenuSpark(centerX, rect.bottom - 5);
+    }
+
+    if (menuHeat > 50) {
+        createMenuSteam(centerX + (Math.random() - 0.5) * rect.width, rect.top);
+        if (navigator.vibrate) navigator.vibrate(25);
+    }
+}
+
+function createMenuSpark(x, y) {
+    const spark = document.createElement('div');
+    spark.className = 'menu-spark';
+    
+    if (menuHeat > 75) {
+        spark.classList.add('super-spark');
+    }
+
+    spark.style.left = x + 'px';
+    spark.style.top = y + 'px';
+
+    const dx = (Math.random() - 0.5) * 380 + 'px'; 
+    const dy = (Math.random() - 0.6) * 220 - 60 + 'px'; 
+    spark.style.setProperty('--dx', dx);
+    spark.style.setProperty('--dy', dy);
+
+    document.body.appendChild(spark);
+    setTimeout(() => spark.remove(), 800);
+}
+
+function createMenuSteam(x, y) {
+    const steam = document.createElement('div');
+    steam.className = 'menu-steam';
+    
+    const size = (Math.floor(Math.random() * 16) + 20) + 'px'; 
+    steam.style.width = size;
+    steam.style.height = size;
+    steam.style.left = x + 'px';
+    steam.style.top = y + 'px';
+
+    const sdx = (Math.random() - 0.5) * 80 + 'px';
+    steam.style.setProperty('--sdx', sdx);
+
+    document.body.appendChild(steam);
+    setTimeout(() => steam.remove(), 700);
+}
+
+function createAmbientSmoke(x, y, rectWidth) {
+    const smoke = document.createElement('div');
+    smoke.className = 'menu-smoke-ambient';
+    
+    const size = (Math.floor(Math.random() * 11) + 15) + 'px';
+    smoke.style.width = size;
+    smoke.style.height = size;
+    
+    smoke.style.left = (x + (Math.random() - 0.5) * rectWidth) + 'px';
+    smoke.style.top = y + 'px';
+
+    const sdx = (Math.random() - 0.5) * 40 + 'px';
+    smoke.style.setProperty('--sdx', sdx);
+
+    document.body.appendChild(smoke);
+    setTimeout(() => smoke.remove(), 2200);
+}
+
+let ambientTimer = 0;
+setInterval(() => {
+    const title = document.getElementById('menuMainTitle');
+    if (!title) return;
+
+    const rect = title.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+
+    ambientTimer += 50;
+    if (ambientTimer >= 300) {
+        createAmbientSmoke(centerX, rect.top + 5, rect.width);
+        ambientTimer = 0;
+    }
+
+    if (menuHeat > 0) {
+        menuHeat = Math.max(0, menuHeat - 1.2);
+
+        if (menuHeat > 65) {
+            title.classList.add('title-overheated');
+        } else {
+            title.classList.remove('title-overheated');
+        }
+
+        title.style.filter = `drop-shadow(0 0 ${menuHeat / 3}px rgba(255, 68, 0, ${menuHeat / 100})) drop-shadow(0 4px 6px rgba(0,0,0,0.7))`;
+    } else {
+        title.style.filter = `drop-shadow(0 4px 6px rgba(0, 0, 0, 0.7))`;
+    }
+}, 50);

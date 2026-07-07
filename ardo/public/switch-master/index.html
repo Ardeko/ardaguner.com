@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Switch Master</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght=700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.js"></script>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -13,10 +13,9 @@
 <div id="splashScreen" class="splash-screen">
   <div class="logo-container">
     <img src="logo.png" id="studioLogo" alt="Ardeko Studios">
-    <h2 class="game-title-splash">SWITCH MASTER</h2>
+    <h2 class="splash-title">SWITCH MASTER</h2>
     <div class="loading-bar-container">
       <div class="loading-bar-fill"></div>
-      <p style="color: #00ff88; font-size: 11px; margin-top: 10px; letter-spacing: 2px; font-family: sans-serif;">SİSTEMLER BAŞLATILIYOR...</p>
     </div>
   </div>
   <audio id="splashAudio" src="splash-sound.mp3" preload="auto"></audio>
@@ -28,31 +27,68 @@
 </div>
 
 <div id="gameWrapper">
+  
+  <div id="highScoreScreen" class="ui-screen hidden">
+    <div class="modal-box leaderboard-modal">
+      <button class="close-market-btn" onclick="closeHighScores()">✖</button>
+      <h2 class="leaderboard-title">EN İYİLER</h2>
+      <div class="leaderboard-container">
+        <ol id="mainScoreList" class="modern-score-list">
+          <div class="loading-pulse">Veriler Çekiliyor...</div>
+        </ol>
+      </div>
+    </div>
+  </div>
+  
   <button id="pauseBtn" class="hidden" onclick="pauseGame(event)">⏸</button>
 
   <div id="startScreen" class="ui-screen hidden-at-start">
     <button class="info-toggle-btn" onclick="openInfo()">?</button>
     <div class="modal-box start">
-      <h2>🚂 SWITCH MASTER</h2>
-      <div class="coin-bar" style="color: #ffd700; font-weight: bold; margin-bottom: 25px; margin-top: 15px; font-size: 20px;">
+      <h2 class="menu-title" id="menuMainTitle" onclick="clickMenuTitle()">
+        <span class="title-switch">SWITCH</span>
+        <span class="title-master">MASTER</span>
+      </h2>
+      <div class="coin-bar" style="color: #ffd700; font-weight: 600; margin-bottom: 25px; font-size: 18px;">
         Mevcut Altın: <span id="menuCoinDisplay">0</span> 💰
       </div>
       <div class="button-container">
-        <button onclick="startGame()">OYUNA BAŞLA</button>
-        <button onclick="openMarket()" style="color: #ffaa00; border-color: #775500;">MARKET</button>
+        <button onclick="startEndlessMode()">SONSUZ MOD</button>
+        <button onclick="openStoryMenu()" style="background: rgba(0, 204, 255, 0.08); border-color: rgba(0, 204, 255, 0.3); color: #00ccff;">MACERA MODU</button>
+        <button onclick="openMarket()" style="background: rgba(255, 170, 0, 0.08); border-color: rgba(255, 170, 0, 0.3); color: #ffaa00;">MARKET</button>
+        <button onclick="openHighScores()" class="high-score-btn">🏆 LİDERLİK TABLOSU</button>
+        <button onclick="openSettings()" style="background: rgba(100, 100, 100, 0.2); border-color: rgba(255, 255, 255, 0.3); color: #fff;">⚙️ AYARLAR</button>
       </div>
     </div>
   </div>
+   
+<div id="settingsScreen" class="ui-screen hidden">
+  <div class="modal-box">
+    <h2>⚙️ AYARLAR</h2>
+    <div class="settings-group">
+      <label for="volumeSlider">Oyun Sesi</label>
+      <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="1" onchange="changeVolume(this.value)">
+    </div>
+    <button onclick="closeSettings()" style="margin-top: 20px;">KAPAT</button>
+  </div>
+</div>
 
   <div id="infoScreen" class="ui-screen hidden">
     <div class="modal-box info-modal">
       <h2>NASIL OYNANIR?</h2>
       <div class="how-to-play">
-        <p>👆 <b>Ekrana Dokun:</b> Ray makaslarını değiştirerek trenleri yönlendirin.</p>
-        <p>🛑 <b>Fren Butonu:</b> Treni yavaşlatır (Aşırı ısıtmaya dikkat!).</p>
-        <p>🎁 <b>Sürpriz Kutular:</b> Puan, Altın(💰), Yavaşla (❄️) veya Kalkan (🛡️) verir.</p>
-        <p>🔥 <b>Ana Hat:</b> 25 puana ulaştığında 3. zorlu şerit açılır!</p>
-        <p>⚠️ <b>Serseri Vagon:</b> Karşı raylardan gelen vagonlara çarpmayın!</p>
+        <p>👆 <b>Yönlendirme:</b> Ekrana dokunarak ray makaslarını değiştirin.</p>
+        <p>🛑 <b>Fren:</b> Butona basarak treni yavaşlatın. Aşırı ısıtmaya dikkat!</p>
+        <p>⚡ <b>Nitro:</b> Satın alındığında sol butona basarak treni uçurun!</p>
+        <p>🔥 <b>Ana Hat:</b> 25 puana ulaştığında 3. zorlu şerit açılır.</p>
+        
+        <div class="bonus-section">
+          <h3>🎁 Bonus Kutuları</h3>
+          <p>💰 <b>Altın:</b> +50 altın verir. Markette harcayabilirsin.</p>
+          <p>❄️ <b>Soğutma:</b> Aşırı ısınan frenleri anında buz gibi yapar.</p>
+          <p>🛡️ <b>Kalkan:</b> Seni bir sonraki kaza ihtimalinden korur.</p>
+          <p>💥 <b>Buldozer:</b> Serseri vagonu parçala, anında +5 kazan!</p>
+        </div>
       </div>
       <button onclick="closeInfo()">ANLADIM</button>
     </div>
@@ -62,7 +98,7 @@
     <div class="modal-box market-modal">
       <button class="close-market-btn" onclick="closeMarket()">✖</button>
       <h2 class="market-title">🛠️ GARAJ & MARKET</h2>
-      <div class="market-balance">
+      <div class="market-balance" style="margin-bottom: 20px; font-size: 18px; color: #ffd700; font-weight: 600;">
         <span class="balance-icon">💰</span>
         <span id="marketCoinDisplay">0</span>
       </div>
@@ -91,17 +127,25 @@
           <div class="card-icon">🛡️</div>
           <div class="card-info">
             <h4>Zırhlı Tren</h4>
-            <p>Çarpışmalara dayanıklı (2 Kalkan).</p>
+            <p>Çarpışmalara dayanıklı.</p>
           </div>
           <button class="buy-btn" onclick="if(buyTrain('armored', 5000)) updateMarketUI(); else selectTrain('armored')">5000 💰</button>
         </div>
       </div>
       <div id="tab-upgrades" class="market-grid hidden">
+        <div class="item-card upgrade-card" id="upgrade-nitro">
+          <div class="card-icon">⚡</div>
+          <div class="card-info">
+            <h4>Plazma Nitro Sistemi</h4>
+            <p>Tüm trenler için yüksek voltaj itici mavi alev gücü.</p>
+          </div>
+          <button class="buy-btn" onclick="buyNitro()">800 💰</button>
+        </div>
         <div class="item-card upgrade-card" id="upgrade-classic">
           <div class="card-icon">❄️</div>
           <div class="card-info">
             <h4>Standart Soğutucu</h4>
-            <p>Klasik tren için geç ısınan frenler.</p>
+            <p>Geç ısınan frenler.</p>
           </div>
           <button class="buy-btn" onclick="buyUpgrade('classic', 2000)">2000 💰</button>
         </div>
@@ -109,11 +153,46 @@
           <div class="card-icon">❄️</div>
           <div class="card-info">
             <h4>Stark Soğutucu</h4>
-            <p>YHT için üst düzey fren sistemi.</p>
+            <p>Üst düzey fren sistemi.</p>
           </div>
           <button class="buy-btn" onclick="buyUpgrade('speedster', 2500)">2500 💰</button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <div id="storyMenuScreen" class="ui-screen hidden">
+    <div class="modal-box story-modal">
+      <button class="close-market-btn" onclick="closeStoryMenu()">✖</button>
+      <h2 class="story-title">MACERA MODU</h2>
+      <p class="story-subtitle" style="color: #00ccff; font-weight: bold; text-shadow: 0 0 10px rgba(0,204,255,0.2);">YENİ SÖZLEŞMELER YAKINDA</p>
+      
+      <div class="level-grid">
+        <div class="level-card locked" style="opacity: 0.6; border-color: rgba(255,255,255,0.05);">
+          <div class="level-icon">🔒</div>
+          <div class="level-info">
+            <h4>Bölüm 1: Banliyö Çıkışı</h4>
+            <p>Merkez İstasyon Erişimi Bekleniyor...</p>
+          </div>
+        </div>
+        <div class="level-card locked">
+          <div class="level-icon">🔒</div>
+          <div class="level-info">
+            <h4>Bölüm 2: Gece Seferi</h4>
+            <p>Sistemler Hazırlanıyor...</p>
+          </div>
+        </div>
+        <div class="level-card locked">
+          <div class="level-icon">🔒</div>
+          <div class="level-info">
+            <h4>Bölüm 3: Hassas Kargo</h4>
+            <p>Rota Protokolü Yükleniyor...</p>
+          </div>
+        </div>
+      </div>
+      <p style="color: #64748b; font-size: 12px; margin-top: 25px; letter-spacing: 1px; line-height: 1.4;">
+        Uzak hatlardaki demiryolu ağları şu an güncelleniyor.<br>İlk seferler için takipte kalın!
+      </p>
     </div>
   </div>
 
@@ -122,29 +201,31 @@
       <h2>DURAKLATILDI</h2>
       <button onclick="resumeGame(event)">▶️ DEVAM ET</button>
       <br>
-      <button onclick="quitToMenuFromPause(event)" style="background: #ff4444; width: 100%; margin-top: 10px;">🏠 ANA MENÜ</button>
+      <button onclick="quitToMenuFromPause(event)" style="background: rgba(255, 68, 68, 0.1); color: #ff4444; border: 1px solid rgba(255, 68, 68, 0.3); width: 100%; margin-top: 15px;">🏠 ANA MENÜ</button>
     </div>
   </div>
 
   <div id="gameOverScreen" class="ui-screen hidden">
     <div class="modal-box game-over-modal">
       <h2 id="gameOverTitle">KAZA!</h2>
-      <p id="finalScoreDisplay">Skor: 0</p>
-      <p id="earnedCoinDisplay">+0 💰</p>
+      <p id="finalScoreDisplay" style="font-size: 22px; margin: 10px 0;">Skor: 0</p>
+      <p id="earnedCoinDisplay" style="font-size: 20px; color: #ffd700; margin: 5px 0;">+0 💰</p>
       <div id="scoreInputArea" class="hidden">
-        <p style="color: #00ff88; font-size: 14px; margin: 5px 0;">🎉 EN İYİ 5'E GİRDİN! 🎉</p>
+        <p style="color: #00ffff; font-size: 14px; margin: 15px 0 10px 0; font-weight: 600;">🎉 EN İYİ 5'E GİRDİN! 🎉</p>
         <input type="text" id="playerNameInput" placeholder="İsmini gir..." maxlength="12" autocomplete="off" />
         <br>
         <button onclick="submitScoreAndReturn()">Kaydet & Ana Menü</button>
       </div>
-      <button id="justRestartBtn" onclick="returnToMenu()">Ana Menüye Dön</button>
+      <button id="justRestartBtn" onclick="returnToMenu()" style="margin-top: 15px;">Ana Menüye Dön</button>
       <div id="leaderboardUI">
         <h3>EN İYİ 5!</h3>
         <ol id="scoreList">Yükleniyor...</ol>
       </div>
     </div>
   </div>
+
 </div>
+
 <script src="game.js"></script>
 <script>
   function handleStart() {
