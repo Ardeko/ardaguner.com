@@ -269,7 +269,7 @@ input:checked + .slider:before {
   overflow: hidden;
 }
 
-/* RAY ÇİZGİLERİ EFEKTİ - ÇÖZÜM BURADA */
+/* RAY ÇİZGİLERİ EFEKTİ */
 .switch-master-card::before {
   content: "";
   position: absolute;
@@ -284,13 +284,13 @@ input:checked + .slider:before {
     rgba(255,255,255,0.05) 42px
   );
   animation: trackMove 6s linear infinite;
-  pointer-events: none; /* ÖNEMLİ: Tıklamaları engellemesini önler */
+  pointer-events: none; 
   z-index: 0;
 }
 
 /* BAŞLIK */
 .switch-master-card h2 {
-  position: relative; /* İçeriğin ::before'un üstünde kalmasını sağlar */
+  position: relative; 
   z-index: 1;
   font-size: 2.2rem;
   margin-bottom: 1rem;
@@ -300,17 +300,17 @@ input:checked + .slider:before {
 
 /* AÇIKLAMA */
 .switch-master-card p {
-  position: relative; /* İçeriğin ::before'un üstünde kalmasını sağlar */
+  position: relative; 
   z-index: 1;
   margin-bottom: 1.5rem;
   font-size: 1.1rem;
   color: #aaa;
 }
 
-/* BUTON - ÇÖZÜM BURADA */
+/* BUTON */
 .play-button {
-  position: relative; /* Tıklanabilir alanın animasyonun üstünde kalması için */
-  z-index: 10; /* Katman önceliğini artırdık */
+  position: relative; 
+  z-index: 10; 
   display: inline-block;
   padding: 1rem 2.5rem;
   border-radius: 10px;
@@ -339,7 +339,7 @@ input:checked + .slider:before {
   border-radius: 50%;
   font-size: 0.8rem;
   animation: signalBlink 1s infinite;
-  z-index: 1; /* Badge'in de üstte kalmasını sağladık */
+  z-index: 1; 
 }
 
 /* ANİMASYONLAR */
@@ -353,6 +353,83 @@ input:checked + .slider:before {
   50% { background: darkred; box-shadow: 0 0 3px red; }
   100% { background: red; box-shadow: 0 0 10px red; }
 }
+
+/* -------------------------------------- */
+/* YENİ: ARDEKO STUDIOS ÖZEL EFEKTLERİ   */
+/* -------------------------------------- */
+
+/* Parlak, cyberpunk stili neon oyun kartı */
+.ardeko-card {
+  position: relative;
+  background: #121214;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 2rem;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+}
+
+/* Hover durumunda dışa doğru RGB/Mor neon patlaması */
+.ardeko-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(144, 19, 254, 0.25), 
+              0 0 30px rgba(0, 229, 255, 0.2);
+  border-color: rgba(144, 19, 254, 0.6);
+}
+
+/* Kartın içinden geçen şık metalik ışık süzmesi (Shimmer Efekti) */
+.ardeko-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.13) 50%,
+    transparent
+  );
+  transform: skewX(-25deg);
+  transition: none;
+}
+
+.ardeko-card:hover::after {
+  left: 150%;
+  transition: left 0.8s ease-in-out;
+}
+
+/* Ardeko Studios Başlıkları için Hareketli Gradyan Text */
+.shimmer-text {
+  font-weight: 800;
+  background: linear-gradient(to right, #00e5ff 0%, #9013fe 50%, #00e5ff 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textShine 3s linear infinite;
+}
+
+@keyframes textShine {
+  to { background-position: 200% center; }
+}
+
+/* Mini parıltılı tag/badge stili (Örn: "Solo Game Dev" yazısı için) */
+.ardeko-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: bold;
+  border-radius: 20px;
+  background: rgba(144, 19, 254, 0.15);
+  color: #c084fc;
+  border: 1px solid rgba(144, 19, 254, 0.4);
+  box-shadow: 0 0 10px rgba(144, 19, 254, 0.2);
+}
+
 
 /* -------------------------------------- */
 /* MOBİL UYUMLULUK (Birleştirilmiş)       */

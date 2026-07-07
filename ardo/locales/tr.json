@@ -18,10 +18,11 @@
     "title": "Hakkımda",
     "description": "Merhaba, ben Arda Güner. Yazılım geliştirme yolculuğumda JavaScript ile başladım ve modern teknolojilere yönelik projeler geliştirdim.",
     "detailedDescription": [
-     "Merhaba, ben Arda Güner. Yazılım geliştirme yolculuğuma JavaScript ile başladım ve zaman içinde modern web teknolojileri üzerine uzmanlaşarak bu alanda güçlü bir teknik altyapı edindim. React ve Node.js başta olmak üzere JavaScript ekosistemindeki araçlarla sürdürülebilir, performanslı ve kullanıcı odaklı web uygulamaları geliştiriyorum. Yazılımı yalnızca bir iş değil, sürekli gelişen bir problem çözme disiplini olarak görüyorum.",
-     "Mobil uygulama geliştirme alanında Flutter ve Dart ile kullanıcı deneyimi yüksek ve ölçeklenebilir uygulamalar geliştirdim. Kotlin konusunda ise aktif bir öğrenme sürecindeyim ve mobil platformlardaki teknik yetkinliğimi sürekli ileri taşımayı hedefliyorum. Gelişen teknolojileri yakından takip eden, öğrenmeye ve kendini güncel tutmaya önem veren bir yazılım geliştiriciyim.",
-     "Teknik çalışmalarımın yanında bilişim ve kodlama eğitmeni olarak çocuklara algoritmik düşünme ve problem çözme becerileri kazandırıyorum. Scratch tabanlı eğitimlerde odak noktam, yalnızca kod yazdırmak değil; sistematik düşünmeyi, adım adım çözüm üretmeyi ve üretken bir bakış açısı geliştirmeyi öğretmek."
-  ],
+      "Merhaba, ben Arda Güner. Yazılım geliştirme yolculuğuma JavaScript ile başladım ve zaman içinde modern web teknolojileri üzerine uzmanlaşarak bu alanda güçlü bir teknik altyapı edindim. React ve Node.js başta olmak üzere JavaScript ekosistemindeki araçlarla sürdürülebilir, performanslı ve kullanıcı odaklı web uygulamaları geliştiriyorum. Yazılımı yalnızca bir iş değil, sürekli gelişen bir problem çözme disiplini olarak görüyorum.",
+      "Mobil uygulama geliştirme alanında Flutter ve Dart ile kullanıcı deneyimi yüksek ve ölçeklenebilir uygulamalar geliştirdim. Kotlin konusunda ise aktif bir öğrenme sürecindeyim ve mobil platformlardaki teknik yetkinliğimi sürekli ileri taşımayı hedefliyorum. Gelişen teknolojileri yakından takip eden, öğrenmeye ve kendini güncel tutmaya önem veren bir yazılım geliştiriciyim.",
+      "Geçmişte bilişim ve kodlama eğitmeni olarak çocuklara algoritmik düşünme ve problem çözme becerileri kazandırdım. Scratch tabanlı eğitimlerde odak noktam, yalnızca kod yazdırmak değil; sistematik düşünmeyi, adım adım çözüm üretmeyi ve üretken bir bakış açısı geliştirmeyi öğretmekti.",
+      "Tüm bunların yanında, kendi kurduğum oyun şirketi olan Ardeko Studios çatısı altında tek başıma bağımsız (indie) ufak oyunlar geliştiriyor ve oyun dünyasında yaratıcı fikirlerimi hayata geçiriyorum."
+    ],
     "workExperience": "Çalışma Hayatım",
     "education": "Eğitim",
     "educationDetails": "2018-2023: Altınbaş Üniversitesi, Yazılım Mühendisliği",
@@ -29,7 +30,9 @@
       "2019-2021: DNY, Teknik Destek Stajyeri",
       "2023: Fit Bilişim ve Danışmanlık, Ağ İzleme Stajyeri",
       "2023-2025: TAC A.Ş., Yazılım Geliştirme Uzmanı",
-      "2025-Günümüz: Üsküdar Ünalan Çocuk Üniversitesi, Bilişim ve Kodlama Eğitmeni"
+      "2025-2026: Üsküdar Ünalan Çocuk Üniversitesi, Bilişim ve Kodlama Eğitmeni",
+      "2026-Günümüz: BENTAŞ A.Ş., Software Support Specialist",
+      "2026-Günümüz: Ardeko Studios, Kurucu & Oyun Geliştirici"
     ],
     "skills": "Yeteneklerim",
     "languages": "Programlama Dilleri: C++, C#, Python, JavaScript",
@@ -75,17 +78,14 @@
     "revoDescription": "SignalR ve WebRTC teknolojileriyle geliştirilmiş, tarayıcı üzerinden sesli ve yazılı iletişim sağlayan web uygulaması.",
     "nebula": "Nebula - Balon Patlatma",
     "nebulaDescription": "50 seviyelik ve sonsuz modlu kozmik temalı bir bubble shooter oyunu. React, Phaser 3, FastAPI ve MongoDB ile geliştirildi. Mobil öncelikli tasarım, güçlendiriciler, başarımlar ve daha fazlası."
-
-
   },
   "footer": {
     "title": "İletişim",
     "thanks": "Soner ve Çiğdem Güner'e özel teşekkürler!",
     "copyright": "© 2026 Arda Güner. Tüm hakları saklıdır."
-  }
-,
+  },
   "cv": {
-  "title": "Özgeçmiş",
-  "downloadButton": "PDF Dosyası (TR)"
-}
+    "title": "Özgeçmiş",
+    "downloadButton": "PDF Dosyası (TR)"
+  }
 }

@@ -18,18 +18,21 @@
     "title": "About Me",
     "description": "Hi, I'm Arda Güner. I started my software journey with JavaScript and developed projects in modern technologies.",
     "detailedDescription": [
-    "Hello, I’m Arda Güner. I started my software development journey with JavaScript and over time specialized in modern web technologies, building a strong technical foundation in this field. I develop sustainable, high-performance, and user-focused web applications using tools from the JavaScript ecosystem, especially React and Node.js. I see software not just as a job, but as a continuously evolving problem-solving discipline.",
-    "In mobile application development, I have built user-friendly and scalable applications using Flutter and Dart. I am currently deepening my knowledge of Kotlin and actively working to improve my technical expertise on mobile platforms. I closely follow emerging technologies and place strong importance on continuous learning and staying up to date.",
-    "Alongside my technical work, I work as a coding and computer science instructor, helping children develop algorithmic thinking and problem-solving skills. In Scratch-based workshops, my focus is not only on teaching how to code, but on building systematic thinking, step-by-step reasoning, and a creative, productive mindset."
+      "Hello, I’m Arda Güner. I started my software development journey with JavaScript and over time specialized in modern web technologies, building a strong technical foundation in this field. I develop sustainable, high-performance, and user-focused web applications using tools from the JavaScript ecosystem, especially React and Node.js. I see software not just as a job, but as a continuously evolving problem-solving discipline.",
+      "In mobile application development, I have built user-friendly and scalable applications using Flutter and Dart. I am currently deepening my knowledge of Kotlin and actively working to improve my technical expertise on mobile platforms. I closely follow emerging technologies and place strong importance on continuous learning and staying up to date.",
+      "In the past, I worked as a coding and computer science instructor, helping children develop algorithmic thinking and problem-solving skills. In Scratch-based workshops, my focus was not only on teaching how to code, but on building systematic thinking, step-by-step reasoning, and a creative, productive mindset.",
+      "Alongside these, I solo-develop unique independent (indie) games under my own game studio, Ardeko Studios, bringing my creative concepts and gaming passions to life."
     ],
     "workExperience": "Work Experience",
     "education": "Education",
     "educationDetails": "2018-2023: Altınbaş University, Software Engineering",
     "jobs": [
-    "2019-2021: DNY, Technical Support Intern",
-    "2023: Fit Computing and Consulting, Network Monitoring Intern",
-    "2023-2025: TAC A.Ş., Software Development Specialist",
-    "2025-Present:  Üsküdar Ünalan Children’s University, Coding and Computer Science Instructor"
+      "2019-2021: DNY, Technical Support Intern",
+      "2023: Fit Computing and Consulting, Network Monitoring Intern",
+      "2023-2025: TAC A.Ş., Software Development Specialist",
+      "2025-2026: Üsküdar Ünalan Children’s University, Coding and Computer Science Instructor",
+      "2026-Present: BENTAŞ A.Ş., Software Support Specialist",
+      "2026-Present: Ardeko Studios, Founder & Game Developer"
     ],
     "skills": "My Skills",
     "languages": "Programming Languages: C++, C#, Python, JavaScript",
@@ -52,7 +55,6 @@
     "philosophy": "My life philosophy is to always learn, explore, and be open to new opportunities.",
     "githubCTA": "Additionally, I share my projects on my GitHub profile. For more:",
     "githubLink": "GitHub Profile"
-
   },
   "projects": {
     "title": "My Projects",
@@ -78,9 +80,6 @@
     "revoDescription": "A browser-based real-time communication app built with SignalR and WebRTC for voice and text chat.",
     "nebula": "Nebula - Bubble Shooter",
     "nebulaDescription": "A cosmic-themed bubble shooter game with 50 levels and an infinite mode. Built with React, Phaser 3, FastAPI, and MongoDB. Mobile-first design, power-ups, achievements, and more."
-
-
-
   },
   "footer": {
     "title": "Contact",
@@ -88,7 +87,7 @@
     "copyright": "© 2026 Arda Güner. All rights reserved."
   },
   "cv": {
-  "title": "Resume",
-  "downloadButton": "PDF File (EN)"
-}
+    "title": "Resume",
+    "downloadButton": "PDF File (EN)"
+  }
 }
