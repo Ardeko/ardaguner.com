@@ -5,6 +5,7 @@ import { tips } from "./tips";
 import tr from "/locales/tr.json";
 import en from "/locales/en.json";
 import PrivacyPolicy from './PrivacyPolicy';
+import StudioSpotlight from "./StudioSpotlight";
 
 const CodeLab = lazy(() => import("./CodeLab"));
 
@@ -116,6 +117,9 @@ function App() {
             </li>
             <li>
               <a href="#projects">{strings.nav.projects}</a>
+            </li>
+            <li>
+              <a href="#studio">{language === "tr" ? "Stüdyo" : "Studio"}</a>
             </li>
             <li>
               <a href="#contact">{strings.nav.contact}</a>
@@ -277,6 +281,8 @@ function App() {
                   ))}
                 </ul>
               </section>
+
+              <StudioSpotlight language={language} />
             </>
           }
         />
