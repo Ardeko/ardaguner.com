@@ -1,0 +1,206 @@
+.studio-section {
+  position: relative;
+  padding: 5.5rem 1.5rem 6rem;
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.studio-inner {
+  max-width: 620px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.studio-eyebrow {
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #64b5f6;
+  opacity: 0;
+}
+
+.studio-visible .studio-eyebrow {
+  animation: studio-fade-up 0.7s ease forwards;
+  animation-delay: 0.05s;
+}
+
+.studio-kickoff {
+  position: relative;
+  width: 140px;
+  height: 112px;
+  margin-top: 1.75rem;
+  opacity: 0;
+}
+
+.studio-visible .studio-kickoff {
+  animation: studio-fade-up 0.7s ease forwards;
+  animation-delay: 0.18s;
+}
+
+.studio-pitch-line {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 92px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.studio-shadow {
+  position: absolute;
+  bottom: 11px;
+  left: 50%;
+  width: 32px;
+  height: 7px;
+  margin-left: -16px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  filter: blur(1.5px);
+  animation: studio-shadow-pulse 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
+
+.studio-ball {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  width: 40px;
+  height: 40px;
+  margin-left: -20px;
+  display: block;
+  transform-origin: bottom center;
+  animation: studio-ball-bounce 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
+
+.studio-ball svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.35));
+}
+
+@keyframes studio-ball-bounce {
+  0%, 100% { transform: translateY(0) scaleX(1) scaleY(1); }
+  8% { transform: translateY(0) scaleX(1.22) scaleY(0.78); }
+  45% { transform: translateY(-58px) scaleX(0.97) scaleY(1.03); }
+  50% { transform: translateY(-60px) scaleX(0.95) scaleY(1.05); }
+  55% { transform: translateY(-58px) scaleX(0.97) scaleY(1.03); }
+  92% { transform: translateY(0) scaleX(1.22) scaleY(0.78); }
+}
+
+@keyframes studio-shadow-pulse {
+  0%, 100% { transform: scaleX(1); opacity: 0.5; }
+  8% { transform: scaleX(1.15); opacity: 0.55; }
+  50% { transform: scaleX(0.4); opacity: 0.16; }
+  92% { transform: scaleX(1.15); opacity: 0.55; }
+}
+
+.studio-heading {
+  margin: 1.4rem 0 0;
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: #f2f3f7;
+  opacity: 0;
+}
+
+.studio-visible .studio-heading {
+  animation: studio-fade-up 0.7s ease forwards;
+  animation-delay: 0.32s;
+}
+
+.studio-tagline {
+  margin: 0.9rem 0 0;
+  max-width: 460px;
+  font-size: 1.02rem;
+  line-height: 1.65;
+  color: rgba(242, 243, 247, 0.68);
+  opacity: 0;
+}
+
+.studio-visible .studio-tagline {
+  animation: studio-fade-up 0.7s ease forwards;
+  animation-delay: 0.46s;
+}
+
+@keyframes studio-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.studio-cta {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: 2rem;
+  padding: 0.85rem 1.9rem;
+  border-radius: 12px;
+  background: #64b5f6;
+  color: #0d1117;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: none;
+  box-shadow: 0 8px 22px rgba(100, 181, 246, 0.25);
+  opacity: 0;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+
+.studio-visible .studio-cta {
+  animation: studio-fade-up 0.7s ease forwards;
+  animation-delay: 0.6s;
+}
+
+.studio-cta:hover {
+  background: #82c4f8;
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(100, 181, 246, 0.35);
+}
+
+.studio-cta-arrow {
+  transition: transform 0.25s ease;
+}
+
+.studio-cta:hover .studio-cta-arrow {
+  transform: translateX(5px);
+}
+
+@media (max-width: 640px) {
+  .studio-section {
+    padding: 4rem 1.25rem 4.5rem;
+  }
+
+  .studio-heading {
+    font-size: 1.9rem;
+  }
+
+  .studio-tagline {
+    font-size: 0.95rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .studio-eyebrow,
+  .studio-kickoff,
+  .studio-heading,
+  .studio-tagline,
+  .studio-cta {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .studio-ball,
+  .studio-shadow {
+    animation: none;
+  }
+}
