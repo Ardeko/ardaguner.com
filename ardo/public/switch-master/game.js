@@ -1,5 +1,27 @@
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
+// Yetersiz para — 3'lü "bıp bıp bıp" pattern (her bip ~75ms, arada ~110ms boşluk)
+function playInsufficientFundsBeep() {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const startTime = audioCtx.currentTime;
+    const beepDur = 0.075;
+    const gap = 0.110;
+    for (let i = 0; i < 3; i++) {
+        const t = startTime + i * (beepDur + gap);
+        const osc = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        osc.connect(g); g.connect(audioCtx.destination);
+        osc.type = 'square';
+        // İkinci ve üçüncüde frekans biraz düşsün — daha "uyarı" hissi
+        osc.frequency.setValueAtTime(i === 0 ? 880 : i === 1 ? 740 : 620, t);
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(0.22, t + 0.008);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + beepDur);
+        osc.start(t);
+        osc.stop(t + beepDur + 0.01);
+    }
+}
+
 function playSound(type) {
     if (audioCtx.state === 'suspended') audioCtx.resume();
     const osc = audioCtx.createOscillator();
@@ -87,7 +109,11 @@ function loadScores() {
 
             let delay = index * 0.1;
             let rankClass = index === 0 ? 'rank-first' : index === 1 ? 'rank-second' : index === 2 ? 'rank-third' : '';
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
             mainListHTML += `
             <li class="score-item ${rankClass}" style="animation-delay: ${delay}s">
                 <div class="score-rank">#${index + 1}</div>
@@ -118,7 +144,11 @@ window.closeHighScores = function() {
     document.getElementById("startScreen").classList.remove("hidden");
 };
 
+<<<<<<< HEAD
 function submitScoreAndReturn() {
+=======
+window.submitScoreAndReturn = function() {
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
     const nameInput = document.getElementById("playerNameInput");
     const name = nameInput ? nameInput.value.trim() : "";
     if (name !== "") {
@@ -164,10 +194,38 @@ let ownedTrains = JSON.parse(localStorage.getItem('sm_ownedTrains')) || ['classi
 let activeTrain = localStorage.getItem('sm_activeTrain') || 'classic';
 let trainUpgrades = JSON.parse(localStorage.getItem('sm_trainUpgrades')) || {};
 
-window.onload = function() {
+window.addEventListener('load', function() {
     let mC = document.getElementById("menuCoinDisplay");
     if (mC) mC.innerText = totalCoins;
     loadScores();
+    checkDailyReward();
+});
+
+function checkDailyReward() {
+    let today = new Date().toDateString();
+    let lastLogin = localStorage.getItem('sm_lastLoginDate');
+
+    if (lastLogin !== today) {
+        document.getElementById("startScreen").classList.add("hidden");
+        document.getElementById("dailyRewardScreen").classList.remove("hidden");
+    }
+}
+
+window.claimDailyReward = function() {
+    if (navigator.vibrate) navigator.vibrate(50);
+
+    let today = new Date().toDateString();
+    localStorage.setItem('sm_lastLoginDate', today);
+
+    totalCoins += 100;
+    saveMarketData();
+
+    let mC = document.getElementById("menuCoinDisplay");
+    if (mC) mC.innerText = totalCoins;
+
+    triggerConfetti();
+    document.getElementById("dailyRewardScreen").classList.add("hidden");
+    document.getElementById("startScreen").classList.remove("hidden");
 };
 
 function saveMarketData() {
@@ -177,13 +235,224 @@ function saveMarketData() {
     localStorage.setItem('sm_trainUpgrades', JSON.stringify(trainUpgrades));
 }
 
-function openMarket() {
+// ── 3D KARUSEL CONTROLLER ─────────────────────────────────
+// Tüm market sekmelerini sanal bir çemberin etrafında dizer.
+// Sürükle/yön tuşları/noktalar ile aktif kart değişir.
+const Carousel = {
+    instances: {},
+
+    init(key) {
+        const tab = document.getElementById('tab-' + key);
+        if (!tab) return;
+        const rotor = tab.querySelector('.carousel-rotor');
+        if (!rotor) return;
+
+        // Kartları topla (yalnızca direkt çocuklar)
+        const cards = Array.from(rotor.children).filter(c => c.classList.contains('item-card'));
+        if (!cards.length) return;
+
+        const total = cards.length;
+        const step = 360 / total;
+
+        // Yarıçap kart genişliğinden orantılı hesaplanır → ekran küçüldükçe
+        // kartlar da küçülür, dağılım her zaman düzgün kalır.
+        // Kart sayısı arttıkça komşuların üst üste binmemesi için faktör de artar.
+        const cardW = rotor.offsetWidth || 160;
+        const factor = total <= 3 ? 1.05 : total <= 4 ? 1.25 : total <= 5 ? 1.45 : 1.65;
+        const radius = Math.round(cardW * factor);
+
+        // Her kartı çemberin etrafına yerleştir
+        cards.forEach((c, i) => {
+            c.style.setProperty('--card-angle', `${i * step}deg`);
+            c.style.setProperty('--carousel-radius', `${radius}px`);
+        });
+
+        // Noktaları oluştur
+        const dotsContainer = tab.querySelector('.carousel-dots');
+        if (dotsContainer) {
+            dotsContainer.innerHTML = '';
+            for (let i = 0; i < total; i++) {
+                const d = document.createElement('button');
+                d.className = 'carousel-dot';
+                d.dataset.index = i;
+                d.addEventListener('click', () => Carousel.setIndex(key, i));
+                dotsContainer.appendChild(d);
+            }
+        }
+
+        // Yön ok düğmeleri
+        tab.querySelectorAll('.carousel-arrow').forEach(a => {
+            const dir = a.dataset.dir;
+            a.onclick = () => {
+                const inst = Carousel.instances[key];
+                if (!inst) return;
+                Carousel.setIndex(key, inst.index + (dir === 'next' ? 1 : -1));
+            };
+        });
+
+        // Yan kartlara tıklayınca o karta odaklan
+        cards.forEach((c, i) => {
+            c.addEventListener('click', (e) => {
+                const inst = Carousel.instances[key];
+                if (!inst) return;
+                if (inst.hasMoved) { e.stopPropagation(); e.preventDefault(); return; }
+                if (i !== inst.index) {
+                    e.stopPropagation();
+                    Carousel.setIndex(key, i);
+                }
+            }, true);
+        });
+
+        // Önceki instance varsa (resize/re-init senaryosu) index'i koru
+        const prevIndex = (this.instances[key] && this.instances[key].index) || 0;
+
+        // Instance
+        const instance = {
+            tab, rotor, cards, total, step, dotsContainer,
+            index: 0, isDragging: false, startX: 0, startAngle: 0, hasMoved: false
+        };
+        this.instances[key] = instance;
+
+        // Sürükleme dinleyicileri (önceki varsa eklemeyelim — re-init durumu için)
+        if (!rotor.dataset.carouselBound) {
+            rotor.dataset.carouselBound = '1';
+            rotor.addEventListener('pointerdown',   e => this.onDown(key, e), { passive: false });
+            rotor.addEventListener('pointermove',   e => this.onMove(key, e), { passive: false });
+            rotor.addEventListener('pointerup',     e => this.onUp(key, e));
+            rotor.addEventListener('pointercancel', e => this.onUp(key, e));
+            // pointerleave KALDIRILDI — setPointerCapture varken zaten gereksiz,
+            // ve mobilde parmağın hafif kayması rotor sınırına çıkınca drag'i iptal ediyordu.
+        }
+
+        this.setIndex(key, prevIndex, true);
+    },
+
+    setIndex(key, i, immediate = false) {
+        const inst = this.instances[key];
+        if (!inst) return;
+        i = ((i % inst.total) + inst.total) % inst.total;
+
+        // Target açı her zaman tam -i*step olmalı (kart TAM ortalansın).
+        // Sadece 360°'lik tur sayısını mevcut açıya yakın seçerek "kısa yön"den döner.
+        const currentAngle = parseFloat(inst.rotor.style.getPropertyValue('--rotor-angle')) || 0;
+        let targetAngle = -i * inst.step;
+        while (targetAngle - currentAngle > 180)  targetAngle -= 360;
+        while (targetAngle - currentAngle < -180) targetAngle += 360;
+
+        if (immediate) {
+            inst.rotor.style.transition = 'none';
+            inst.rotor.style.setProperty('--rotor-angle', `${targetAngle}deg`);
+            // Force reflow then restore transition
+            void inst.rotor.offsetWidth;
+            inst.rotor.style.transition = '';
+        } else {
+            inst.rotor.style.setProperty('--rotor-angle', `${targetAngle}deg`);
+        }
+
+        const prevIdx = inst.index;
+        inst.index = i;
+        inst.cards.forEach((c, idx) => c.classList.toggle('card-active', idx === i));
+
+        // Trenler karuselinde: önde kalan kart sahip olunan bir trense, OTOMATİK SEÇ.
+        // Upgrades için seçim kavramı yok; o yüzden sadece trains.
+        if (key === 'trains' && !immediate && prevIdx !== i) {
+            const trainId = inst.cards[i].dataset.train;
+            if (trainId && typeof window.selectTrain === 'function' && trainId !== activeTrain) {
+                // selectTrain() owned değilse sessizce false döner — güvenli.
+                window.selectTrain(trainId);
+            }
+        }
+
+        if (navigator.vibrate && !immediate) navigator.vibrate(10);
+    },
+
+    snapToId(key, id) {
+        const inst = this.instances[key];
+        if (!inst || !id) return;
+        const attr = key === 'trains' ? 'train' : 'upgrade';
+        const idx = inst.cards.findIndex(c => c.dataset[attr] === id);
+        if (idx >= 0) this.setIndex(key, idx, true);
+    },
+
+    onDown(key, e) {
+        const inst = this.instances[key];
+        if (!inst) return;
+        // Buy butonu üzerinde drag başlatma — tıklama olsun
+        if (e.target.closest('.buy-btn')) return;
+        // preventDefault → tarayıcı tıklama/zoom tetiklemesin, anında drag başlasın
+        if (e.cancelable) e.preventDefault();
+        inst.isDragging = true;
+        inst.hasMoved = false;
+        inst.startX = e.clientX;
+        inst.startAngle = parseFloat(inst.rotor.style.getPropertyValue('--rotor-angle')) || (-inst.index * inst.step);
+        inst.rotor.classList.add('dragging');
+        try { inst.rotor.setPointerCapture(e.pointerId); } catch (_) {}
+    },
+
+    onMove(key, e) {
+        const inst = this.instances[key];
+        if (!inst || !inst.isDragging) return;
+        if (e.cancelable) e.preventDefault();
+        const dx = e.clientX - inst.startX;
+        if (Math.abs(dx) > 4) inst.hasMoved = true;
+        // Çarpan 0.4 → 0.7: mobilde daha az parmak hareketi yetsin, akıcı hissetsin
+        const angle = inst.startAngle + dx * 0.7;
+        inst.rotor.style.setProperty('--rotor-angle', `${angle}deg`);
+    },
+
+    onUp(key, e) {
+        const inst = this.instances[key];
+        if (!inst || !inst.isDragging) return;
+        inst.isDragging = false;
+        inst.rotor.classList.remove('dragging');
+        try { inst.rotor.releasePointerCapture(e.pointerId); } catch (_) {}
+
+        const cur = parseFloat(inst.rotor.style.getPropertyValue('--rotor-angle')) || 0;
+        const nearestIdx = Math.round(-cur / inst.step);
+        this.setIndex(key, nearestIdx);
+
+        // Tıklama olaylarının yanlışlıkla tetiklenmesini engellemek için kısa bir bekleme
+        if (inst.hasMoved) {
+            setTimeout(() => { inst.hasMoved = false; }, 50);
+        }
+    }
+};
+
+window.openMarket = function() {
     document.getElementById("startScreen").classList.add("hidden");
     document.getElementById("marketScreen").classList.remove("hidden");
     updateMarketUI();
+    // Karuselleri hidden tab dahil başlat — DOM yerleşimi bittikten sonra
+    requestAnimationFrame(() => {
+        Carousel.init('trains');
+        Carousel.init('upgrades');
+        Carousel.snapToId('trains', activeTrain);
+    });
 }
 
-function closeMarket() {
+// Modal kenarındaki ok düğmeleri — hangi tab aktifse onun karuselini gezdirir
+window.marketNav = function(dir) {
+    const trainsHidden = document.getElementById('tab-trains').classList.contains('hidden');
+    const key = trainsHidden ? 'upgrades' : 'trains';
+    const inst = Carousel.instances[key];
+    if (!inst) return;
+    Carousel.setIndex(key, inst.index + (dir === 'next' ? 1 : -1));
+};
+
+// Pencere yeniden boyutlandırılırsa (cihaz döndürme dahil) kart yarıçapını
+// yeni boyutlara göre tekrar hesapla — kartlar her zaman ekrana sığsın.
+let _marketResizeTimer = null;
+window.addEventListener('resize', () => {
+    if (document.getElementById('marketScreen').classList.contains('hidden')) return;
+    clearTimeout(_marketResizeTimer);
+    _marketResizeTimer = setTimeout(() => {
+        // Re-init mevcut index'i korur (Carousel.init içinde prevIndex bakılır)
+        Carousel.init('trains');
+        Carousel.init('upgrades');
+    }, 150);
+});
+
+window.closeMarket = function() {
     document.getElementById("marketScreen").classList.add("hidden");
     document.getElementById("startScreen").classList.remove("hidden");
     let mC = document.getElementById("menuCoinDisplay");
@@ -224,41 +493,143 @@ window.closeStoryMenu = function() {
     document.getElementById("startScreen").classList.remove("hidden");
 };
 
+<<<<<<< HEAD
 window.buyNitro = function() {
     if (totalCoins >= 800 && !trainUpgrades['nitro_system']) {
+=======
+function triggerInsufficientFunds() {
+    let balanceDiv = document.querySelector('.market-balance');
+    if (balanceDiv) {
+        balanceDiv.classList.remove('shake-red');
+        void balanceDiv.offsetWidth;
+        balanceDiv.classList.add('shake-red');
+        // Animasyon biter bitmez sınıfı kaldır (1.4s = flash duration)
+        setTimeout(() => balanceDiv.classList.remove('shake-red'), 1500);
+    }
+
+    if (navigator.vibrate) navigator.vibrate([50, 60, 50, 60, 50]);
+    playInsufficientFundsBeep();
+}
+
+window.buyNitro = function() {
+    if (trainUpgrades['nitro_system']) return false;
+
+    if (totalCoins >= 800) {
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
         totalCoins -= 800;
         trainUpgrades['nitro_system'] = true;
         saveMarketData();
         updateMarketUI();
         return true;
+<<<<<<< HEAD
     }
     return false;
 };
 
 function updateMarketUI() {
+=======
+    } else {
+        triggerInsufficientFunds();
+        return false;
+    }
+};
+
+window.buyTrain = function(trainId, price) {
+    if (ownedTrains.includes(trainId)) return false;
+
+    if (totalCoins >= price) {
+        totalCoins -= price;
+        ownedTrains.push(trainId);
+        saveMarketData();
+        updateMarketUI();
+        return true;
+    } else {
+        triggerInsufficientFunds();
+        return false;
+    }
+}
+
+window.buyUpgrade = function(trainId, price) {
+    let upgradeKey = trainId + "_brake";
+
+    if (trainUpgrades[upgradeKey]) return false;
+
+    if (totalCoins < price) {
+        triggerInsufficientFunds();
+        return false;
+    }
+    if (!ownedTrains.includes(trainId)) return false;
+
+    totalCoins -= price;
+    trainUpgrades[upgradeKey] = true;
+    saveMarketData();
+    updateMarketUI();
+    return true;
+}
+
+// --- market kodunun tamamı ---
+window.updateMarketUI = function() {
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
     let mD = document.getElementById("marketCoinDisplay");
     if (mD) mD.innerText = totalCoins;
 
     const setBtnState = (selector, isSelected, isOwned, price) => {
         let btn = document.querySelector(selector);
         if (!btn) return;
+        btn.disabled = false;
+        btn.style.border = "none";
+        
         if (isSelected) {
             btn.innerText = "SEÇİLDİ";
-            btn.style.background = "#00ff88";
+            btn.style.background = "#ff6600";
             btn.style.color = "#000";
         } else if (isOwned) {
             btn.innerText = "SEÇ";
-            btn.style.background = "rgba(0, 255, 136, 0.1)";
-            btn.style.color = "#00ff88";
+            btn.style.background = "rgba(255, 102, 0, 0.1)";
+            btn.style.color = "#ff6600";
         } else {
             btn.innerText = price + " 💰";
-            btn.style.background = "rgba(0, 255, 136, 0.1)";
-            btn.style.color = "#00ff88";
+            let numPrice = parseInt(price);
+            if (totalCoins >= numPrice) {
+                btn.style.background = "rgba(255, 102, 0, 0.1)";
+                btn.style.color = "#ff6600";
+            } else {
+                btn.style.background = "rgba(255, 255, 255, 0.05)";
+                btn.style.color = "#888888";
+                btn.style.border = "1px solid rgba(255, 255, 255, 0.1)";
+            }
+        }
+    };
+
+    const setupUpgradeBtn = (selector, isOwned, priceStr) => {
+        let upBtn = document.querySelector(selector + " button");
+        if (!upBtn) return;
+        upBtn.disabled = false;
+        upBtn.style.border = "none";
+
+        if (isOwned) {
+            upBtn.innerText = "AKTİF";
+            upBtn.disabled = true;
+            upBtn.style.background = "transparent";
+            upBtn.style.color = "#888";
+            upBtn.style.border = "1px solid #555";
+        } else {
+            upBtn.innerText = priceStr + " 💰";
+            let numPrice = parseInt(priceStr);
+            if (totalCoins >= numPrice) {
+                upBtn.style.background = "rgba(255, 102, 0, 0.1)";
+                upBtn.style.color = "#ff6600";
+            } else {
+                upBtn.style.background = "rgba(255, 255, 255, 0.05)";
+                upBtn.style.color = "#888888";
+                upBtn.style.border = "1px solid rgba(255, 255, 255, 0.1)";
+            }
         }
     };
 
     setBtnState("#card-speedster button", activeTrain === 'speedster', ownedTrains.includes('speedster'), "3000");
     setBtnState("#card-armored button", activeTrain === 'armored', ownedTrains.includes('armored'), "5000");
+<<<<<<< HEAD
     setBtnState("#tab-trains .item-card:nth-child(1) button", activeTrain === 'classic', true, "");
 
     let upCls = document.querySelector("#upgrade-classic button");
@@ -302,33 +673,19 @@ function updateMarketUI() {
             upNit.disabled = false;
         }
     }
+=======
+    setBtnState("#card-devoria button", activeTrain === 'devoria', ownedTrains.includes('devoria'), "10000");
+    setBtnState("#card-tsunami button", activeTrain === 'tsunami', ownedTrains.includes('tsunami'), "6000");
+    setBtnState("#card-cyber button", activeTrain === 'cyber', ownedTrains.includes('cyber'), "7500");
+    setBtnState("#card-classic button", activeTrain === 'classic', true, "0");
+
+    setupUpgradeBtn("#upgrade-classic", trainUpgrades['classic_brake'], "2000");
+    setupUpgradeBtn("#upgrade-speedster", trainUpgrades['speedster_brake'], "2500");
+    setupUpgradeBtn("#upgrade-nitro", trainUpgrades['nitro_system'], "800");
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
 }
 
-let tunnelsBack, tunnelsFront;
-
-function buyTrain(trainId, price) {
-    if (totalCoins >= price && !ownedTrains.includes(trainId)) {
-        totalCoins -= price;
-        ownedTrains.push(trainId);
-        saveMarketData();
-        return true;
-    }
-    return false;
-}
-
-function buyUpgrade(trainId, price) {
-    let upgradeKey = trainId + "_brake";
-    if (totalCoins >= price && ownedTrains.includes(trainId) && !trainUpgrades[upgradeKey]) {
-        totalCoins -= price;
-        trainUpgrades[upgradeKey] = true;
-        saveMarketData();
-        updateMarketUI();
-        return true;
-    }
-    return false;
-}
-
-function selectTrain(trainId) {
+window.selectTrain = function(trainId) {
     if (ownedTrains.includes(trainId)) {
         activeTrain = trainId;
         saveMarketData();
@@ -340,8 +697,15 @@ function selectTrain(trainId) {
 }
 
 let isPaused = false;
-
-function pauseGame(e) {
+let isStoryMode = false;
+let storyProgress = 0;
+let isLevelComplete = false;
+let progressBarBg, progressBarFill, progressText;
+let storyEventsFired = {};
+let storyBrakeOverheated = false;
+let storyStartTime = 0;
+let storyPauseStart = 0; // Pause başlangıç timestamp'i — duraklamada geçen süre 3-yıldız hesabında sayılmaz
+window.pauseGame = function(e) {
     if (e) {
         e.preventDefault();
         e.stopPropagation();
@@ -349,25 +713,48 @@ function pauseGame(e) {
     if (!game || !gameStarted || isGameOver || isPaused) return;
 
     isPaused = true;
+    storyPauseStart = Date.now();
     game.scene.pause('PlayScene');
+<<<<<<< HEAD
     if (gameScene && gameScene.playerTrainSnd) gameScene.playerTrainSnd.pause(); 
+=======
+    if (gameScene && gameScene.playerTrainSnd) gameScene.playerTrainSnd.pause();
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
     document.getElementById("pauseScreen").classList.remove("hidden");
     document.getElementById("pauseBtn").classList.add("hidden");
 }
 
-function resumeGame(e) {
+window.resumeGame = function(e) {
     if (e) e.stopPropagation();
     if (!isPaused) return;
     isPaused = false;
+    // Pause süresince geçen wall-clock süresini storyStartTime'a aktar —
+    // 3-yıldız zaman sınırı sadece aktif oynanan süreyi sayar.
+    if (storyPauseStart > 0) {
+        storyStartTime += (Date.now() - storyPauseStart);
+        storyPauseStart = 0;
+    }
     game.scene.resume('PlayScene');
+<<<<<<< HEAD
     if (gameScene && gameScene.playerTrainSnd) gameScene.playerTrainSnd.resume(); 
+=======
+    if (gameScene && gameScene.playerTrainSnd) gameScene.playerTrainSnd.resume();
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
     document.getElementById("pauseScreen").classList.add("hidden");
     document.getElementById("pauseBtn").classList.remove("hidden");
 }
 
-function quitToMenuFromPause(e) {
+window.quitToMenuFromPause = function(e) {
     if (e) e.stopPropagation();
-    resumeGame();
+    // Pause durumunu doğrudan toparla — resumeGame() çağırmak pause butonunu
+    // bir an görünür yapıp returnToMenu'nün tekrar gizlemesine yol açıyordu.
+    if (isPaused) {
+        isPaused = false;
+        storyPauseStart = 0;
+        if (game && game.scene.isPaused('PlayScene')) game.scene.resume('PlayScene');
+        if (gameScene && gameScene.playerTrainSnd) gameScene.playerTrainSnd.resume();
+        document.getElementById("pauseScreen").classList.add("hidden");
+    }
     returnToMenu();
 }
 
@@ -393,7 +780,11 @@ function showFloatingText(x, y, message, colorStr) {
 let train, graphics, scoreText, phaseText, vagonText, obstacles;
 let switchBase, switchHandle, headlight, headlineCore, farGlow;
 let itemGraphic, itemType = 0;
+<<<<<<< HEAD
 let trainShieldCircle, backgroundGroup, bulldozerAura, midgroundGroup; 
+=======
+let trainShieldCircle, backgroundGroup, bulldozerAura, midgroundGroup;
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
 let farMountains, midTrees, solidGround;
 let brakeBtnObj, brakeBtnText, brakeBarBg, brakeBarFill;
 let isBraking = false, brakeHeat = 0, brakeCooldown = false, chillTimer = 0;
@@ -404,6 +795,11 @@ let phase = 1, currentPath, pathIndex = 0;
 let baseSpeed = 2.5, speed = baseSpeed, maxSpeed = 12;
 let switchState = 0, correctPathIndex = 0, lockedChoice = null;
 let score = 0, isGameOver = false, gameStarted = false, hasShield = false;
+<<<<<<< HEAD
+=======
+let localBestScore = parseInt(localStorage.getItem('sm_bestScore')) || 0;
+let targetRecord = 0, isRecordBroken = false;
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
 let bulldozerTimer = 0;
 let pulse = 0, currentAngle = 0;
 let smokeParticles = [], sparkParticles = [], explosionParticles = [], nitroParticles = [];
@@ -416,6 +812,20 @@ let yhtTrainGroup = [];
 let armoredTrainGroup = [];
 let metalShieldBase, metalShieldSpike1, metalShieldSpike2, metalShieldCrack;
 let shieldDurability = 0;
+let devoriaTrainGroup = [];
+let tsunamiTrainGroup = [];
+let cyberTrainGroup   = [];
+let devoriaLives      = 0;
+let driftBoostTimer   = 0;
+let devoriaEmbers     = [];
+let cyberDriftParts   = [];
+let tunnelsBack, tunnelsFront;
+let isStoryMode2 = false;
+let story2Progress = 0;
+let story2Phase = 0;
+let story2EventsFired = {};
+let story2BrakeOverheat = false;
+let brakeBlastPenaltyTimer = 0;
 
 const p1Top = [ { x: -150, y: 300 }, { x: 300, y: 300 }, { x: 500, y: 200 }, { x: 1000, y: 200 } ];
 const p1Bot = [ { x: -150, y: 300 }, { x: 300, y: 300 }, { x: 500, y: 400 }, { x: 1000, y: 400 } ];
@@ -428,6 +838,10 @@ function applyTrainVisuals() {
     classicTrainGroup.forEach(p => p.setVisible(activeTrain === 'classic'));
     yhtTrainGroup.forEach(p => p.setVisible(activeTrain === 'speedster'));
     armoredTrainGroup.forEach(p => p.setVisible(activeTrain === 'armored'));
+    devoriaTrainGroup.forEach(p => p.setVisible(activeTrain === 'devoria'));
+    tsunamiTrainGroup.forEach(p => p.setVisible(activeTrain === 'tsunami'));
+    cyberTrainGroup  .forEach(p => p.setVisible(activeTrain === 'cyber'));
+    syncDevoriaHUD();
 
     if (activeTrain === 'armored') {
         if (shieldDurability === 2) {
@@ -451,6 +865,16 @@ function applyTrainVisuals() {
 
 function create() {
     gameScene = this;
+<<<<<<< HEAD
+=======
+    let gw = this.cameras.main.width;
+
+    p1Top[3].x = gw + 50;
+    p1Bot[3].x = gw + 50;
+    p2Top[3].x = gw + 50;
+    p2Mid[3].x = gw + 50;
+    p2Bot[3].x = gw + 50;
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
     if (typeof globalVolume !== 'undefined') {
         gameScene.sound.volume = globalVolume;
     }
@@ -460,8 +884,8 @@ function create() {
     obstacles = this.physics.add.group();
     this.add.circle(600, 100, 30, 0xffeb3b).setDepth(0);
 
-    gameScene.overlaySunset = this.add.rectangle(400, 300, 2000, 600, 0xfc7b03).setDepth(0.1).setAlpha(0);
-    gameScene.overlayNight = this.add.rectangle(400, 300, 2000, 600, 0x111122).setDepth(0.2).setAlpha(0);
+    gameScene.overlaySunset = this.add.rectangle(gw/2, 300, gw + 2000, 1500, 0xfc7b03).setDepth(0.1).setAlpha(0);
+    gameScene.overlayNight = this.add.rectangle(gw/2, 300, gw + 2000, 1500, 0x111122).setDepth(0.2).setAlpha(0);
 
     tunnelsBack = this.add.graphics().setDepth(9);
     tunnelsFront = this.add.graphics().setDepth(11);
@@ -487,10 +911,10 @@ function create() {
             tunnelsBack.lineTo(x + radInner, groundY);
             tunnelsBack.fillPath();
 
-            let rx = isRightSide ? x : 0;
-            let rw = isRightSide ? (1000 - x) : x;
+            let tunnelGw = gameScene ? gameScene.cameras.main.width : 1000;
+            let rx = isRightSide ? x : -500;
+            let rw = isRightSide ? (tunnelGw + 500 - x) : (x + 500);
             tunnelsBack.fillRect(rx, archY - radInner, rw, radInner + (groundY - archY));
-
             tunnelsBack.fillStyle(0x5a5a5a, 1);
             tunnelsBack.lineStyle(3, 0x111111);
             tunnelsBack.beginPath();
@@ -560,13 +984,14 @@ function create() {
         };
 
         drawPipe(30, 300, false);
+        let endX = (gameScene ? gameScene.cameras.main.width : 1000) - 30;
         if (phase === 1) {
-            drawPipe(970, 200, true);
-            drawPipe(970, 400, true);
+            drawPipe(endX, 200, true);
+            drawPipe(endX, 400, true);
         } else {
-            drawPipe(970, 150, true);
-            drawPipe(970, 300, true);
-            drawPipe(970, 450, true);
+            drawPipe(endX, 150, true);
+            drawPipe(endX, 300, true);
+            drawPipe(endX, 450, true);
         }
     };
     window.refreshTunnels();
@@ -584,7 +1009,7 @@ function create() {
     mountainTex.fillPath();
     mountainTex.closePath();
     mountainTex.generateTexture('farMnt', 600, 300);
-    farMountains = this.add.tileSprite(400, 450, 2000, 300, 'farMnt').setOrigin(0.5, 0.5).setDepth(1);
+    farMountains = this.add.tileSprite(gw/2, 450, gw + 1000, 300, 'farMnt').setOrigin(0.5, 0.5).setDepth(1);
 
     let treeTex = this.make.graphics({ x: 0, y: 0, add: false });
     treeTex.fillStyle(0x1a713b, 1);
@@ -595,8 +1020,10 @@ function create() {
     treeTex.fillPath();
     treeTex.closePath();
     treeTex.generateTexture('midTree', 60, 60);
-    midTrees = this.add.tileSprite(400, 560, 2000, 60, 'midTree').setOrigin(0.5, 0.5).setDepth(2);
-    solidGround = this.add.rectangle(400, 590, 2000, 20, 0x114a24).setDepth(2.5);
+    midTrees = this.add.tileSprite(gw/2, 560, gw + 2000, 60, 'midTree').setOrigin(0.5, 0.5).setDepth(2);
+    solidGround = this.add.rectangle(gw/2, 590, gw + 2000, 20, 0x114a24).setDepth(2.5);
+    this.add.rectangle(gw/2, 700, gw + 2000, 200, 0x3d2817).setDepth(2.5);
+    this.add.rectangle(gw/2, 950, gw + 2000, 300, 0x222222).setDepth(2.5);
 
     itemGraphic = this.add.container(0, 0).setDepth(8);
     let cOutline = this.add.circle(0, 0, 18, 0xffffff, 0.3);
@@ -715,15 +1142,81 @@ function create() {
     armoredTrainGroup.push(arBodyLower, arBodyUpper, arCabin, arWindow, arFront, arChimney, arStripe, metalShieldBase, metalShieldSpike1, metalShieldSpike2, metalShieldCrack);
 
     train.add([...classicTrainGroup, ...yhtTrainGroup, ...armoredTrainGroup]);
+
+    let dvBodyLow = this.add.rectangle(0, 8, 64, 14, 0x1a0000);
+    let dvBodyTop = this.add.rectangle(0,-3, 64, 16, 0x3d0000);
+    let dvCabin   = this.add.rectangle(-16,-15, 24, 16, 0x200000).setStrokeStyle(1, 0x000000);
+    let dvWindow  = this.add.rectangle(-16,-15, 12,  8, 0xff2200);
+    let dvMaw     = this.add.graphics();
+    dvMaw.fillStyle(0x660000); dvMaw.beginPath();
+    dvMaw.moveTo(22,-12); dvMaw.lineTo(40,0); dvMaw.lineTo(22,12);
+    dvMaw.closePath(); dvMaw.fillPath();
+    dvMaw.fillStyle(0xff5500,0.9); dvMaw.fillCircle(40,0,5);
+    let dvCrack   = this.add.graphics();
+    dvCrack.lineStyle(1,0xff5500,0.75); dvCrack.beginPath();
+    dvCrack.moveTo(6,-8); dvCrack.lineTo(11,-2); dvCrack.lineTo(9,6);
+    dvCrack.strokePath();
+    let dvStripe  = this.add.rectangle(0, 1, 64, 2, 0xff2200);
+    let dvStack   = this.add.rectangle(18,-15, 8,12, 0x0d0000);
+    devoriaTrainGroup.push(dvBodyLow,dvBodyTop,dvCabin,dvWindow,dvMaw,dvCrack,dvStripe,dvStack);
+
+    let tsBodyLow = this.add.rectangle(0, 8, 64, 14, 0x0a1a2a);
+    let tsBodyTop = this.add.rectangle(0,-3, 64, 16, 0x0e2d4a);
+    let tsCabin   = this.add.rectangle(-16,-15, 24, 16, 0x071525).setStrokeStyle(1, 0x0a3060);
+    let tsWindow  = this.add.rectangle(-16,-15, 12,  8, 0x00ccff);
+    let tsBow     = this.add.triangle(36, 0, -9,-10, 9,0, -9,10, 0x1a6080);
+    let tsWave    = this.add.graphics();
+    tsWave.lineStyle(2, 0x00ccff, 0.85); tsWave.beginPath();
+    tsWave.moveTo(-28, 4);
+    for (let wx = 0; wx <= 56; wx += 4) {
+        tsWave.lineTo(-28 + wx, 4 + Math.sin((wx / 4) * Math.PI) * 2.5);
+    }
+    tsWave.strokePath();
+    let tsFoam = this.add.rectangle(30, 0, 8, 16, 0x1a4a6a);
+    tsunamiTrainGroup.push(tsBodyLow,tsBodyTop,tsCabin,tsWindow,tsBow,tsWave,tsFoam);
+
+    let cyBodyLow = this.add.rectangle(0, 8, 64, 14, 0x0a0a0a);
+    let cyBodyTop = this.add.rectangle(0,-3, 64, 16, 0x111111);
+    let cyCabin   = this.add.rectangle(-16,-15, 24, 16, 0x080808).setStrokeStyle(1, 0x00ffff);
+    let cyVisor   = this.add.rectangle(-16,-15, 12,  6, 0x001a1a);
+    let cyFront   = this.add.graphics();
+    cyFront.fillStyle(0x111111); cyFront.fillRect(22,-11,16,22);
+    cyFront.lineStyle(2, 0x00ffff); cyFront.strokeRect(22,-11,16,22);
+    let cyLed     = this.add.rectangle(35, 0, 4, 10, 0x00ffff);
+    let cyNeonT   = this.add.rectangle(0,-12, 64, 2, 0x00ffff);
+    let cyNeonB   = this.add.rectangle(0,  5, 64, 2, 0xff00cc);
+    cyberTrainGroup.push(cyBodyLow,cyBodyTop,cyCabin,cyVisor,cyFront,cyLed,cyNeonT,cyNeonB);
+
+    train.add([...devoriaTrainGroup, ...tsunamiTrainGroup, ...cyberTrainGroup]);
     applyTrainVisuals();
 
     switchBase = this.add.rectangle(300, 300, 14, 60, 0x555555).setDepth(6);
     switchHandle = this.add.circle(300, 280, 10, 0xff0000).setStrokeStyle(1, 0x000).setDepth(7);
-    scoreText = this.add.text(20, 20, "Skor: 0", { fontSize: "32px", fill: "#ffaa00", fontStyle: "bold", stroke: '#000', strokeThickness: 6 }).setDepth(100);
-    phaseText = this.add.text(400, 250, "🎟️ ANA HAT KİLİDİ AÇILDI 🎟️\n🔥 3. ŞERİT AKTİF 🔥", { fontSize: "38px", fill: "#ff3300", fontStyle: "bold", align: "center", stroke: "#ffffff", strokeThickness: 6 }).setOrigin(0.5).setDepth(100);
+   scoreText = this.add.text(30, 25, "🏆 0", {
+        fontFamily: "'Poppins', sans-serif",
+        fontSize: "26px",
+        fill: "#ffffff",
+        fontStyle: "700",
+        shadow: { offsetX: 0, offsetY: 4, color: 'rgba(0,0,0,0.4)', blur: 6, stroke: false, fill: true }
+    }).setDepth(100);
+
+    progressBarBg = this.add.rectangle(gw / 2, 40, 300, 20, 0x222222).setDepth(150).setStrokeStyle(2, 0xffffff);
+    progressBarFill = this.add.rectangle(gw / 2 - 150, 40, 0, 20, 0x00ff88).setOrigin(0, 0.5).setDepth(150);
+    progressText = this.add.text(gw / 2, 40, "%0", {
+        fontFamily: "'Poppins', sans-serif",
+        fontSize: '14px',
+        fill: '#ffffff',
+        fontStyle: 'bold'
+    }).setOrigin(0.5).setDepth(150);
+
+    progressBarBg.setVisible(false);
+    progressBarFill.setVisible(false);
+    progressText.setVisible(false);
+    phaseText = this.add.text(gw/2, 250, "🎟️ ANA HAT KİLİDİ AÇILDI 🎟️\n🔥 3. ŞERİT AKTİF 🔥", { fontSize: "38px", fill: "#ff3300", fontStyle: "bold", align: "center", stroke: "#ffffff", strokeThickness: 6 }).setOrigin(0.5).setDepth(100);
     phaseText.setVisible(false);
-    vagonText = this.add.text(400, 200, "🚂 YENİ VAGON EKLENDİ 🚂", { fontSize: "32px", fill: "#00ffff", fontStyle: "bold", align: "center", stroke: "#000", strokeThickness: 6 }).setOrigin(0.5).setDepth(100);
+    vagonText = this.add.text(gw/2, 200, "🚂 YENİ VAGON EKLENDİ 🚂", { fontSize: "32px", fill: "#00ffff", fontStyle: "bold", align: "center", stroke: "#000", strokeThickness: 6 }).setOrigin(0.5).setDepth(100);
     vagonText.setVisible(false);
+<<<<<<< HEAD
     
     brakeBarBg = this.add.rectangle(900, 490, 120, 15, 0x222222).setOrigin(0.5).setStrokeStyle(2, 0xffffff).setDepth(100);
     brakeBarFill = this.add.rectangle(840, 490, 0, 15, 0xffeb3b).setOrigin(0, 0.5).setDepth(100);
@@ -733,6 +1226,17 @@ function create() {
     nitroBarBg.setVisible(false);
     nitroBarFill.setVisible(false);
 
+=======
+
+    brakeBarBg = this.add.rectangle(gw - 100, 490, 120, 15, 0x222222).setOrigin(0.5).setStrokeStyle(2, 0xffffff).setDepth(100);
+    brakeBarFill = this.add.rectangle(gw - 160, 490, 0, 15, 0xffeb3b).setOrigin(0, 0.5).setDepth(100);
+
+    nitroBarBg = this.add.rectangle(100, 490, 120, 15, 0x222222).setOrigin(0.5).setStrokeStyle(2, 0xffffff).setDepth(100);
+    nitroBarFill = this.add.rectangle(40, 490, 0, 15, 0x00ccff).setOrigin(0, 0.5).setDepth(100);
+    nitroBarBg.setVisible(false);
+    nitroBarFill.setVisible(false);
+
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
     let btnGraphics = this.make.graphics({ x: 0, y: 0, add: false });
     btnGraphics.fillStyle(0x1a1a1a, 0.8);
     btnGraphics.fillRoundedRect(0, 0, 140, 60, 30);
@@ -771,6 +1275,7 @@ function create() {
     btnGraphics.strokeRoundedRect(0, 0, 140, 60, 30);
     btnGraphics.generateTexture('btnNitroCooldown', 140, 60);
 
+<<<<<<< HEAD
     brakeBtnObj = this.add.image(900, 540, 'btnIdle').setInteractive().setDepth(100);
     brakeBtnText = this.add.text(900, 540, "FREN", { 
     fontFamily: 'system-ui, -apple-system, sans-serif', 
@@ -781,6 +1286,18 @@ function create() {
     nitroBtnText = this.add.text(100, 540, "NİTRO", { 
         fontFamily: 'system-ui, -apple-system, sans-serif', 
         fontSize: '20px', fontStyle: 'bold', color: '#00ccff', letterSpacing: 2 
+=======
+    brakeBtnObj = this.add.image(gw - 100, 540, 'btnIdle').setInteractive().setDepth(100);
+    brakeBtnText = this.add.text(gw - 100, 540, "FREN", {
+    fontFamily: 'system-ui, -apple-system, sans-serif',
+    fontSize: '20px', fontStyle: 'bold', color: '#ff3333', letterSpacing: 2
+    }).setOrigin(0.5).setDepth(100);
+
+    nitroBtnObj = this.add.image(100, 540, 'btnNitroIdle').setInteractive().setDepth(100);
+    nitroBtnText = this.add.text(100, 540, "NİTRO", {
+        fontFamily: 'system-ui, -apple-system, sans-serif',
+        fontSize: '20px', fontStyle: 'bold', color: '#00ccff', letterSpacing: 2
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
     }).setOrigin(0.5).setDepth(100);
     nitroBtnObj.setVisible(false);
     nitroBtnText.setVisible(false);
@@ -858,7 +1375,8 @@ function create() {
     this.input.keyboard.on('keyup-SHIFT', stopNitro);
 
     this.input.on("pointerdown", (pointer, currentlyOver) => {
-        if (!gameStarted || isGameOver || isPaused || currentlyOver.length > 0) return;
+        let safeZoneY = gameScene.cameras.main.height - 120;
+        if (!gameStarted || isGameOver || isPaused || currentlyOver.length > 0 || pointer.y > safeZoneY) return;
 
         playSound('switch');
         if (navigator.vibrate) navigator.vibrate(40);
@@ -868,7 +1386,7 @@ function create() {
         if (pathIndex === 1 && distToSwitch > 0 && distToSwitch < 60 && !perfectUsed) {
             perfectUsed = true;
             score += 2;
-            scoreText.setText("Skor: " + score);
+            scoreText.setText("🏆 " + score);
             playSound('perfect');
             showFloatingText(train.x, train.y - 40, "KUSURSUZ! +2", "#00ffff");
             starEmitter.emitParticleAt(train.x, train.y, 20);
@@ -880,6 +1398,12 @@ function create() {
         } else {
             switchState = (switchState + 1) % 3;
             this.tweens.add({ targets: switchHandle, y: (275 + (switchState * 25)), duration: 100 });
+        }
+
+        if (activeTrain === 'cyber' && gameStarted && !isGameOver && !isPaused) {
+            driftBoostTimer = 95;
+            showFloatingText(train.x, train.y - 44, "DRIFT! ⚡", "#00ffff");
+            gameScene.cameras.main.flash(90, 0, 255, 255);
         }
     });
 
@@ -899,6 +1423,7 @@ function setNewCorrectPath() {
     }
 }
 
+<<<<<<< HEAD
 function handleCollision(obs) {
     if (obs.sound) obs.sound.stop();
     if (bulldozerTimer > 0) {
@@ -913,26 +1438,64 @@ function handleCollision(obs) {
         return;
     }
     
+=======
+// Çarpışma absorbsiyon mantığı — kalkan/zırh/devoria/gameover branching'i tek noktadan.
+// Döndürür: 'shield' | 'armored' | 'devoria' | 'gameover'
+function absorbHit() {
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
     if (hasShield) {
         playSound('shield_break');
         if (navigator.vibrate) navigator.vibrate(100);
         hasShield = false;
         showFloatingText(train.x, train.y - 40, "ZIRH KIRILDI!", "#ff4444");
-        createExplosion(obs.x, obs.y);
-        obs.destroy();
         gameScene.cameras.main.shake(200, 0.015);
-    } else if (activeTrain === 'armored' && shieldDurability > 0) {
+        return 'shield';
+    }
+    if (activeTrain === 'armored' && shieldDurability > 0) {
         shieldDurability--;
         playSound('shield_break');
         if (navigator.vibrate) navigator.vibrate(100);
         showFloatingText(train.x, train.y - 40, "ZIRH HASAR ALDI!", "#ff4444");
-        createExplosion(obs.x, obs.y);
-        obs.destroy();
         gameScene.cameras.main.shake(200, 0.015);
         applyTrainVisuals();
-    } else {
-        triggerGameOver();
+        return 'armored';
     }
+    if (activeTrain === 'devoria' && devoriaLives > 0) {
+        devoriaLives--;
+        playSound('shield_break');
+        if (navigator.vibrate) navigator.vibrate([80, 40, 80]);
+        showFloatingText(train.x, train.y - 42, "CAN −1! 💀", "#ff3300");
+        gameScene.cameras.main.shake(260, 0.018);
+        gameScene.cameras.main.flash(180, 200, 0, 0);
+        triggerOrbLoss(3 - devoriaLives);
+        syncDevoriaHUD();
+        applyTrainVisuals();
+        return 'devoria';
+    }
+    triggerGameOver();
+    return 'gameover';
+}
+
+function handleCollision(obs) {
+    if (obs.sound) obs.sound.stop();
+    if (bulldozerTimer > 0) {
+        playSound('explosion');
+        if (navigator.vibrate) navigator.vibrate(50);
+        showFloatingText(obs.x, obs.y - 40, "PARÇALANDI! +5", "#ff4400");
+        createExplosion(obs.x, obs.y);
+        obs.destroy();
+        score += 5;
+        if (scoreText) scoreText.setText("🏆 " + score);
+        gameScene.cameras.main.shake(100, 0.01);
+        return;
+    }
+
+    const result = absorbHit();
+    if (result === 'gameover') return;
+
+    if (result === 'devoria') createDevoriaExplosion(obs.x, obs.y);
+    else createExplosion(obs.x, obs.y);
+    obs.destroy();
 }
 
 function createWagon() {
@@ -955,6 +1518,39 @@ function createWagon() {
         let w1 = gameScene.add.circle(-15, 12, 6, 0x111).setStrokeStyle(1, 0x000);
         let w2 = gameScene.add.circle(15, 12, 6, 0x111).setStrokeStyle(1, 0x000);
         w.add([base, body, roof, w1, w2, window1, window2]);
+    } else if (activeTrain === 'devoria') {
+        let base  = gameScene.add.rectangle(0, 5, 50, 14, 0x1a0000);
+        let body  = gameScene.add.rectangle(0,-5, 48, 16, 0x3d0000);
+        let roof  = gameScene.add.rectangle(0,-15, 50, 6, 0x1f0000);
+        let crack = gameScene.add.graphics();
+        crack.lineStyle(1, 0xff3300, 0.65);
+        crack.beginPath(); crack.moveTo(-8,-8); crack.lineTo(-3,0); crack.lineTo(-6,8);
+        crack.strokePath();
+        let glow  = gameScene.add.rectangle(0, 1, 50, 2, 0xff2200);
+        let w1    = gameScene.add.circle(-15,12,6,0x0d0000).setStrokeStyle(1,0x330000);
+        let w2    = gameScene.add.circle( 15,12,6,0x0d0000).setStrokeStyle(1,0x330000);
+        w.add([base,body,roof,crack,glow,w1,w2]);
+    } else if (activeTrain === 'tsunami') {
+        let base  = gameScene.add.rectangle(0, 5, 50, 14, 0x0a1a2a);
+        let body  = gameScene.add.rectangle(0,-5, 48, 16, 0x0e2d4a);
+        let roof  = gameScene.add.rectangle(0,-15, 50, 6, 0x0a1a2a);
+        let wl    = gameScene.add.rectangle(-10,-5, 12, 8, 0x00ccff);
+        let wr    = gameScene.add.rectangle( 10,-5, 12, 8, 0x00ccff);
+        let wave  = gameScene.add.rectangle(0, 4, 50, 2, 0x00ccff);
+        let w1    = gameScene.add.circle(-15,12,6,0x071525).setStrokeStyle(1,0x0a3060);
+        let w2    = gameScene.add.circle( 15,12,6,0x071525).setStrokeStyle(1,0x0a3060);
+        w.add([base,body,roof,w1,w2,wl,wr,wave]);
+    } else if (activeTrain === 'cyber') {
+        let base  = gameScene.add.rectangle(0, 5, 50, 14, 0x0a0a0a);
+        let body  = gameScene.add.rectangle(0,-5, 48, 16, 0x111111);
+        let roof  = gameScene.add.rectangle(0,-15, 50, 6, 0x0a0a0a);
+        let wl    = gameScene.add.rectangle(-10,-5, 12, 8, 0x001a1a);
+        let wr    = gameScene.add.rectangle( 10,-5, 12, 8, 0x001a1a);
+        let nt    = gameScene.add.rectangle(0,-12, 50, 2, 0x00ffff);
+        let nb    = gameScene.add.rectangle(0,  4, 50, 2, 0xff00cc);
+        let w1    = gameScene.add.circle(-15,12,6,0x080808).setStrokeStyle(1,0x00ffff);
+        let w2    = gameScene.add.circle( 15,12,6,0x080808).setStrokeStyle(1,0x00ffff);
+        w.add([base,body,roof,w1,w2,wl,wr,nt,nb]);
     } else {
         let base = gameScene.add.rectangle(0, 5, 50, 14, 0x111111);
         let body = gameScene.add.rectangle(0, -5, 48, 16, 0x2c3e50);
@@ -1002,6 +1598,7 @@ function updateNitroFlames() {
 
 function update() {
     if (!gameStarted || isGameOver || isPaused) return;
+<<<<<<< HEAD
     
 
     if (gameScene && gameScene.playerTrainSnd && gameScene.playerTrainSnd.isPlaying) {
@@ -1009,6 +1606,59 @@ function update() {
         gameScene.playerTrainSnd.setRate(pitchRate);
     }
 
+=======
+
+    if (isLevelComplete) {
+        speed -= 0.08 * gameTime.scale;
+        if (speed < 0) speed = 0;
+        isNitro = false;
+        isBraking = false;
+    }
+
+   if (isStoryMode && !isLevelComplete) {
+        storyProgress += (speed * 0.012) * gameTime.scale;
+
+        if (!storyEventsFired['e30'] && storyProgress >= 30) {
+            storyEventsFired['e30'] = true;
+            showStoryEventBanner('⚠️', 'Demiryolunda çalışma ekibi! Dikkat!', 'danger');
+        }
+        if (!storyEventsFired['e65'] && storyProgress >= 65) {
+            storyEventsFired['e65'] = true;
+            showStoryEventBanner('🚉', 'Son durak yaklaşıyor, hızlan!', 'success');
+        }
+        if (!storyEventsFired['e85'] && storyProgress >= 85) {
+            storyEventsFired['e85'] = true;
+            showStoryEventBanner('🔴', 'Acil fren bölgesi! Yavaşla!', 'danger');
+        }
+
+        if (storyProgress >= 100) {
+            storyProgress = 100;
+            triggerLevelComplete();
+        }
+
+        progressBarFill.width = (storyProgress / 100) * 300;
+        progressText.setText("%" + Math.floor(storyProgress));
+
+        if (storyProgress > 75) progressBarFill.fillColor = 0x00ff88;
+        else if (storyProgress > 40) progressBarFill.fillColor = 0xffd700;
+        else progressBarFill.fillColor = 0xffaa00;
+    }
+    if (isStoryMode2 && !isLevelComplete) {
+    updateStory2Logic(gameTime.scale);
+}
+if (isStoryMode2 && brakeBlastPenaltyTimer > 0) {
+    brakeBlastPenaltyTimer -= gameTime.scale;
+    speed = Math.max(speed - 0.06 * gameTime.scale, 0.8);
+}
+
+    if (gameScene && gameScene.playerTrainSnd && gameScene.playerTrainSnd.isPlaying) {
+        let pitchRate = 0.6 + (speed / maxSpeed) * 0.8;
+        gameScene.playerTrainSnd.setRate(pitchRate);
+    }
+
+    let targetZoom = 1.0 - (0.15 * (speed / maxSpeed));
+    gameScene.cameras.main.zoom += (targetZoom - gameScene.cameras.main.zoom) * 0.05 * gameTime.scale;
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
 
     farMountains.tilePositionX += 0.1 * (speed / baseSpeed) * gameTime.scale;
     midTrees.tilePositionX += 0.5 * (speed / baseSpeed) * gameTime.scale;
@@ -1034,7 +1684,7 @@ function update() {
         farGlow.setVisible(true);
     }
 
-    let targetWagonCount = Math.min(Math.floor(score / 20), 4);
+    let targetWagonCount = Math.min(Math.floor(score / 15), 4);
     if (trainWagons.length < targetWagonCount) {
         trainWagons.push(createWagon());
         playSound('ice');
@@ -1098,22 +1748,60 @@ function update() {
 
         if (bulldozerTimer <= 0) {
             bulldozerTimer = 0;
+<<<<<<< HEAD
             bulldozerAura.setVisible(false); 
         }
     }
 
     let baseHeatRate = 1.5;
+=======
+            bulldozerAura.setVisible(false);
+        }
+    }
+
+   let baseHeatRate = 1.5;
+   if (activeTrain === 'tsunami') baseHeatRate *= 0.38;
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
     let upgradeKey = activeTrain + "_brake";
+    if (driftBoostTimer > 0 && activeTrain === 'cyber') {
+        driftBoostTimer -= gameTime.scale;
+        if (!isBraking) speed = Math.min(maxSpeed + 3.5, speed + 0.45 * gameTime.scale);
+        spawnCyberDriftParts();
+    }
     if (trainUpgrades[upgradeKey]) {
         baseHeatRate = 0.8;
     }
 
+    if (chillTimer > 0) {
+        chillTimer -= gameTime.scale;
+
+        if (brakeHeat > 0) brakeHeat = 0;
+        if (nitroHeat > 0) nitroHeat = 0;
+        brakeCooldown = false;
+        nitroCooldown = false;
+
+        brakeBtnObj.setTexture(isBraking ? 'btnDown' : 'btnIdle');
+        brakeBtnText.setText("FREN");
+        brakeBtnText.setColor(isBraking ? '#ffffff' : '#ff3333');
+
+        if (trainUpgrades['nitro_system']) {
+            nitroBtnObj.setTexture(isNitro ? 'btnNitroDown' : 'btnNitroIdle');
+            nitroBtnText.setText("NİTRO");
+            nitroBtnText.setColor(isNitro ? '#ffffff' : '#00ccff');
+        }
+    }
+
     if (isBraking) {
         speed = 0.5;
-        brakeHeat += (baseHeatRate * gameTime.scale);
+        if (chillTimer <= 0) {
+            brakeHeat += (baseHeatRate * gameTime.scale);
+        }
         spawnBrakeSparks();
+
         if (brakeHeat >= 100) {
             brakeHeat = 100;
+             if (isStoryMode) storyBrakeOverheated = true;
+             if (isStoryMode2) story2BrakeOverheat = true;
             isBraking = false;
             brakeCooldown = true;
             brakeBtnObj.setTexture('btnCooldown');
@@ -1121,6 +1809,7 @@ function update() {
             brakeBtnText.setScale(1);
             brakeBtnText.setText("AŞIRI ISI");
             brakeBtnText.setColor('#888888');
+<<<<<<< HEAD
             playSound('shield_break');
         }
     } else if (isNitro && trainUpgrades['nitro_system']) {
@@ -1153,13 +1842,39 @@ function update() {
                 brakeBtnText.setText("FREN");
                 brakeBtnText.setColor('#ff3333');
             }
+=======
+            playSound('shield_break');
+        }
+    } else if (isNitro && trainUpgrades['nitro_system']) {
+        let tSpeed = baseSpeed + (score * 0.2) + 6.0;
+        if (activeTrain === 'speedster') tSpeed += 2;
+        speed = Math.min(maxSpeed + 4, tSpeed);
+
+        if (chillTimer <= 0) {
+            nitroHeat += (2.2 * gameTime.scale);
+        }
+        spawnNitroFlames();
+
+        if (nitroHeat >= 100) {
+            nitroHeat = 100;
+            isNitro = false;
+            nitroCooldown = true;
+            nitroBtnObj.setTexture('btnNitroCooldown');
+            nitroBtnObj.setScale(1);
+            nitroBtnText.setScale(1);
+            nitroBtnText.setText("AŞIRI ISI");
+            nitroBtnText.setColor('#888888');
+            playSound('shield_break');
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
         }
     } else {
+
         let tSpeed = baseSpeed + (score * 0.2);
         if (activeTrain === 'speedster') tSpeed += 2;
         let targetSpeed = Math.min(maxSpeed, tSpeed);
         speed += (targetSpeed - speed) * 0.1 * gameTime.scale;
-        if (brakeHeat > 0) {
+
+        if (brakeHeat > 0 && chillTimer <= 0) {
             brakeHeat -= (0.6 * gameTime.scale);
             if (brakeHeat <= 0) {
                 brakeHeat = 0;
@@ -1171,7 +1886,11 @@ function update() {
         }
     }
 
+<<<<<<< HEAD
     if (!isNitro && nitroHeat > 0) {
+=======
+    if (!isNitro && nitroHeat > 0 && chillTimer <= 0) {
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
         nitroHeat -= (1.2 * gameTime.scale);
         if (nitroHeat <= 0) {
             nitroHeat = 0;
@@ -1193,8 +1912,12 @@ function update() {
         else if (nitroHeat > 50) nitroBarFill.fillColor = 0x0066ff;
         else nitroBarFill.fillColor = 0x00ccff;
     }
+<<<<<<< HEAD
 
     if (itemGraphic.visible) {
+=======
+if (itemGraphic.visible) {
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
         itemGraphic.scale = 1 + Math.sin(pulse * 4) * 0.1;
         let cx = itemGraphic.x - train.x;
         let cy = itemGraphic.y - train.y;
@@ -1205,7 +1928,7 @@ function update() {
                 totalCoins += 50;
                 saveMarketData();
                 showFloatingText(train.x, train.y - 40, "+50 💰", "#ffd700");
-                scoreText.setText("Skor: " + score);
+                scoreText.setText("🏆 " + score);
                 playSound('coin');
                 gameScene.tweens.add({
                     targets: scoreText,
@@ -1214,13 +1937,26 @@ function update() {
                     yoyo: true
                 });
             } else if (itemType === 2) {
-                showFloatingText(train.x, train.y - 40, "SOĞUTMA! ❄️", "#00ffff");
-                chillTimer = 180;
+                showFloatingText(train.x, train.y - 40, "OVERCLOCK! ❄️⚡", "#00ffff");
+                chillTimer = 240;
                 brakeHeat = 0;
+                nitroHeat = 0;
                 brakeCooldown = false;
+<<<<<<< HEAD
                 brakeBtnObj.setTexture('btnIdle');
                 brakeBtnText.setText("FREN");
                 brakeBtnText.setColor('#ff3333');
+=======
+                nitroCooldown = false;
+                brakeBtnObj.setTexture('btnIdle');
+                brakeBtnText.setText("FREN");
+                brakeBtnText.setColor('#ff3333');
+                if (trainUpgrades['nitro_system']) {
+                    nitroBtnObj.setTexture('btnNitroIdle');
+                    nitroBtnText.setText("NİTRO");
+                    nitroBtnText.setColor('#00ccff');
+                }
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
                 playSound('ice');
                 gameScene.cameras.main.flash(300, 0, 255, 255);
             } else if (itemType === 3) {
@@ -1229,19 +1965,37 @@ function update() {
                 playSound('shield');
             } else if (itemType === 4) {
                 showFloatingText(train.x, train.y - 40, "BULDOZER! PARÇALA +5", "#ff4400");
+<<<<<<< HEAD
                 bulldozerTimer = 480; 
                 bulldozerAura.setVisible(true); 
+=======
+                bulldozerTimer = 480;
+                bulldozerAura.setVisible(true);
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
                 playSound('explosion');
                 gameScene.cameras.main.shake(300, 0.02);
             }
             itemType = 0;
         }
     }
+
     drawRails();
     updateSmoke();
     updateSparks();
     updateExplosions();
     updateNitroFlames();
+<<<<<<< HEAD
+=======
+    if (activeTrain === 'devoria' && gameStarted && !isGameOver) {
+        spawnDevoriaEmber();
+        updateDevoriaEmbers();
+        if (devoriaLives <= 1 && devoriaLives >= 0) {
+            graphics.lineStyle(2.5, 0xff2200, 0.25 + Math.sin(pulse * 16) * 0.3);
+            graphics.strokeCircle(train.x, train.y, 34);
+        }
+    }
+    if (activeTrain === 'cyber') updateCyberDriftParts();
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
     let target = currentPath[pathIndex];
     let dx = target.x - train.x;
     let dy = target.y - train.y;
@@ -1258,30 +2012,24 @@ function update() {
         }
         if (pathIndex >= currentPath.length) {
             if (lockedChoice !== correctPathIndex) {
-                if (hasShield) {
-                    playSound('shield_break');
-                    if (navigator.vibrate) navigator.vibrate(100);
-                    hasShield = false;
-                    showFloatingText(train.x, train.y - 40, "ZIRH KIRILDI!", "#ff4444");
-                    gameScene.cameras.main.shake(200, 0.015);
+                const result = absorbHit();
+                if (result !== 'gameover') {
                     resetTrain(false);
                     setNewCorrectPath();
-                } else if (activeTrain === 'armored' && shieldDurability > 0) {
-                    shieldDurability--;
-                    playSound('shield_break');
-                    if (navigator.vibrate) navigator.vibrate(100);
-                    showFloatingText(train.x, train.y - 40, "ZIRH HASAR ALDI!", "#ff4444");
-                    gameScene.cameras.main.shake(200, 0.015);
-                    applyTrainVisuals();
-                    resetTrain(false);
-                    setNewCorrectPath();
-                } else {
-                    triggerGameOver();
                 }
             } else {
                 score++;
-                scoreText.setText("Skor: " + score);
+                scoreText.setText("🏆 " + score);
                 playSound('score');
+
+                if (score > targetRecord && !isRecordBroken) {
+                    isRecordBroken = true;
+                    showFloatingText(train.x, train.y - 60, "YENİ REKOR! 🏆", "#ffd700");
+                    if (navigator.vibrate) navigator.vibrate([50, 50, 50]);
+                    gameScene.cameras.main.flash(400, 255, 215, 0);
+                    starEmitter.emitParticleAt(train.x, train.y, 30);
+                }
+
                 resetTrain(false);
                 setNewCorrectPath();
                 if (Math.random() > 0.5) {
@@ -1383,14 +2131,18 @@ function update() {
  obstacles.getChildren().forEach(obs => {
         obs.x -= (4 + (score * 0.05)) * gameTime.scale;
         if (obs.x < -100) {
+<<<<<<< HEAD
             if (obs.sound) obs.sound.stop(); 
+=======
+            if (obs.sound) obs.sound.stop();
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
             obs.destroy();
         }
         spawnBlackSmoke(obs.x, obs.y);
     });
 }
-
 function spawnObstacle() {
+    if (isLevelComplete) return;
     if (score < 5) return;
     if (Math.random() > 0.4) {
         let obsY;
@@ -1405,7 +2157,8 @@ function spawnObstacle() {
                 obsY = (Math.random() > 0.5) ? 150 : 450;
             }
         }
-        let obsContainer = gameScene.add.container(900, obsY).setDepth(10);
+        let gw = gameScene.cameras.main.width;
+        let obsContainer = gameScene.add.container(gw + 50, obsY).setDepth(10);
         gameScene.physics.add.existing(obsContainer);
         obsContainer.body.setCircle(20, -20, -20);
         let cBaseL = gameScene.add.rectangle(0, 5, 35, 10, 0x111111);
@@ -1416,7 +2169,10 @@ function spawnObstacle() {
         let percin1 = gameScene.add.circle(-12, -4, 1.5, 0x000000).setAlpha(0.5);
         let percin2 = gameScene.add.circle(12, -4, 1.5, 0x000000).setAlpha(0.5);
         obsContainer.add([cBaseL, cBaseU, cCoal, w1, w2, percin1, percin2]);
+<<<<<<< HEAD
         
+=======
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
 
         if (gameScene && gameScene.sound) {
             let obsSnd = gameScene.sound.add('snd_rogue', { loop: true, volume: 0.4 });
@@ -1424,7 +2180,10 @@ function spawnObstacle() {
             obsContainer.sound = obsSnd;
         }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
         obstacles.add(obsContainer);
     }
 }
@@ -1524,13 +2283,15 @@ function drawRails() {
     graphics.clear();
     graphics.lineStyle(2, 0x555555, 0.4);
 
+    let rightEdge = (gameScene ? gameScene.cameras.main.width : 1000) + 500;
+
     if (phase === 1) {
-        drawRailSegment(-500, 200, 1500, 200);
-        drawRailSegment(-500, 400, 1500, 400);
+        drawRailSegment(-500, 200, rightEdge, 200);
+        drawRailSegment(-500, 400, rightEdge, 400);
     } else {
-        drawRailSegment(-500, 150, 1500, 150);
-        drawRailSegment(-500, 300, 1500, 300);
-        drawRailSegment(-500, 450, 1500, 450);
+        drawRailSegment(-500, 150, rightEdge, 150);
+        drawRailSegment(-500, 300, rightEdge, 300);
+        drawRailSegment(-500, 450, rightEdge, 450);
     }
 
     drawRailSegment(-50, 300, 300, 300);
@@ -1681,19 +2442,42 @@ function resetTrain(isFullReset = false) {
     pathIndex = 0;
     perfectUsed = false;
 
+    if (gameScene && gameScene.cameras.main) {
+        gameScene.cameras.main.zoom = 1.0;
+    }
+
     if (isFullReset) {
         document.body.style.backgroundColor = "#87CEEB";
         if (gameScene) gameScene.cameras.main.setBackgroundColor('#87CEEB');
 
+<<<<<<< HEAD
+=======
+        if (farMountains) farMountains.clearTint();
+        if (midTrees) midTrees.clearTint();
+        if (solidGround) solidGround.fillColor = 0x114a24;
+
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
         if (activeTrain === 'armored') {
             shieldDurability = 2;
         } else {
             shieldDurability = 0;
         }
+        if (activeTrain === 'devoria') {
+            devoriaLives = 3;
+        } else {
+            devoriaLives = 0;
+        }
+        driftBoostTimer = 0;
+        syncDevoriaHUD();
         hasShield = false;
         bulldozerTimer = 0;
+<<<<<<< HEAD
         if (bulldozerAura) bulldozerAura.setVisible(false); 
         
+=======
+        if (bulldozerAura) bulldozerAura.setVisible(false);
+
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
         currentSkyPhase = 1;
         if (gameScene.overlaySunset) gameScene.overlaySunset.setAlpha(0);
         if (gameScene.overlayNight) gameScene.overlayNight.setAlpha(0);
@@ -1744,14 +2528,49 @@ function manageTrainSounds() {
     gameScene.playerTrainSnd.play();
 }
 
+<<<<<<< HEAD
 function startEndlessMode() {
+=======
+window.startEndlessMode = function() {
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
     if (audioCtx.state === 'suspended') audioCtx.resume();
     document.getElementById("startScreen").classList.add("hidden");
     document.getElementById("pauseBtn").classList.remove("hidden");
     gameStarted = true;
+    targetRecord = Math.max(minHighScore, localBestScore);
+    if (targetRecord < 5) targetRecord = 5;
+    isRecordBroken = false;
     resetTrain(true);
     setNewCorrectPath();
+<<<<<<< HEAD
     manageTrainSounds(); 
+=======
+    manageTrainSounds();
+}
+
+window.startStoryMode = function() {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    document.getElementById("storyMenuScreen").classList.add("hidden");
+    showStoryCutscene(function() {
+        document.getElementById("startScreen").classList.add("hidden");
+        document.getElementById("pauseBtn").classList.remove("hidden");
+        gameStarted = true;
+        isStoryMode = true;
+        storyProgress = 0;
+        isLevelComplete = false;
+        storyEventsFired = {};
+        storyBrakeOverheated = false;
+        storyStartTime = Date.now();
+        storyPauseStart = 0;
+        resetTrain(true);
+        setNewCorrectPath();
+        manageTrainSounds();
+        progressBarBg.setVisible(true);
+        progressBarFill.setVisible(true);
+        progressText.setVisible(true);
+        scoreText.setVisible(false);
+    });
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
 }
 
 function triggerGameOver() {
@@ -1764,10 +2583,14 @@ function triggerGameOver() {
 
     if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
     gameScene.cameras.main.shake(400, 0.02);
-
-    let earnedCoins = Math.floor(score * 10);
+let earnedCoins = Math.floor(score * 10);
     totalCoins += earnedCoins;
     saveMarketData();
+
+    if (score > localBestScore) {
+        localBestScore = score;
+        localStorage.setItem('sm_bestScore', localBestScore);
+    }
 
     setTimeout(() => {
         document.getElementById("gameOverScreen").classList.remove("hidden");
@@ -1795,7 +2618,55 @@ function triggerGameOver() {
     }, 400);
 }
 
-function returnToMenu() {
+function triggerLevelComplete() {
+    if (isLevelComplete) return;
+    isLevelComplete = true;
+
+    if (gameScene && gameScene.playerTrainSnd) gameScene.playerTrainSnd.stop();
+    obstacles.getChildren().forEach(obs => { if (obs.sound) obs.sound.stop(); });
+    playSound('perfect');
+    document.getElementById("pauseBtn").classList.add("hidden");
+    gameScene.cameras.main.flash(700, 0, 255, 136);
+    gameScene.cameras.main.shake(300, 0.008);
+
+    let elapsed = Math.floor((Date.now() - storyStartTime) / 1000);
+    let brakeOverheated = isStoryMode2 ? story2BrakeOverheat : storyBrakeOverheated;
+    let timeLimit = isStoryMode2 ? 120 : 90;
+    let stars = 1;
+    if (!brakeOverheated) stars = 2;
+    if (!brakeOverheated && elapsed < timeLimit) stars = 3;
+
+    let bonusCoins = 200 + (stars * 100);
+    totalCoins += bonusCoins;
+    saveMarketData();
+
+    let mC = document.getElementById("menuCoinDisplay");
+    if (mC) mC.innerText = totalCoins;
+
+    setTimeout(() => {
+        triggerConfetti();
+        let screen = document.getElementById("levelCompleteScreen");
+        screen.classList.remove("hidden");
+
+        let mins = Math.floor(elapsed / 60);
+        let secs = elapsed % 60;
+        document.getElementById("lcTime").textContent = (mins > 0 ? mins + 'd ' : '') + secs + 's';
+        document.getElementById("lcSwitches").textContent = score + ' doğru';
+        document.getElementById("lcCoins").textContent = '+' + bonusCoins + ' 💰';
+
+        let starsContainer = document.getElementById("lcStars");
+        starsContainer.innerHTML = '';
+        for (let i = 0; i < 3; i++) {
+            let starEl = document.createElement('span');
+            starEl.className = 'lc-star' + (i < stars ? ' earned' : '');
+            starEl.textContent = '★';
+            starEl.style.animationDelay = (0.25 + i * 0.18) + 's';
+            starsContainer.appendChild(starEl);
+        }
+    }, 700);
+}
+
+window.returnToMenu = function() {
     document.getElementById("gameOverScreen").classList.add("hidden");
     if (gameScene && gameScene.playerTrainSnd) gameScene.playerTrainSnd.stop();
     obstacles.getChildren().forEach(obs => { if (obs.sound) obs.sound.stop(); });
@@ -1808,9 +2679,14 @@ function returnToMenu() {
     if (mC) mC.innerText = totalCoins;
 
     gameStarted = false;
+    devoriaLives    = 0;
+    driftBoostTimer = 0;
+    syncDevoriaHUD();
     isGameOver = false;
     isPaused = false;
     score = 0;
+    storyEventsFired = {};
+    storyBrakeOverheated = false;
     phase = 1;
     speed = baseSpeed;
     brakeHeat = 0;
@@ -1838,8 +2714,13 @@ function returnToMenu() {
     if (nitroBarBg) nitroBarBg.setVisible(false);
     if (nitroBarFill) nitroBarFill.setVisible(false);
 
+<<<<<<< HEAD
     scoreText.setText("Skor: 0");
     scoreText.setColor("#ffaa00");
+=======
+    scoreText.setText("🏆 0");
+    scoreText.setColor("#ffffff");
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
     phaseText.setVisible(false);
     itemGraphic.setVisible(false);
     itemType = 0;
@@ -1859,6 +2740,24 @@ function returnToMenu() {
     if (game.scene.isPaused('PlayScene')) {
         game.scene.resume('PlayScene');
     }
+
+    isStoryMode = false;
+    isStoryMode2 = false;
+    story2Progress = 0;
+    story2Phase = 0;
+    story2EventsFired = {};
+    story2BrakeOverheat = false;
+    brakeBlastPenaltyTimer = 0;
+    deactivateFog();
+    deactivateSnow();
+    isLevelComplete = false;
+    storyProgress = 0;
+    if (progressBarBg) {
+        progressBarBg.setVisible(false);
+        progressBarFill.setVisible(false);
+        progressText.setVisible(false);
+    }
+    if (scoreText) scoreText.setVisible(true);
 }
 
 function preload() {
@@ -1870,6 +2769,7 @@ function preload() {
 const PlayScene = {
     key: 'PlayScene',
     preload: preload,
+<<<<<<< HEAD
     create: create, 
     update: update  
 };
@@ -1881,6 +2781,13 @@ const StoryScene = {
     },
     update: function() {}
 };
+=======
+    create: create,
+    update: update
+};
+
+let gameWidth = Math.max(1000, window.innerWidth * (600 / window.innerHeight));
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
 
 const config = {
     type: Phaser.AUTO,
@@ -1889,7 +2796,7 @@ const config = {
     scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
-        width: 1000,
+        width: gameWidth,
         height: 600
     },
     physics: {
@@ -1898,7 +2805,11 @@ const config = {
             debug: false
         }
     },
+<<<<<<< HEAD
     scene: [PlayScene, StoryScene], 
+=======
+    scene: [PlayScene],
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
     fps: {
         target: 60,
         forceSetTimeOut: true
@@ -1907,40 +2818,195 @@ const config = {
 
 let game;
 
+function syncDevoriaHUD() {
+    let hud = document.getElementById('devoriaLivesHUD');
+    if (!hud) return;
+    if (activeTrain === 'devoria' && gameStarted && !isGameOver) {
+        hud.classList.remove('hidden');
+        for (let i = 1; i <= 3; i++) {
+            let orb = document.getElementById('dlOrb' + i);
+            if (!orb) continue;
+            if (i > devoriaLives) {
+                orb.classList.add('dl-orb-spent');
+            } else {
+                orb.classList.remove('dl-orb-spent', 'dl-orb-losing');
+            }
+        }
+    } else {
+        hud.classList.add('hidden');
+    }
+}
+ 
+function triggerOrbLoss(lostIndex) {
+    let orb = document.getElementById('dlOrb' + lostIndex);
+    if (!orb) return;
+    orb.classList.remove('dl-orb-losing');
+    void orb.offsetWidth;
+    orb.classList.add('dl-orb-losing');
+    setTimeout(function() {
+        orb.classList.add('dl-orb-spent');
+    }, 550);
+}
+ 
+function spawnDevoriaEmber() {
+    if (Math.random() > 0.45) return;
+    devoriaEmbers.push({
+        x:     train.x - 10 + Phaser.Math.Between(-5, 5),
+        y:     train.y + Phaser.Math.Between(-8, 8),
+        vx:    Phaser.Math.FloatBetween(-4, -1.5),
+        vy:    Phaser.Math.FloatBetween(-3, 0.4),
+        alpha: 1.0,
+        size:  Phaser.Math.FloatBetween(2.2, 5.5),
+        color: [0xff4400, 0xff7700, 0xffaa00, 0xff2200][Math.floor(Math.random() * 4)]
+    });
+}
+ 
+function updateDevoriaEmbers() {
+    for (let i = devoriaEmbers.length - 1; i >= 0; i--) {
+        let p = devoriaEmbers[i];
+        p.x += p.vx * gameTime.scale;
+        p.y += p.vy * gameTime.scale;
+        p.vy -= 0.1 * gameTime.scale;
+        p.alpha -= 0.04 * gameTime.scale;
+        p.size  -= 0.09 * gameTime.scale;
+        graphics.fillStyle(p.color, p.alpha);
+        graphics.fillCircle(p.x, p.y, Math.max(0.1, p.size));
+        if (p.alpha <= 0 || p.size <= 0) devoriaEmbers.splice(i, 1);
+    }
+}
+ 
+function createDevoriaExplosion(x, y) {
+    for (let i = 0; i < 28; i++) {
+        explosionParticles.push({
+            x: x, y: y,
+            vx: (Math.random() - 0.5) * 14,
+            vy: (Math.random() - 0.5) * 14,
+            life: 1.0,
+            size:  Math.random() * 13 + 4,
+            color: [0xff4400, 0xff8800, 0xffcc00, 0xcc0000, 0xff2200][Math.floor(Math.random() * 5)]
+        });
+    }
+}
+ 
+function spawnCyberDriftParts() {
+    if (Math.random() > 0.55) return;
+    for (let i = 0; i < 3; i++) {
+        cyberDriftParts.push({
+            x:     train.x - 18 + Phaser.Math.Between(-6, 10),
+            y:     train.y + Phaser.Math.Between(-7, 7),
+            vx:    Phaser.Math.FloatBetween(-6, -2.5),
+            vy:    Phaser.Math.FloatBetween(-1, 1),
+            alpha: 0.9,
+            w:     Phaser.Math.FloatBetween(3, 8),
+            h:     Phaser.Math.FloatBetween(1, 2.5),
+            color: Math.random() > 0.5 ? 0x00ffff : 0xff00cc
+        });
+    }
+}
+ 
+function updateCyberDriftParts() {
+    for (let i = cyberDriftParts.length - 1; i >= 0; i--) {
+        let p = cyberDriftParts[i];
+        p.x     += p.vx * gameTime.scale;
+        p.y     += p.vy * gameTime.scale;
+        p.alpha -= 0.07 * gameTime.scale;
+        p.w     -= 0.2  * gameTime.scale;
+        graphics.fillStyle(p.color, p.alpha);
+        graphics.fillRect(p.x, p.y, Math.max(0.5, p.w), Math.max(0.3, p.h));
+        if (p.alpha <= 0 || p.w <= 0) cyberDriftParts.splice(i, 1);
+    }
+}
+
 function initPhaserGame() {
     if (!game) {
         game = new Phaser.Game(config);
     }
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
 let menuHeat = 0;
 const maxHeat = 100;
 
 window.clickMenuTitle = function() {
+<<<<<<< HEAD
     menuHeat = Math.min(maxHeat, menuHeat + 15);
     
+=======
+    let today = new Date().toDateString();
+    let easterEggClaimed = localStorage.getItem('sm_easterEggDate') === today;
+
+    menuHeat = Math.min(maxHeat, menuHeat + 20);
+
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
     const title = document.getElementById('menuMainTitle');
     if (!title) return;
 
     const rect = title.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
+<<<<<<< HEAD
     const centerY = rect.top + rect.height / 2;
 
     const sparkCount = Math.floor(menuHeat / 4) + 15; 
+=======
+
+    const sparkCount = Math.floor(menuHeat / 5) + 5;
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
     for (let i = 0; i < sparkCount; i++) {
         createMenuSpark(centerX, rect.bottom - 5);
     }
 
     if (menuHeat > 50) {
         createMenuSteam(centerX + (Math.random() - 0.5) * rect.width, rect.top);
+<<<<<<< HEAD
         if (navigator.vibrate) navigator.vibrate(25);
     }
+=======
+        if (navigator.vibrate) navigator.vibrate(20);
+    }
+
+    if (menuHeat >= maxHeat && !easterEggClaimed) {
+        localStorage.setItem('sm_easterEggDate', today);
+
+        totalCoins += 500;
+        saveMarketData();
+
+        let mC = document.getElementById("menuCoinDisplay");
+        if (mC) mC.innerText = totalCoins;
+
+        triggerConfetti();
+        if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 200]);
+        playSound('coin');
+        setTimeout(() => playSound('perfect'), 300);
+
+        showSecretText(centerX, rect.top, "ARDEKO GİZLİ KASASI!\n+500 💰");
+
+        menuHeat = 0;
+    } else if (menuHeat >= maxHeat && easterEggClaimed) {
+        menuHeat = 80;
+    }
+}
+
+function showSecretText(x, y, text) {
+    const el = document.createElement('div');
+    el.className = 'secret-float-text';
+    el.style.left = x + 'px';
+    el.style.top = y + 'px';
+    el.innerText = text;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 2500);
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
 }
 
 function createMenuSpark(x, y) {
     const spark = document.createElement('div');
     spark.className = 'menu-spark';
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
     if (menuHeat > 75) {
         spark.classList.add('super-spark');
     }
@@ -1948,8 +3014,13 @@ function createMenuSpark(x, y) {
     spark.style.left = x + 'px';
     spark.style.top = y + 'px';
 
+<<<<<<< HEAD
     const dx = (Math.random() - 0.5) * 380 + 'px'; 
     const dy = (Math.random() - 0.6) * 220 - 60 + 'px'; 
+=======
+    const dx = (Math.random() - 0.5) * 380 + 'px';
+    const dy = (Math.random() - 0.6) * 220 - 60 + 'px';
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
     spark.style.setProperty('--dx', dx);
     spark.style.setProperty('--dy', dy);
 
@@ -1960,8 +3031,13 @@ function createMenuSpark(x, y) {
 function createMenuSteam(x, y) {
     const steam = document.createElement('div');
     steam.className = 'menu-steam';
+<<<<<<< HEAD
     
     const size = (Math.floor(Math.random() * 16) + 20) + 'px'; 
+=======
+
+    const size = (Math.floor(Math.random() * 16) + 20) + 'px';
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
     steam.style.width = size;
     steam.style.height = size;
     steam.style.left = x + 'px';
@@ -1977,11 +3053,19 @@ function createMenuSteam(x, y) {
 function createAmbientSmoke(x, y, rectWidth) {
     const smoke = document.createElement('div');
     smoke.className = 'menu-smoke-ambient';
+<<<<<<< HEAD
     
     const size = (Math.floor(Math.random() * 11) + 15) + 'px';
     smoke.style.width = size;
     smoke.style.height = size;
     
+=======
+
+    const size = (Math.floor(Math.random() * 11) + 15) + 'px';
+    smoke.style.width = size;
+    smoke.style.height = size;
+
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
     smoke.style.left = (x + (Math.random() - 0.5) * rectWidth) + 'px';
     smoke.style.top = y + 'px';
 
@@ -1991,7 +3075,295 @@ function createAmbientSmoke(x, y, rectWidth) {
     document.body.appendChild(smoke);
     setTimeout(() => smoke.remove(), 2200);
 }
+<<<<<<< HEAD
 
+=======
+// Ortak cutscene mantığı — showStoryCutscene ve showStoryCutscene2 için tek noktadan
+function runCutscene(config, callback) {
+    const steps = config.steps;
+    let currentStep = 0;
+    let twTimer = null;
+
+    const screen = document.getElementById(config.screenId);
+    const speakerEl = document.getElementById(config.speakerId);
+    const avatarEl = document.getElementById(config.avatarId);
+    const bodyEl = document.getElementById(config.bodyId);
+    const btn = document.getElementById(config.btnId);
+    const dots = screen.querySelectorAll('.cdot');
+
+    screen.classList.remove('hidden');
+
+    function typeText(text, el, speed) {
+        el.textContent = '';
+        el.classList.add('typing');
+        let i = 0;
+        if (twTimer) clearInterval(twTimer);
+        twTimer = setInterval(function() {
+            el.textContent = text.slice(0, i + 1);
+            i++;
+            if (i >= text.length) {
+                clearInterval(twTimer);
+                twTimer = null;
+                el.classList.remove('typing');
+            }
+        }, speed || 28);
+    }
+
+    function showStep(index) {
+        const s = steps[index];
+        speakerEl.textContent = s.speaker;
+        avatarEl.textContent = s.avatar;
+        dots.forEach(function(d, i) { d.classList.toggle('active', i === index); });
+        btn.textContent = index < steps.length - 1 ? 'DEVAM ▶' : 'BAŞLA ▶';
+        typeText(s.text, bodyEl, 28);
+    }
+
+    showStep(0);
+
+    btn.onclick = function() {
+        if (twTimer) {
+            clearInterval(twTimer);
+            twTimer = null;
+            bodyEl.textContent = steps[currentStep].text;
+            bodyEl.classList.remove('typing');
+            return;
+        }
+        currentStep++;
+        if (currentStep >= steps.length) {
+            screen.classList.add('cutscene-exit');
+            setTimeout(function() {
+                screen.classList.add('hidden');
+                screen.classList.remove('cutscene-exit');
+                btn.onclick = null;
+                callback();
+            }, 480);
+        } else {
+            showStep(currentStep);
+        }
+    };
+}
+
+function showStoryCutscene(callback) {
+    runCutscene({
+        screenId:  'storyCutsceneScreen',
+        speakerId: 'cutsceneSpeaker',
+        avatarId:  'cutsceneAvatar',
+        bodyId:    'cutsceneBody',
+        btnId:     'cutsceneContinueBtn',
+        steps: [
+            { speaker: 'KONDÜKTÖR',     avatar: '👴', text: 'Merkeze bildiriyorum! Banliyö hattında tanımlanamayan bir sinyal arızası tespit edildi.' },
+            { speaker: 'KONDÜKTÖR',     avatar: '👴', text: 'Makasları dikkatli değiştir. Freni aşırı ısıtma, her saniye önemli. İstasyona güvenli ulaş!' },
+            { speaker: 'MİSYON HEDEFİ', avatar: '🎯', text: 'İstasyona ulaş. Fren ısısını aşma ve 90 saniyenin altında tamamla → 3 Yıldız.' }
+        ]
+    }, callback);
+}
+
+function applyWinterTheme() {
+    if (!gameScene) return;
+    
+    // Gökyüzünü ve HTML arkaplanını kasvetli gece/kış rengine çevir
+    document.body.style.backgroundColor = '#1a202c';
+    gameScene.cameras.main.setBackgroundColor('#1a202c');
+
+    // Ağaçları, dağları ve zemini soğuk, donuk renklere boya (YENİ GÖRSEL GEREKTİRMEZ)
+    if (farMountains) farMountains.setTint(0x4a5568);
+    if (midTrees) midTrees.setTint(0x2d3748); 
+    if (solidGround) solidGround.fillColor = 0x1a202c;
+
+    // Ortam karanlık olduğu için tren farlarını baştan aç
+    if (headlight) {
+        headlight.setVisible(true);
+        headlineCore.setVisible(true);
+        farGlow.setVisible(true);
+    }
+}
+
+function showStoryCutscene2(callback) {
+    runCutscene({
+        screenId:  'storyCutsceneScreen2',
+        speakerId: 'cutsceneSpeaker2',
+        avatarId:  'cutsceneAvatar2',
+        bodyId:    'cutsceneBody2',
+        btnId:     'cutsceneContinueBtn2',
+        steps: [
+            { speaker: 'KONDÜKTÖR',     avatar: '👴', text: 'Gece seferi başlıyor. Dışarıda sis ve kar var, görüş mesafesi çok düşük.' },
+            { speaker: 'KONDÜKTÖR',     avatar: '👴', text: 'Fren sistemine dikkat et, soğuk havada ısınması zorlaşıyor. Kontrollü sür!' },
+            { speaker: 'MİSYON HEDEFİ', avatar: '🎯', text: 'Gece istasyonuna ulaş. Fren patlamasını önle ve 120 saniyenin altında tamamla → 3 Yıldız.' },
+            { speaker: 'SİSTEM',        avatar: '⚠️', text: 'Uyarı: Karlı zemin frenleme mesafesini artırır. Ekstra dikkatli ol!' }
+        ]
+    }, callback);
+}
+
+function showStoryEventBanner(icon, text, type) {
+    let banner = document.getElementById("storyEventBanner");
+    let iconEl = document.getElementById("storyBannerIcon");
+    let textEl = document.getElementById("storyBannerText");
+
+    banner.classList.remove("hidden", "seb-exit", "danger-banner", "success-banner");
+
+    if (type === 'danger') banner.classList.add("danger-banner");
+    if (type === 'success') banner.classList.add("success-banner");
+
+    iconEl.textContent = icon;
+    textEl.textContent = text;
+
+    setTimeout(function() {
+        banner.classList.add("seb-exit");
+        setTimeout(function() {
+            banner.classList.add("hidden");
+            banner.classList.remove("seb-exit", "danger-banner", "success-banner");
+        }, 450);
+    }, 3200);
+}
+
+let snowParticles = [];
+let snowCtx = null;
+let snowAnimFrame = null;
+
+function activateFog() {
+    const fog = document.getElementById('fogOverlay');
+    if (fog) fog.classList.add('fog-active');
+}
+
+function deactivateFog() {
+    const fog = document.getElementById('fogOverlay');
+    if (fog) fog.classList.remove('fog-active');
+}
+
+function activateSnow() {
+    const canvas = document.getElementById('snowCanvas');
+    if (!canvas) return;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    snowCtx = canvas.getContext('2d');
+    snowParticles = [];
+    for (let i = 0; i < 140; i++) {
+        snowParticles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            r: Math.random() * 2.5 + 0.8,
+            speed: Math.random() * 1.2 + 0.4,
+            wind: Math.random() * 0.6 - 0.3,
+            alpha: Math.random() * 0.5 + 0.25
+        });
+    }
+    canvas.classList.add('snow-active');
+    if (snowAnimFrame) cancelAnimationFrame(snowAnimFrame);
+    animateSnow();
+}
+
+function animateSnow() {
+    const canvas = document.getElementById('snowCanvas');
+    if (!canvas || !snowCtx || !canvas.classList.contains('snow-active')) return;
+    snowCtx.clearRect(0, 0, canvas.width, canvas.height);
+    snowParticles.forEach(p => {
+        snowCtx.beginPath();
+        snowCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        snowCtx.fillStyle = `rgba(210, 230, 255, ${p.alpha})`;
+        snowCtx.fill();
+        p.y += p.speed;
+        p.x += p.wind;
+        if (p.y > canvas.height) { p.y = -5; p.x = Math.random() * canvas.width; }
+        if (p.x > canvas.width) p.x = 0;
+        if (p.x < 0) p.x = canvas.width;
+    });
+    snowAnimFrame = requestAnimationFrame(animateSnow);
+}
+
+function deactivateSnow() {
+    const canvas = document.getElementById('snowCanvas');
+    if (canvas) canvas.classList.remove('snow-active');
+    if (snowAnimFrame) { cancelAnimationFrame(snowAnimFrame); snowAnimFrame = null; }
+    if (snowCtx && canvas) snowCtx.clearRect(0, 0, canvas.width, canvas.height);
+    snowParticles = [];
+}
+
+function triggerBrakeBlast() {
+    const el = document.getElementById('brakeBlast');
+    if (!el) return;
+    el.classList.remove('blast-pop');
+    void el.offsetWidth;
+    el.classList.add('blast-pop');
+    setTimeout(() => el.classList.remove('blast-pop'), 600);
+}
+
+function updateStory2Logic(dt) {
+    story2Progress += (speed * 0.010) * dt;
+
+    if (!story2EventsFired['fog'] && story2Progress >= 12) {
+        story2EventsFired['fog'] = true;
+        activateFog();
+        showStoryEventBanner('🌫️', 'Yoğun sis! Görüş mesafesi azaldı.', 'fog');
+    }
+    if (!story2EventsFired['snow'] && story2Progress >= 28) {
+        story2EventsFired['snow'] = true;
+        activateSnow();
+        showStoryEventBanner('❄️', 'Kar yağışı başladı! Fren mesafesi arttı.', 'snow');
+    }
+    if (!story2EventsFired['e50'] && story2Progress >= 50) {
+        story2EventsFired['e50'] = true;
+        showStoryEventBanner('⚠️', 'Buz tutan raylar! Çok dikkatli fren!', 'danger');
+    }
+    if (!story2EventsFired['blast'] && story2Progress >= 65) {
+        story2EventsFired['blast'] = true;
+        triggerBrakeBlast();
+        brakeBlastPenaltyTimer = 90;
+        // story2BrakeOverheat burada SET EDİLMEZ — bu senaryo gereği bir olay,
+        // oyuncu hatası değil. Aşırı ısı bayrağı yalnızca oyuncu freni gerçekten
+        // 100'e dayadığında setlenmeli, aksi takdirde 3 yıldız imkansız hale gelirdi.
+        showStoryEventBanner('💥', 'Fren patlaması! Hız geçici olarak düşüyor.', 'danger');
+    }
+    if (!story2EventsFired['e80'] && story2Progress >= 80) {
+        story2EventsFired['e80'] = true;
+        showStoryEventBanner('🚉', 'Gece istasyonu yaklaşıyor!', 'success');
+    }
+
+    if (story2Progress >= 100) {
+        story2Progress = 100;
+        triggerLevelComplete();
+        return;
+    }
+
+    progressBarFill.width = (story2Progress / 100) * 300;
+    progressText.setText("%" + Math.floor(story2Progress));
+
+    if (story2Progress > 75) progressBarFill.fillColor = 0x64a0ff;
+    else if (story2Progress > 40) progressBarFill.fillColor = 0x4070dd;
+    else progressBarFill.fillColor = 0x2050bb;
+}
+
+window.startStoryMode2 = function() {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    document.getElementById('storyMenuScreen').classList.add('hidden');
+    showStoryCutscene2(function() {
+        document.getElementById('startScreen').classList.add('hidden');
+        document.getElementById('pauseBtn').classList.remove('hidden');
+        gameStarted = true;
+        isStoryMode2 = true;
+        story2Progress = 0;
+        story2Phase = 0;
+        isLevelComplete = false;
+        story2EventsFired = {};
+        story2BrakeOverheat = false;
+        brakeBlastPenaltyTimer = 0;
+        storyStartTime = Date.now();
+        storyPauseStart = 0;
+        resetTrain(true);
+        applyWinterTheme();
+        setNewCorrectPath();
+        manageTrainSounds();
+        progressBarBg.setVisible(true);
+        progressBarFill.setVisible(true);
+        progressText.setVisible(true);
+        scoreText.setVisible(false);
+    });
+};
+
+window.returnToMenuFromLevelComplete = function() {
+    document.getElementById("levelCompleteScreen").classList.add("hidden");
+    returnToMenu();
+};
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
 let ambientTimer = 0;
 setInterval(() => {
     const title = document.getElementById('menuMainTitle');
@@ -2007,16 +3379,34 @@ setInterval(() => {
     }
 
     if (menuHeat > 0) {
+<<<<<<< HEAD
         menuHeat = Math.max(0, menuHeat - 1.2);
 
         if (menuHeat > 65) {
+=======
+        menuHeat = Math.max(0, menuHeat - 1);
+
+        title.style.setProperty('--heat', menuHeat / 100);
+
+        if (menuHeat > 70) {
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3
             title.classList.add('title-overheated');
         } else {
             title.classList.remove('title-overheated');
         }
 
+<<<<<<< HEAD
         title.style.filter = `drop-shadow(0 0 ${menuHeat / 3}px rgba(255, 68, 0, ${menuHeat / 100})) drop-shadow(0 4px 6px rgba(0,0,0,0.7))`;
     } else {
         title.style.filter = `drop-shadow(0 4px 6px rgba(0, 0, 0, 0.7))`;
     }
 }, 50);
+=======
+        title.style.filter = `drop-shadow(0 ${4 + (menuHeat/15)}px ${6 + (menuHeat/10)}px rgba(255, 68, 0, ${menuHeat / 100}))`;
+    } else {
+        title.style.setProperty('--heat', 0);
+        title.style.filter = `drop-shadow(0 4px 6px rgba(0, 0, 0, 0.7))`;
+        title.classList.remove('title-overheated');
+    }
+}, 50);
+>>>>>>> 40b02f449edcf36d870ff2891c3c18255724e7b3

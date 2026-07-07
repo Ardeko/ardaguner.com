@@ -294,7 +294,7 @@ function App() {
        </Suspense>
         }
       />
-      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+      <Route path="/privacy-policy" element={<PrivacyPolicy language={language} />} />
       </Routes>
 
        {/* Footer */}
