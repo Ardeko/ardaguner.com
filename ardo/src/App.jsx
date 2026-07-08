@@ -6,6 +6,8 @@ import tr from "/locales/tr.json";
 import en from "/locales/en.json";
 import PrivacyPolicy from './PrivacyPolicy';
 import StudioSpotlight from "./StudioSpotlight";
+import Reveal from "./Reveal";
+import Particles from "./Particles";
 
 const CodeLab = lazy(() => import("./CodeLab"));
 
@@ -27,13 +29,26 @@ function Clock() {
   );
 }
 
+function ScrollProgress() {
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      setProgress(docHeight > 0 ? (scrollTop / docHeight) * 100 : 0);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  return <div className="scroll-progress" style={{ width: `${progress}%` }} />;
+}
+
 function App() {
   const [language, setLanguage] = useState("tr");
   const strings = language === "tr" ? tr : en;
-
-  const toggleLanguage = () => {
-    setLanguage((prevLanguage) => (prevLanguage === "tr" ? "en" : "tr"));
-  };
 
   const projectList = [  
     {
@@ -104,8 +119,10 @@ function App() {
 
   return (
     <Router>
+      <ScrollProgress />
+      <Particles />
       <header className="header">
-        <h1>Arda Güner</h1>
+        <h1 className="shimmer-text">Arda Güner</h1>
         <p>{strings.profession}</p>
         <nav>
           <ul>
@@ -127,39 +144,40 @@ function App() {
             <li><Link to="/codelab">Code Lab</Link></li>
           </ul>
         </nav>
-        <div className="language-switcher">
-          <label className="switch">
-            <input
-              type="checkbox"
-              id="language-toggle"
-              onChange={toggleLanguage}
-              checked={language === "en"}
-            />
-            <span className="slider">
-              <span className="language-labels">
-                <span style={{ marginLeft: "10px" }}>EN</span>
-                <span style={{ marginRight: "10px" }}>TR</span>
-              </span>
-            </span>
-          </label>
+        <div className={`language-switcher lang-${language}`}>
+          <span className="lang-indicator" aria-hidden="true" />
+          <button
+            type="button"
+            className={`lang-option${language === "tr" ? " active" : ""}`}
+            onClick={() => setLanguage("tr")}
+            aria-pressed={language === "tr"}
+          >
+            <span className="lang-flag" aria-hidden="true">🇹🇷</span>
+            TR
+          </button>
+          <button
+            type="button"
+            className={`lang-option${language === "en" ? " active" : ""}`}
+            onClick={() => setLanguage("en")}
+            aria-pressed={language === "en"}
+          >
+            <span className="lang-flag" aria-hidden="true">🇬🇧</span>
+            EN
+          </button>
         </div>
       </header>
 
-      {/* Routes */}
       <Routes>
-        {/* Anasayfa */}
         <Route
           path="/"
           element={
             <>
-              {/* Hero Section */}
               <section id="hero" className="hero">
-  <h1>{strings.hero.title}</h1>
-  <p>{strings.hero.subtitle}</p>
- {/* 🚂 SWITCH MASTER */}
-                <div className="switch-master-wrapper">
-                  <div className="switch-master-card">
+                <Reveal as="h1" delay={0}>{strings.hero.title}</Reveal>
+                <Reveal as="p" delay={100}>{strings.hero.subtitle}</Reveal>
 
+                <Reveal as="div" delay={200} className="switch-master-wrapper">
+                  <div className="switch-master-card">
                     <span className="badge">
                       {language === "tr" ? "YENİ" : "NEW"}
                     </span>
@@ -180,89 +198,85 @@ function App() {
                     >
                       {language === "tr" ? "OYNA 🔥" : "PLAY 🔥"}
                     </button>
+                  </div>
+                </Reveal>
 
+                <Reveal as="div" delay={300} className="daily-tip-widget">
+                  <h3>{strings.hero.tipTitle}</h3>
+                  <p>{tips[language][Math.floor(Math.random() * tips[language].length)]}</p>
+                </Reveal>
+
+                <Reveal
+                  as="button"
+                  delay={400}
+                  onClick={() => {
+                    document.getElementById("about").scrollIntoView({ behavior: "smooth" });
+                  }}
+                >
+                  {strings.hero.aboutButton}
+                </Reveal>
+
+                <Reveal as="div" delay={500} style={{ marginTop: "20px" }}>
+                  <h2 className="cv-title">{strings.cv.title}</h2>
+                  <a
+                    href={language === "tr" ? "/files/arda-guner-cv-tr.pdf" : "/files/arda-guner-cv-en.pdf"}
+                    className="pdf-button"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    download={language === "tr" ? "arda-guner-cv-tr.pdf" : "arda-guner-cv-en.pdf"}
+                  >
+                    <span className="pdf-icon">📄</span>
+                    {strings.cv.downloadButton}
+                  </a>
+                </Reveal>
+              </section>
+
+              <Reveal as="section" id="about" className="about-container">
+                <h2 className="about-title">{strings.about.title}</h2>
+                <div className="about-content">
+                  <img src="/arda.JPG" alt="Arda Güner" className="profile-picture" />
+                  <div className="about-text">
+                    {strings.about.detailedDescription.map((paragraph, index) => (
+                      <p key={index}>{paragraph}</p>
+                    ))}
+                    <h3>{strings.about.workExperience}</h3>
+                    <ul>
+                      {strings.about.jobs.map((job, index) => (
+                        <li key={index}>{job}</li>
+                      ))}
+                    </ul>
+                    <h3>{strings.about.skills}</h3>
+                    <ul>
+                      <li>{strings.about.languages}</li>
+                      <li>{strings.about.webTechnologies}</li>
+                      <li>{strings.about.databases}</li>
+                      <li>{strings.about.os}</li>
+                      {strings.about.additionalSkills.map((skill, index) => (
+                        <li key={index}>{skill}</li>
+                      ))}
+                    </ul>
+                    <h3>{strings.about.hobbies}</h3>
+                    <ul>
+                      {strings.about.hobbyList.map((hobby, index) => (
+                        <li key={index}>{hobby}</li>
+                      ))}
+                    </ul>
+                    <p>{strings.about.philosophy}</p>
+                    <p>
+                      {strings.about.githubCTA}{" "}
+                      <a
+                        href="https://github.com/Ardeko"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {strings.about.githubLink}
+                      </a>
+                    </p>
                   </div>
                 </div>
-  {/* Daily Software Tip */}
-  <div className="daily-tip-widget">
-    <h3>{strings.hero.tipTitle}</h3>
-    <p>{tips[language][Math.floor(Math.random() * tips[language].length)]}</p>
-  </div>
+              </Reveal>
 
-  {/* About Button */}
-  <button
-    onClick={() => {
-      document.getElementById("about").scrollIntoView({ behavior: "smooth" });
-    }}
-  >
-    {strings.hero.aboutButton}
-  </button>
-
-{/* CV Download */}
-<div style={{ marginTop: "20px" }}>
-  <h2 className="cv-title">{strings.cv.title}</h2>
-  <a
-    href={language === "tr" ? "/files/arda-guner-cv-tr.pdf" : "/files/arda-guner-cv-en.pdf"}
-    className="pdf-button"
-    target="_blank"
-    rel="noopener noreferrer"
-    download={language === "tr" ? "arda-guner-cv-tr.pdf" : "arda-guner-cv-en.pdf"}
-  >
-    <span className="pdf-icon">📄</span>
-    {strings.cv.downloadButton}
-  </a>
-</div>
-
-</section>
-
-              {/* About Section */}
-              <section id="about" className="about-container">
-  <h2 className="about-title">{strings.about.title}</h2>
-  <div className="about-content">
-    <img src="/arda.JPG" alt="Arda Güner" className="profile-picture" />
-    <div className="about-text">
-      {strings.about.detailedDescription.map((paragraph, index) => (
-        <p key={index}>{paragraph}</p>
-      ))}
-      <h3>{strings.about.workExperience}</h3>
-      <ul>
-        {strings.about.jobs.map((job, index) => (
-          <li key={index}>{job}</li>
-        ))}
-      </ul>
-      <h3>{strings.about.skills}</h3>
-      <ul>
-        <li>{strings.about.languages}</li>
-        <li>{strings.about.webTechnologies}</li>
-        <li>{strings.about.databases}</li>
-        <li>{strings.about.os}</li>
-        {strings.about.additionalSkills.map((skill, index) => (
-          <li key={index}>{skill}</li>
-        ))}
-      </ul>
-      <h3>{strings.about.hobbies}</h3>
-      <ul>
-        {strings.about.hobbyList.map((hobby, index) => (
-          <li key={index}>{hobby}</li>
-        ))}
-      </ul>
-      <p>{strings.about.philosophy}</p>
-      <p>
-        {strings.about.githubCTA}{" "}
-        <a
-          href="https://github.com/Ardeko"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {strings.about.githubLink}
-        </a>
-      </p>
-    </div>
-  </div>
-</section>
-
-              {/* Projects Section */}
-              <section id="projects" className="projects-container">
+              <Reveal as="section" id="projects" className="projects-container">
                 <h2>{strings.projects.title}</h2>
                 <ul>
                   {projectList.map((project, index) => (
@@ -280,7 +294,7 @@ function App() {
                     </li>
                   ))}
                 </ul>
-              </section>
+              </Reveal>
 
               <StudioSpotlight language={language} />
             </>
@@ -297,8 +311,7 @@ function App() {
       <Route path="/privacy-policy" element={<PrivacyPolicy language={language} />} />
       </Routes>
 
-       {/* Footer */}
-       <footer id="contact" className="footer">
+      <Reveal as="footer" id="contact" className="footer">
         <h2>{strings.footer.title}</h2>
         <ul className="contact-list">
           <li>
@@ -344,22 +357,21 @@ function App() {
             </a>
           </li>
           <li style={{ marginBottom: "1rem", marginTop: "1rem" }}>
-  <Link to="/privacy-policy" style={{ color: "#64b5f6", textDecoration: "underline" }}>
-    {language === "tr" ? "Gizlilik Politikası" : "Privacy Policy"}
-  </Link>
-</li>
+            <Link to="/privacy-policy" style={{ textDecoration: "underline" }}>
+              {language === "tr" ? "Gizlilik Politikası" : "Privacy Policy"}
+            </Link>
+          </li>
         </ul>
 
-        {/* Saat ve Tarih */}
         <Clock />
 
-        <p 
-          style={{ cursor: "pointer", color: "#64b5f6" }} 
+        <p
+          style={{ cursor: "pointer" }}
           onClick={() => alert(strings.footer.thanks)}
         >
           {strings.footer.copyright}
         </p>
-      </footer>
+      </Reveal>
     </Router>
   );
 }

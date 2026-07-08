@@ -1,8 +1,7 @@
 .studio-section {
-  position: relative;
   padding: 5.5rem 1.5rem 6rem;
   text-align: center;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid var(--line);
 }
 
 .studio-inner {
@@ -15,16 +14,20 @@
 
 .studio-eyebrow {
   display: inline-block;
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.18em;
+  padding: 5px 14px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #64b5f6;
+  border-radius: 999px;
+  background: var(--accent-violet-soft);
+  color: var(--accent-violet);
+  border: 1px solid rgba(167, 139, 250, 0.4);
   opacity: 0;
 }
 
-.studio-visible .studio-eyebrow {
-  animation: studio-fade-up 0.7s ease forwards;
+.reveal-visible .studio-eyebrow {
+  animation: studio-fade-up var(--duration-slow) var(--ease-out) forwards;
   animation-delay: 0.05s;
 }
 
@@ -36,8 +39,8 @@
   opacity: 0;
 }
 
-.studio-visible .studio-kickoff {
-  animation: studio-fade-up 0.7s ease forwards;
+.reveal-visible .studio-kickoff {
+  animation: studio-fade-up var(--duration-slow) var(--ease-out) forwards;
   animation-delay: 0.18s;
 }
 
@@ -48,7 +51,7 @@
   transform: translateX(-50%);
   width: 92px;
   height: 1px;
-  background: rgba(255, 255, 255, 0.16);
+  background: var(--line-strong);
 }
 
 .studio-shadow {
@@ -103,12 +106,12 @@
   margin: 1.4rem 0 0;
   font-size: 2.4rem;
   font-weight: 800;
-  color: #f2f3f7;
+  color: var(--text-primary);
   opacity: 0;
 }
 
-.studio-visible .studio-heading {
-  animation: studio-fade-up 0.7s ease forwards;
+.reveal-visible .studio-heading {
+  animation: studio-fade-up var(--duration-slow) var(--ease-out) forwards;
   animation-delay: 0.32s;
 }
 
@@ -117,12 +120,12 @@
   max-width: 460px;
   font-size: 1.02rem;
   line-height: 1.65;
-  color: rgba(242, 243, 247, 0.68);
+  color: var(--text-secondary);
   opacity: 0;
 }
 
-.studio-visible .studio-tagline {
-  animation: studio-fade-up 0.7s ease forwards;
+.reveal-visible .studio-tagline {
+  animation: studio-fade-up var(--duration-slow) var(--ease-out) forwards;
   animation-delay: 0.46s;
 }
 
@@ -144,30 +147,29 @@
   gap: 0.55rem;
   margin-top: 2rem;
   padding: 0.85rem 1.9rem;
-  border-radius: 12px;
-  background: #64b5f6;
-  color: #0d1117;
+  border-radius: var(--radius-sm);
+  background: var(--gradient-brand);
+  color: #0a0c12;
   font-weight: 700;
   font-size: 0.95rem;
   text-decoration: none;
-  box-shadow: 0 8px 22px rgba(100, 181, 246, 0.25);
+  box-shadow: var(--shadow-glow-cyan);
   opacity: 0;
-  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+  transition: transform var(--duration-fast) ease, box-shadow var(--duration-fast) ease;
 }
 
-.studio-visible .studio-cta {
-  animation: studio-fade-up 0.7s ease forwards;
+.reveal-visible .studio-cta {
+  animation: studio-fade-up var(--duration-slow) var(--ease-out) forwards;
   animation-delay: 0.6s;
 }
 
 .studio-cta:hover {
-  background: #82c4f8;
   transform: translateY(-3px);
-  box-shadow: 0 12px 28px rgba(100, 181, 246, 0.35);
+  box-shadow: var(--shadow-glow-violet);
 }
 
 .studio-cta-arrow {
-  transition: transform 0.25s ease;
+  transition: transform var(--duration-fast) ease;
 }
 
 .studio-cta:hover .studio-cta-arrow {

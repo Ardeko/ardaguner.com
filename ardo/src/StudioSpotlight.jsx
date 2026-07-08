@@ -1,43 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import Reveal from "./Reveal";
 import "./StudioSpotlight.css";
 
 const STUDIO_URL = "https://ardekostudios.com";
 
 function StudioSpotlight({ language }) {
-  const sectionRef = useRef(null);
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    const node = sectionRef.current;
-    if (!node) return undefined;
-
-    if (typeof IntersectionObserver === "undefined") {
-      setIsVisible(true);
-      return undefined;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsVisible(true);
-            observer.disconnect();
-          }
-        });
-      },
-      { threshold: 0.3 }
-    );
-
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, []);
-
   return (
-    <section
-      id="studio"
-      ref={sectionRef}
-      className={`studio-section${isVisible ? " studio-visible" : ""}`}
-    >
+    <Reveal as="section" id="studio" className="studio-section">
       <div className="studio-inner">
         <span className="studio-eyebrow">
           {language === "tr" ? "İndie Oyun Stüdyosu" : "Indie Game Studio"}
@@ -81,7 +49,7 @@ function StudioSpotlight({ language }) {
           </span>
         </a>
       </div>
-    </section>
+    </Reveal>
   );
 }
 
