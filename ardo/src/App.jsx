@@ -144,29 +144,44 @@ function App() {
             <li><Link to="/codelab">Code Lab</Link></li>
           </ul>
         </nav>
-        <div className={`language-switcher lang-${language}`}>
-          <span className="lang-indicator" aria-hidden="true" />
-          <button
-            type="button"
-            className={`lang-option${language === "tr" ? " active" : ""}`}
-            onClick={() => setLanguage("tr")}
-            aria-pressed={language === "tr"}
-          >
-            <span className="lang-flag" aria-hidden="true">🇹🇷</span>
-            TR
-          </button>
-          <button
-            type="button"
-            className={`lang-option${language === "en" ? " active" : ""}`}
-            onClick={() => setLanguage("en")}
-            aria-pressed={language === "en"}
-          >
-            <span className="lang-flag" aria-hidden="true">🇬🇧</span>
-            EN
-          </button>
-        </div>
-      </header>
+        <div className={`language-switcher-v2 lang-${language}`}>
+          <div className="switch-track">
+            
+            {/* Türkçe Seçeneği (Sol) */}
+            <div
+              className={`lang-option-v2 turkish ${language === "tr" ? "active" : ""}`}
+              onClick={() => setLanguage("tr")}
+              role="button"
+              tabIndex={0}
+              aria-pressed={language === "tr"}
+              aria-label="Türkçe'ye geç"
+            >
+              {/* Buraya internetten bulduğun kristal veya normal TR bayrak resmini/SVG'sini ekle */}
+              <span className="crystal-flag tr-flag" /> 
+              <span className="lang-text">TR</span>
+            </div>
 
+            {/* Kayan Panel (Handle) */}
+            <div className="switch-handle" />
+
+            {/* İngilizce Seçeneği (Sağ) */}
+            <div
+              className={`lang-option-v2 english ${language === "en" ? "active" : ""}`}
+              onClick={() => setLanguage("en")}
+              role="button"
+              tabIndex={0}
+              aria-pressed={language === "en"}
+              aria-label="Switch to English"
+            >
+              {/* Buraya internetten bulduğun kristal veya normal EN bayrak resmini/SVG'sini ekle */}
+              <span className="crystal-flag en-flag" />
+              <span className="lang-text">EN</span>
+            </div>
+            
+          </div>
+        </div>
+        {/* ------------------------------------------ */}
+      </header>
       <Routes>
         <Route
           path="/"
