@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy, Suspense } from "react";
+import React, { useState, useEffect, useCallback, lazy, Suspense } from "react";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import "./App.css";
 import { tips } from "./tips";
@@ -8,6 +8,9 @@ import PrivacyPolicy from './PrivacyPolicy';
 import StudioSpotlight from "./StudioSpotlight";
 import Reveal from "./Reveal";
 import Particles from "./Particles";
+import Tilt from "./Tilt";
+import Magnetic from "./Magnetic";
+import { useKonamiCode, ConfettiBurst } from "./KonamiConfetti";
 
 const CodeLab = lazy(() => import("./CodeLab"));
 
@@ -47,7 +50,15 @@ function ScrollProgress() {
 
 function App() {
   const [language, setLanguage] = useState("tr");
+  const [celebrate, setCelebrate] = useState(false);
   const strings = language === "tr" ? tr : en;
+
+  const handleUnlock = useCallback(() => {
+    setCelebrate(true);
+    window.setTimeout(() => setCelebrate(false), 3600);
+  }, []);
+
+  useKonamiCode(handleUnlock);
 
   const projectList = [  
     {
@@ -119,6 +130,7 @@ function App() {
     <Router>
       <ScrollProgress />
       <Particles />
+      <ConfettiBurst active={celebrate} language={language} />
       <header className="header">
         <h1 className="modern-brand-name">
           Arda Güner<span className="pulse-dot"></span>
@@ -180,7 +192,6 @@ function App() {
           path="/"
           element={
             <>
-              {/* HERO SECTION */}
               <section id="hero" className="hero">
                 <Reveal as="h1" delay={0}>{strings.hero.title}</Reveal>
                 <Reveal as="p" delay={100}>{strings.hero.subtitle}</Reveal>
@@ -202,20 +213,21 @@ function App() {
 
                 <Reveal as="div" delay={400} style={{ marginTop: "20px" }}>
                   <h2 className="cv-title">{strings.cv.title}</h2>
-                  <a
+                  <Magnetic
+                    as="a"
                     href={language === "tr" ? "/files/arda-guner-cv-tr.pdf" : "/files/arda-guner-cv-en.pdf"}
                     className="pdf-button"
                     target="_blank"
                     rel="noopener noreferrer"
                     download={language === "tr" ? "arda-guner-cv-tr.pdf" : "arda-guner-cv-en.pdf"}
+                    strength={0.25}
                   >
                     <span className="pdf-icon">📄</span>
                     {strings.cv.downloadButton}
-                  </a>
+                  </Magnetic>
                 </Reveal>
               </section>
 
-              {/* ABOUT SECTION */}
               <Reveal as="section" id="about" className="about-container">
                 <h2 className="about-title">{strings.about.title}</h2>
                 <div className="about-content">
@@ -257,9 +269,8 @@ function App() {
                 </div>
               </Reveal>
 
-              {/* SWITCH MASTER - FEATURED APP CARD (YENİ PRO UX YERİ) */}
               <Reveal as="section" className="switch-master-wrapper">
-                <div className="switch-master-card">
+                <Tilt as="div" className="switch-master-card" strength={5}>
                   <span className="badge">
                     {language === "tr" ? "YAYINDA" : "LIVE"}
                   </span>
@@ -269,13 +280,11 @@ function App() {
                       ? "🚦 Rayları değiştir, treni kurtar! Şimdi mobil mağazalarda ücretsiz."
                       : "🚦 Switch tracks, save the train! Now free on mobile stores."}
                   </p>
-                  
-                  {/* Mağaza Butonları */}
+
                   <div className="store-buttons-container">
-                    {/* App Store */}
-                    <a 
-                      href="https://apps.apple.com/tr/app/switch-master-railway/id6770972534?l=tr" 
-                      target="_blank" 
+                    <a
+                      href="https://apps.apple.com/tr/app/switch-master-railway/id6770972534?l=tr"
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="store-btn app-store"
                     >
@@ -288,10 +297,9 @@ function App() {
                       </div>
                     </a>
 
-                    {/* Google Play */}
-                    <a 
-                      href="https://play.google.com/store/apps/details?id=com.ardeko.switchmaster&pcampaignid=web_share" 
-                      target="_blank" 
+                    <a
+                      href="https://play.google.com/store/apps/details?id=com.ardeko.switchmaster&pcampaignid=web_share"
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="store-btn google-play"
                     >
@@ -304,15 +312,14 @@ function App() {
                       </div>
                     </a>
                   </div>
-                </div>
+                </Tilt>
               </Reveal>
 
-              {/* PROJECTS SECTION */}
               <Reveal as="section" id="projects" className="projects-container">
                 <h2>{strings.projects.title}</h2>
                 <ul>
                   {projectList.map((project, index) => (
-                    <li key={index}>
+                    <Tilt as="li" key={index} strength={5}>
                       <span className="project-emoji">{project.emoji}</span>
                       <h3>{project.name}</h3>
                       <p>{project.description}</p>
@@ -323,7 +330,7 @@ function App() {
                           {strings.projects.more}
                         </a>
                       )}
-                    </li>
+                    </Tilt>
                   ))}
                 </ul>
               </Reveal>

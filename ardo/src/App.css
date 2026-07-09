@@ -1,48 +1,39 @@
-/* --- MODERN LOGO / İSİM TASARIMI --- */
 .modern-brand-name {
-  font-size: 2.4rem; /* Biraz daha iddialı ama zarif bir boyut */
+  font-size: 2.4rem;
   font-weight: 800;
-  letter-spacing: -0.04em; /* Modern tipografide harfler bir tık daha bitişiktir */
+  letter-spacing: -0.04em;
   margin: 0;
   display: inline-flex;
   align-items: baseline;
-  
-  /* Vercel/Apple stili premium metalik-beyaz geçişi */
   background: linear-gradient(135deg, #ffffff 0%, #9ca3af 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   color: transparent;
-  
-  /* Sayfa açılışında zarifçe belirme animasyonu */
   animation: textReveal 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   opacity: 0;
   transform: translateY(10px);
-  
   cursor: default;
   user-select: none;
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
 }
 
-/* Mouse ile üzerine gelince oluşan çok hafif 3D derinlik hissi */
 .modern-brand-name:hover {
   transform: scale(1.02);
   filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.15));
 }
 
-/* İsmin yanındaki teknolojik 'Nefes Alan' nokta */
 .pulse-dot {
   display: inline-block;
   width: 8px;
   height: 8px;
-  background-color: var(--accent-cyan, #06b6d4); 
+  background-color: var(--accent-cyan, #06b6d4);
   border-radius: 50%;
   margin-left: 8px;
   box-shadow: 0 0 12px var(--accent-cyan, #06b6d4);
   animation: pulseDot 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-/* Sayfa Açılış Animasyonu (Yukarı doğru zarifçe kayarak belirme) */
 @keyframes textReveal {
   to {
     opacity: 1;
@@ -50,21 +41,19 @@
   }
 }
 
-/* Noktanın nefes alma animasyonu */
 @keyframes pulseDot {
-  0%, 100% { 
-    opacity: 1; 
-    transform: scale(1); 
-    box-shadow: 0 0 12px var(--accent-cyan, #06b6d4); 
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 12px var(--accent-cyan, #06b6d4);
   }
-  50% { 
-    opacity: 0.3; 
-    transform: scale(0.7); 
-    box-shadow: 0 0 2px var(--accent-cyan, #06b6d4); 
+  50% {
+    opacity: 0.3;
+    transform: scale(0.7);
+    box-shadow: 0 0 2px var(--accent-cyan, #06b6d4);
   }
 }
 
-/* --- YENİ NESİL DİL DEĞİŞTİRİCİ V2 --- */
 .language-switcher-v2 {
   position: fixed;
   top: 16px;
@@ -78,7 +67,7 @@
   align-items: center;
   width: 150px;
   height: 48px;
-  background: rgba(15, 17, 26, 0.5); 
+  background: rgba(15, 17, 26, 0.5);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -122,12 +111,12 @@
 
 .language-switcher-v2.lang-tr .switch-handle {
   transform: translateX(0);
-  box-shadow: inset 0 0 10px rgba(255, 42, 77, 0.25), 0 0 15px rgba(255, 42, 77, 0.2); 
+  box-shadow: inset 0 0 10px rgba(255, 42, 77, 0.25), 0 0 15px rgba(255, 42, 77, 0.2);
 }
 
 .language-switcher-v2.lang-en .switch-handle {
   transform: translateX(100%);
-  box-shadow: inset 0 0 10px rgba(42, 127, 255, 0.25), 0 0 15px rgba(42, 127, 255, 0.2); 
+  box-shadow: inset 0 0 10px rgba(42, 127, 255, 0.25), 0 0 15px rgba(42, 127, 255, 0.2);
 }
 
 .lang-option-v2.turkish.active {
@@ -167,8 +156,6 @@
 .tr-flag { background-image: url('/tr-crystal.png'); }
 .en-flag { background-image: url('/en-crystal.png'); }
 
-
-/* --- KORUNAN VE GELİŞTİRİLEN DİĞER BÖLÜMLER --- */
 .scroll-progress {
   position: fixed;
   top: 0;
@@ -223,8 +210,6 @@
 .pdf-button:active { transform: translateY(0); }
 .pdf-icon { font-size: 1.1rem; }
 
-
-/* --- SWITCH MASTER KARTI & PREMIUM MAĞAZA BUTONLARI --- */
 .switch-master-wrapper {
   margin: 4rem auto;
   max-width: 800px;
@@ -284,7 +269,6 @@
   margin-right: auto;
 }
 
-/* Mağaza Butonları Konteyneri */
 .store-buttons-container {
   position: relative;
   z-index: 10;
@@ -295,7 +279,6 @@
   flex-wrap: wrap;
 }
 
-/* Ortak Buton İskeleti (Görsel 4457836927367386495 uyumlu) */
 .store-btn {
   display: inline-flex;
   align-items: center;
@@ -330,7 +313,6 @@
   letter-spacing: -0.01em;
 }
 
-/* Mağazalara Özel Hover Neon Renkleri */
 .store-btn.app-store:hover {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(42, 157, 255, 0.6);
@@ -373,8 +355,6 @@
   50% { background: #b91c1c; box-shadow: 0 0 3px #ef4444; }
 }
 
-
-/* --- DİĞER PROJE VE KART STİLLERİ --- */
 .ardeko-card {
   position: relative;
   background: var(--bg-surface-strong);
@@ -520,8 +500,6 @@
   text-decoration: underline;
 }
 
-
-/* --- MOBİL UYUMLULUK --- */
 @media (max-width: 768px) {
   .header ul {
     flex-direction: column;
@@ -547,12 +525,12 @@
     width: 110px;
     height: 110px;
   }
-  
+
   .store-buttons-container {
     flex-direction: column;
     width: 100%;
   }
-  
+
   .store-btn {
     width: 100%;
     justify-content: center;
