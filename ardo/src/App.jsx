@@ -53,6 +53,15 @@ function App() {
   const [celebrate, setCelebrate] = useState(false);
   const strings = language === "tr" ? tr : en;
 
+  const [activeTipIndex, setActiveTipIndex] = useState(0);
+
+  useEffect(() => {
+    if (tips && tips["tr"]) {
+      const randomIndex = Math.floor(Math.random() * tips["tr"].length);
+      setActiveTipIndex(randomIndex);
+    }
+  }, []);
+
   const handleUnlock = useCallback(() => {
     setCelebrate(true);
     window.setTimeout(() => setCelebrate(false), 3600);
@@ -198,7 +207,7 @@ function App() {
 
                 <Reveal as="div" delay={200} className="daily-tip-widget">
                   <h3>{strings.hero.tipTitle}</h3>
-                  <p>{tips[language][Math.floor(Math.random() * tips[language].length)]}</p>
+                  <p>{tips[language]?.[activeTipIndex] || "..."}</p>
                 </Reveal>
 
                 <Reveal
