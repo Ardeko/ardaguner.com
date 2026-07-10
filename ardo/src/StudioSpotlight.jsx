@@ -29,6 +29,16 @@ function StudioSpotlight({ language }) {
           </span>
         </div>
 
+        <div className="studio-logo-wrap">
+          <img
+            src="/ardeko.png"
+            alt={language === "tr" ? "Ardeko Studios logosu" : "Ardeko Studios logo"}
+            className="studio-logo"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+
         <h2 className="studio-heading">Ardeko Studios</h2>
 
         <p className="studio-tagline">
