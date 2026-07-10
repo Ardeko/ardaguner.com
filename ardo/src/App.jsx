@@ -324,6 +324,29 @@ function App() {
                 </Tilt>
               </Reveal>
 
+              <Reveal as="section" className="switch-master-wrapper">
+                <Tilt as="div" className="ardeko-card" strength={5}>
+                  <span className="ardeko-badge">
+                    {language === "tr" ? "CANLI · TARAYICIDA ÇALIŞIR" : "LIVE · RUNS IN BROWSER"}
+                  </span>
+                  <h2>💬 Revo</h2>
+                  <p>
+                    {language === "tr"
+                      ? "SignalR ve WebRTC ile güçlendirilmiş, tarayıcı üzerinden anlık sesli ve yazılı sohbet platformu. Kurulum yok — tek tıkla bir odaya katıl, arkadaşlarınla aynı frekansta buluş."
+                      : "A browser-based instant voice & text chat platform powered by SignalR and WebRTC. No install — join a room in one click and connect with friends instantly."}
+                  </p>
+                  <a
+                    href="https://ardekostudios.xyz"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="revo-button"
+                  >
+                    <span>🚀</span>
+                    {language === "tr" ? "Sohbete Başla" : "Start Chatting"}
+                  </a>
+                </Tilt>
+              </Reveal>
+
               <Reveal as="section" id="projects" className="projects-container">
                 <h2>{strings.projects.title}</h2>
                 <ul>
