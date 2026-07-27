@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, lazy, Suspense } from "react";
+import React, { useState, useEffect, useCallback, useRef, lazy, Suspense } from "react";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import "./App.css";
 import { tips } from "./tips";
@@ -60,6 +60,53 @@ function App() {
       const randomIndex = Math.floor(Math.random() * tips["tr"].length);
       setActiveTipIndex(randomIndex);
     }
+  }, []);
+
+  // Header, scroll edildiğinde arka planına blur/gölge kazanır
+  const [headerScrolled, setHeaderScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setHeaderScrolled(window.scrollY > 24);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Proje kartları ekrana girince sırayla (stagger) beliriyor
+  const projectListRef = useRef(null);
+  const [projectsVisible, setProjectsVisible] = useState(false);
+  useEffect(() => {
+    const el = projectListRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setProjectsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.15 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // Mobil hamburger menü
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const closeMobileMenu = useCallback(() => setMobileMenuOpen(false), []);
+
+  useEffect(() => {
+    document.body.style.overflow = mobileMenuOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileMenuOpen]);
+
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") setMobileMenuOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
 
   const handleUnlock = useCallback(() => {
@@ -140,29 +187,53 @@ function App() {
       <ScrollProgress />
       <Particles />
       <ConfettiBurst active={celebrate} language={language} />
-      <header className="header">
+      <header className={`header ${headerScrolled ? "header-scrolled" : ""}`}>
         <h1 className="modern-brand-name">
-          Arda Güner<span className="pulse-dot"></span>
+          Arda Güner
         </h1>
         <p>{strings.profession}</p>
-        <nav>
+
+        <button
+          type="button"
+          className={`hamburger ${mobileMenuOpen ? "is-open" : ""}`}
+          onClick={() => setMobileMenuOpen((open) => !open)}
+          aria-expanded={mobileMenuOpen}
+          aria-controls="primary-navigation"
+          aria-label={
+            mobileMenuOpen
+              ? (language === "tr" ? "Menüyü kapat" : "Close menu")
+              : (language === "tr" ? "Menüyü aç" : "Open menu")
+          }
+        >
+          <span />
+          <span />
+          <span />
+        </button>
+
+        <div
+          className={`nav-backdrop ${mobileMenuOpen ? "is-visible" : ""}`}
+          onClick={closeMobileMenu}
+          aria-hidden="true"
+        />
+
+        <nav id="primary-navigation" className={mobileMenuOpen ? "nav-open" : ""}>
           <ul>
             <li>
-              <Link to="/">{strings.nav.home}</Link>
+              <Link to="/" onClick={closeMobileMenu}>{strings.nav.home}</Link>
             </li>
             <li>
-              <a href="#about">{strings.nav.about}</a>
+              <a href="#about" onClick={closeMobileMenu}>{strings.nav.about}</a>
             </li>
             <li>
-              <a href="#projects">{strings.nav.projects}</a>
+              <a href="#projects" onClick={closeMobileMenu}>{strings.nav.projects}</a>
             </li>
             <li>
-              <a href="#studio">{language === "tr" ? "Stüdyo" : "Studio"}</a>
+              <a href="#studio" onClick={closeMobileMenu}>{language === "tr" ? "Stüdyo" : "Studio"}</a>
             </li>
             <li>
-              <a href="#contact">{strings.nav.contact}</a>
+              <a href="#contact" onClick={closeMobileMenu}>{strings.nav.contact}</a>
             </li>
-            <li><Link to="/codelab">Code Lab</Link></li>
+            <li><Link to="/codelab" onClick={closeMobileMenu}>Code Lab</Link></li>
           </ul>
         </nav>
         <div className={`language-switcher-v2 lang-${language}`}>
@@ -200,7 +271,7 @@ function App() {
         <Route
           path="/"
           element={
-            <>
+            <div className="page-fade" key={language}>
               <section id="hero" className="hero">
                 <Reveal as="h1" delay={0}>{strings.hero.title}</Reveal>
                 <Reveal as="p" delay={100}>{strings.hero.subtitle}</Reveal>
@@ -349,7 +420,7 @@ function App() {
 
               <Reveal as="section" id="projects" className="projects-container">
                 <h2>{strings.projects.title}</h2>
-                <ul>
+                <ul ref={projectListRef} className={projectsVisible ? "in-view" : ""}>
                   {projectList.map((project, index) => (
                     <Tilt as="li" key={index} strength={5}>
                       <span className="project-emoji">{project.emoji}</span>
@@ -368,13 +439,20 @@ function App() {
               </Reveal>
 
               <StudioSpotlight language={language} />
-            </>
+            </div>
           }
         />
         <Route
           path="/codelab"
           element={
-            <Suspense fallback={<div style={{color:"#fff", padding:"2rem"}}>Loading Code Lab…</div>}>
+            <Suspense
+              fallback={
+                <div className="lab-loading">
+                  <span className="lab-spinner" />
+                  <span>Loading Code Lab…</span>
+                </div>
+              }
+            >
               <CodeLab lang={language} strings={strings} />
             </Suspense>
           }
