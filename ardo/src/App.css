@@ -142,6 +142,69 @@
   transition: width 0.1s linear;
 }
 
+/* Özel imleç: küçük nokta + gecikmeli takip eden halka.
+   Sadece gerçek fare kullanan (dokunmatik olmayan) cihazlarda JS ile etkinleşir. */
+.custom-cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: var(--accent-cyan);
+  pointer-events: none;
+  z-index: 3000;
+  transition: opacity 0.2s ease;
+  will-change: transform;
+}
+
+.custom-cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  border-radius: 50%;
+  border: 1px solid rgba(34, 211, 238, 0.5);
+  box-shadow: var(--shadow-glow-cyan);
+  pointer-events: none;
+  z-index: 2999;
+  transition: width 0.25s var(--ease-out), height 0.25s var(--ease-out),
+    margin 0.25s var(--ease-out), border-color 0.25s ease,
+    background 0.25s ease, box-shadow 0.25s ease, opacity 0.2s ease;
+  will-change: transform;
+}
+
+.custom-cursor-ring.cursor-ring-hover {
+  width: 58px;
+  height: 58px;
+  margin: -29px 0 0 -29px;
+  border-color: var(--accent-violet);
+  background: var(--accent-violet-soft);
+  box-shadow: var(--shadow-glow-violet);
+}
+
+.custom-cursor-ring.cursor-ring-active {
+  width: 26px;
+  height: 26px;
+  margin: -13px 0 0 -13px;
+}
+
+/* Native imleç, özel imleç aktifken gizlenir; form alanlarında dokunulmaz */
+body.custom-cursor-active,
+body.custom-cursor-active * {
+  cursor: none !important;
+}
+
+body.custom-cursor-active input,
+body.custom-cursor-active textarea,
+body.custom-cursor-active select,
+body.custom-cursor-active [contenteditable] {
+  cursor: auto !important;
+}
+
 /* Header: scroll edilince ince bir cam/gölge kazanır */
 .header {
   position: sticky;
@@ -722,8 +785,16 @@
     transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     z-index: 1050;
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.75rem;
     padding: 5rem 2rem 2rem;
+  }
+
+  /* Switcher artık menünün içinde normal akışta, sabit konumlama yok */
+  .header nav .language-switcher-v2 {
+    position: static;
+    align-self: flex-start;
   }
 
   .header nav.nav-open {
@@ -769,15 +840,7 @@
     right: 0.5rem;
   }
 
-  /* Dil switcher'ı sağ üstte, hamburger'ın soluna alınır — böylece
-     başlıkla (sol üst) çakışmaz */
-  .language-switcher-v2 {
-    position: fixed;
-    top: 12px;
-    left: auto;
-    right: 70px;
-  }
-
+  /* Menü içindeki dil switcher'ı biraz daha kompakt */
   .switch-track {
     width: 118px;
     height: 40px;
@@ -853,6 +916,7 @@
   .header ul li,
   .hamburger span,
   .nav-backdrop,
+  .custom-cursor-ring,
   .profile-picture,
   .store-btn,
   .store-btn svg,

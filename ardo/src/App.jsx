@@ -48,6 +48,109 @@ function ScrollProgress() {
   return <div className="scroll-progress" style={{ width: `${progress}%` }} />;
 }
 
+function CustomCursor() {
+  const dotRef = useRef(null);
+  const ringRef = useRef(null);
+  const [enabled, setEnabled] = useState(false);
+
+  // Sadece gerçek fare + hover destekleyen cihazlarda aktif (mobil/dokunmatik hariç)
+  useEffect(() => {
+    const query = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const syncEnabled = () => setEnabled(query.matches);
+    syncEnabled();
+    query.addEventListener("change", syncEnabled);
+    return () => query.removeEventListener("change", syncEnabled);
+  }, []);
+
+  useEffect(() => {
+    if (!enabled) return undefined;
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const interactiveSelector = "a, button, [role='button'], input, textarea, select, .tilt, .magnetic";
+
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+    let ringX = mouseX;
+    let ringY = mouseY;
+    let rafId = null;
+
+    const onMouseMove = (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      if (dotRef.current) {
+        dotRef.current.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
+      }
+      if (reduceMotion && ringRef.current) {
+        ringRef.current.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
+      }
+    };
+
+    const onMouseOver = (e) => {
+      if (e.target.closest && e.target.closest(interactiveSelector)) {
+        ringRef.current?.classList.add("cursor-ring-hover");
+      }
+    };
+    const onMouseOut = (e) => {
+      if (e.target.closest && e.target.closest(interactiveSelector)) {
+        ringRef.current?.classList.remove("cursor-ring-hover");
+      }
+    };
+    const onMouseDown = () => ringRef.current?.classList.add("cursor-ring-active");
+    const onMouseUp = () => ringRef.current?.classList.remove("cursor-ring-active");
+    const onMouseLeaveWindow = () => {
+      dotRef.current?.style.setProperty("opacity", "0");
+      ringRef.current?.style.setProperty("opacity", "0");
+    };
+    const onMouseEnterWindow = () => {
+      dotRef.current?.style.setProperty("opacity", "1");
+      ringRef.current?.style.setProperty("opacity", "1");
+    };
+
+    window.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseover", onMouseOver);
+    document.addEventListener("mouseout", onMouseOut);
+    window.addEventListener("mousedown", onMouseDown);
+    window.addEventListener("mouseup", onMouseUp);
+    document.addEventListener("mouseleave", onMouseLeaveWindow);
+    document.addEventListener("mouseenter", onMouseEnterWindow);
+
+    if (!reduceMotion) {
+      const animateRing = () => {
+        ringX += (mouseX - ringX) * 0.16;
+        ringY += (mouseY - ringY) * 0.16;
+        if (ringRef.current) {
+          ringRef.current.style.transform = `translate3d(${ringX}px, ${ringY}px, 0)`;
+        }
+        rafId = requestAnimationFrame(animateRing);
+      };
+      rafId = requestAnimationFrame(animateRing);
+    }
+
+    document.body.classList.add("custom-cursor-active");
+
+    return () => {
+      window.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("mouseover", onMouseOver);
+      document.removeEventListener("mouseout", onMouseOut);
+      window.removeEventListener("mousedown", onMouseDown);
+      window.removeEventListener("mouseup", onMouseUp);
+      document.removeEventListener("mouseleave", onMouseLeaveWindow);
+      document.removeEventListener("mouseenter", onMouseEnterWindow);
+      if (rafId) cancelAnimationFrame(rafId);
+      document.body.classList.remove("custom-cursor-active");
+    };
+  }, [enabled]);
+
+  if (!enabled) return null;
+
+  return (
+    <>
+      <div ref={dotRef} className="custom-cursor-dot" />
+      <div ref={ringRef} className="custom-cursor-ring" />
+    </>
+  );
+}
+
 function App() {
   const [language, setLanguage] = useState("tr");
   const [celebrate, setCelebrate] = useState(false);
@@ -184,6 +287,7 @@ function App() {
 
   return (
     <Router>
+      <CustomCursor />
       <ScrollProgress />
       <Particles />
       <ConfettiBurst active={celebrate} language={language} />
@@ -217,6 +321,35 @@ function App() {
         />
 
         <nav id="primary-navigation" className={mobileMenuOpen ? "nav-open" : ""}>
+          <div className={`language-switcher-v2 lang-${language}`}>
+            <div className="switch-track">
+              <div
+                className={`lang-option-v2 turkish ${language === "tr" ? "active" : ""}`}
+                onClick={() => setLanguage("tr")}
+                role="button"
+                tabIndex={0}
+                aria-pressed={language === "tr"}
+                aria-label="Türkçe'ye geç"
+              >
+                <span className="crystal-flag tr-flag" /> 
+                <span className="lang-text">TR</span>
+              </div>
+
+              <div className="switch-handle" />
+
+              <div
+                className={`lang-option-v2 english ${language === "en" ? "active" : ""}`}
+                onClick={() => setLanguage("en")}
+                role="button"
+                tabIndex={0}
+                aria-pressed={language === "en"}
+                aria-label="Switch to English"
+              >
+                <span className="crystal-flag en-flag" />
+                <span className="lang-text">EN</span>
+              </div>
+            </div>
+          </div>
           <ul>
             <li>
               <Link to="/" onClick={closeMobileMenu}>{strings.nav.home}</Link>
@@ -236,35 +369,6 @@ function App() {
             <li><Link to="/codelab" onClick={closeMobileMenu}>Code Lab</Link></li>
           </ul>
         </nav>
-        <div className={`language-switcher-v2 lang-${language}`}>
-          <div className="switch-track">
-            <div
-              className={`lang-option-v2 turkish ${language === "tr" ? "active" : ""}`}
-              onClick={() => setLanguage("tr")}
-              role="button"
-              tabIndex={0}
-              aria-pressed={language === "tr"}
-              aria-label="Türkçe'ye geç"
-            >
-              <span className="crystal-flag tr-flag" /> 
-              <span className="lang-text">TR</span>
-            </div>
-
-            <div className="switch-handle" />
-
-            <div
-              className={`lang-option-v2 english ${language === "en" ? "active" : ""}`}
-              onClick={() => setLanguage("en")}
-              role="button"
-              tabIndex={0}
-              aria-pressed={language === "en"}
-              aria-label="Switch to English"
-            >
-              <span className="crystal-flag en-flag" />
-              <span className="lang-text">EN</span>
-            </div>
-          </div>
-        </div>
       </header>
       
       <Routes>
