@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Forza Orbit - Ardeko Studios</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+        html, body { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; background-color: #0B0F19; display: flex; justify-content: center; align-items: center; }
+        canvas { display: block; touch-action: none; margin: auto !important; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+</head>
+<body>
+<script>
+window.audioEnabled = true;
+window.audioCtx = null;
+
+window.THEMES = [
+    { id: 'cyber',   name: 'CYBER',   accent: 0x00E5FF, accentStr: '#00E5FF', starColor: 0x88EEFF, bg: '#0B0F19', unlockScore: 0  },
+    { id: 'neon',    name: 'NEON',    accent: 0xFF00E5, accentStr: '#FF00E5', starColor: 0xFF88EE, bg: '#0F0B19', unlockScore: 20 },
+    { id: 'inferno', name: 'INFERNO', accent: 0xFF6600, accentStr: '#FF6600', starColor: 0xFFAA44, bg: '#190B0B', unlockScore: 50 },
+];
+window.activeThemeId = localStorage.getItem('forzaOrbit_theme') || 'cyber';
+
+function getTheme() {
+    return window.THEMES.find(t => t.id === window.activeThemeId) || window.THEMES[0];
+}
+
+class Synth {
+    static init() {
+        if (!window.audioCtx) window.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (window.audioCtx.state === 'suspended') window.audioCtx.resume();
+    }
+    static play(type) {
+        if (!window.audioEnabled || !window.audioCtx) return;
+        const ctx = window.audioCtx;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        const now = ctx.currentTime;
+        if (type === 'shoot') {
+            osc.type = 'sine'; osc.frequency.setValueAtTime(400, now); osc.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
+            gain.gain.setValueAtTime(0.2, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1); osc.start(now); osc.stop(now + 0.1);
+        } else if (type === 'attach') {
+            osc.type = 'triangle'; osc.frequency.setValueAtTime(800, now); osc.frequency.setValueAtTime(1600, now + 0.05);
+            gain.gain.setValueAtTime(0.3, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4); osc.start(now); osc.stop(now + 0.4);
+        } else if (type === 'perfect') {
+            osc.type = 'square'; osc.frequency.setValueAtTime(1200, now); osc.frequency.setValueAtTime(2400, now + 0.1);
+            gain.gain.setValueAtTime(0.3, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.6); osc.start(now); osc.stop(now + 0.6);
+        } else if (type === 'combo') {
+            osc.type = 'sine'; osc.frequency.setValueAtTime(600, now); osc.frequency.exponentialRampToValueAtTime(2000, now + 0.3);
+            gain.gain.setValueAtTime(0.4, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3); osc.start(now); osc.stop(now + 0.3);
+        } else if (type === 'die') {
+            osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, now); osc.frequency.exponentialRampToValueAtTime(40, now + 0.5);
+            gain.gain.setValueAtTime(0.4, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5); osc.start(now); osc.stop(now + 0.5);
+        } else if (type === 'revive') {
+            osc.type = 'sine'; osc.frequency.setValueAtTime(200, now); osc.frequency.exponentialRampToValueAtTime(1600, now + 0.5);
+            gain.gain.setValueAtTime(0.5, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5); osc.start(now); osc.stop(now + 0.5);
+        } else if (type === 'pause') {
+            osc.type = 'sine'; osc.frequency.setValueAtTime(800, now); osc.frequency.setValueAtTime(400, now + 0.1);
+            gain.gain.setValueAtTime(0.2, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2); osc.start(now); osc.stop(now + 0.2);
+        } else if (type === 'unlock') {
+            for (let i = 0; i < 3; i++) {
+                const o2 = ctx.createOscillator(); const g2 = ctx.createGain();
+                o2.connect(g2); g2.connect(ctx.destination);
+                o2.type = 'sine'; o2.frequency.setValueAtTime(400 + i * 300, now + i * 0.15);
+                g2.gain.setValueAtTime(0.3, now + i * 0.15); g2.gain.exponentialRampToValueAtTime(0.01, now + i * 0.15 + 0.2);
+                o2.start(now + i * 0.15); o2.stop(now + i * 0.15 + 0.2);
+            }
+        } else if (type === 'milestone') {
+            const notes = [523, 659, 784, 1047, 1319];
+            notes.forEach((freq, i) => {
+                const o2 = ctx.createOscillator(); const g2 = ctx.createGain();
+                o2.connect(g2); g2.connect(ctx.destination);
+                o2.type = 'square'; o2.frequency.setValueAtTime(freq, now + i * 0.08);
+                g2.gain.setValueAtTime(0.25, now + i * 0.08); g2.gain.exponentialRampToValueAtTime(0.01, now + i * 0.08 + 0.15);
+                o2.start(now + i * 0.08); o2.stop(now + i * 0.08 + 0.15);
+            });
+        } else if (type === 'newbest') {
+            osc.type = 'sine'; osc.frequency.setValueAtTime(440, now); osc.frequency.exponentialRampToValueAtTime(1760, now + 0.4);
+            gain.gain.setValueAtTime(0.4, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.8); osc.start(now); osc.stop(now + 0.8);
+        } else if (type === 'tutorial') {
+            osc.type = 'sine'; osc.frequency.setValueAtTime(660, now); osc.frequency.setValueAtTime(880, now + 0.1);
+            gain.gain.setValueAtTime(0.2, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25); osc.start(now); osc.stop(now + 0.25);
+        }
+    }
+}
+
+window.MILESTONES = [
+    { score: 10,  label: 'FIRST STEPS',  icon: '⭐', color: '#FFE500' },
+    { score: 25,  label: 'GETTING HOT',  icon: '🔥', color: '#FF8800' },
+    { score: 50,  label: 'ON FIRE',      icon: '💥', color: '#FF4400' },
+    { score: 100, label: 'LEGEND',       icon: '👑', color: '#FFD700' },
+    { score: 200, label: 'GODLIKE',      icon: '⚡', color: '#00E5FF' },
+];
+
+function checkAndUpdateStreak() {
+    const today = new Date().toDateString();
+    const lastPlay = localStorage.getItem('forzaOrbit_lastPlay');
+    let streak = parseInt(localStorage.getItem('forzaOrbit_streak') || '0');
+    if (lastPlay === today) return streak;
+    const yesterday = new Date(Date.now() - 86400000).toDateString();
+    streak = (lastPlay === yesterday) ? streak + 1 : 1;
+    localStorage.setItem('forzaOrbit_streak', streak);
+    localStorage.setItem('forzaOrbit_lastPlay', today);
+    return streak;
+}
+
+function createStarBackground(scene) {
+    const theme = getTheme();
+    const W = 1080, H = 1920;
+    const M = 70;
+
+    let bg = scene.add.graphics();
+    bg.fillStyle(theme.accent, 0.04); bg.fillCircle(300,  600,  650);
+    bg.fillStyle(theme.accent, 0.03); bg.fillCircle(800,  1400, 550);
+    bg.fillStyle(0x4400FF,     0.03); bg.fillCircle(540,  960,  750);
+
+    let stars1 = [];
+    for (let i = 0; i < 80; i++) {
+        let s = scene.add.image(
+            Phaser.Math.Between(-M, W + M),
+            Phaser.Math.Between(-M, H + M),
+            'dot'
+        ).setScale(Phaser.Math.FloatBetween(0.04, 0.1))
+         .setAlpha(Phaser.Math.FloatBetween(0.2, 0.5))
+         .setTint(theme.starColor)
+         .setBlendMode('ADD');
+        stars1.push(s);
+    }
+
+    let stars2 = [];
+    for (let i = 0; i < 40; i++) {
+        let s = scene.add.image(
+            Phaser.Math.Between(-M, W + M),
+            Phaser.Math.Between(-M, H + M),
+            'dot'
+        ).setScale(Phaser.Math.FloatBetween(0.08, 0.18))
+         .setAlpha(Phaser.Math.FloatBetween(0.3, 0.7))
+         .setTint(theme.starColor)
+         .setBlendMode('ADD');
+        scene.tweens.add({
+            targets: s, alpha: Phaser.Math.FloatBetween(0.1, 0.3),
+            duration: Phaser.Math.Between(1500, 4000), yoyo: true, repeat: -1,
+            delay: Phaser.Math.Between(0, 2000), ease: 'Sine.easeInOut'
+        });
+        stars2.push(s);
+    }
+
+    let stars3 = [];
+    for (let i = 0; i < 12; i++) {
+        let s = scene.add.image(
+            Phaser.Math.Between(-M, W + M),
+            Phaser.Math.Between(-M, H + M),
+            'dot'
+        ).setScale(Phaser.Math.FloatBetween(0.2, 0.35))
+         .setAlpha(Phaser.Math.FloatBetween(0.4, 0.8))
+         .setTint(0xffffff)
+         .setBlendMode('ADD');
+        scene.tweens.add({
+            targets: s, alpha: Phaser.Math.FloatBetween(0.1, 0.4), scale: s.scale * 0.6,
+            duration: Phaser.Math.Between(2000, 5000), yoyo: true, repeat: -1,
+            delay: Phaser.Math.Between(0, 3000), ease: 'Sine.easeInOut'
+        });
+        stars3.push(s);
+    }
+
+    return { bg, stars1, stars2, stars3 };
+}
+
+function updateStarParallax(starLayers, cameraScrollY) {
+    const { stars1, stars2, stars3 } = starLayers;
+    const W = 1080, H = 1920;
+    stars1.forEach(s => {
+        s.y += 0.08;
+        if (s.y > H + 70) s.y = -70;
+    });
+    stars2.forEach(s => {
+        s.y += 0.15;
+        if (s.y > H + 70) s.y = -70;
+    });
+    stars3.forEach(s => {
+        s.y += 0.25;
+        if (s.y > H + 70) s.y = -70;
+    });
+}
+
+class TutorialScene extends Phaser.Scene {
+    constructor() { super('TutorialScene'); }
+
+    create() {
+        this.cameras.main.fadeIn(600, 11, 15, 25);
+        const theme = getTheme();
+        this.step = 0;
+        this.demoObjects = [];
+        this.activeDemoTween = null;
+
+        createStarBackground(this);
+
+        this.add.text(540, 130, 'HOW TO PLAY', {
+            fontFamily: 'Impact, sans-serif', fontSize: '72px', color: theme.accentStr, letterSpacing: 8
+        }).setOrigin(0.5).setShadow(0, 0, theme.accentStr, 20, false, true);
+
+        this.demoGraphics = this.add.graphics().setDepth(2);
+
+        let divLine = this.add.graphics().setDepth(2);
+        divLine.lineStyle(1, 0x333355, 0.7);
+        divLine.lineBetween(120, 1030, 960, 1030);
+
+        this.stepIcon  = this.add.text(540, 1100, '', { fontSize: '80px' }).setOrigin(0.5).setDepth(3);
+        this.stepTitle = this.add.text(540, 1225, '', {
+            fontFamily: 'Impact, sans-serif', fontSize: '70px', color: '#ffffff'
+        }).setOrigin(0.5).setDepth(3);
+        this.stepDesc  = this.add.text(540, 1390, '', {
+            fontFamily: 'Arial, sans-serif', fontSize: '44px', color: '#cccccc',
+            align: 'center', lineSpacing: 14
+        }).setOrigin(0.5).setDepth(3);
+
+        this.dots = [];
+        for (let i = 0; i < 4; i++) {
+            let d = this.add.graphics().setDepth(3);
+            this.dots.push(d);
+        }
+
+        this.nextBtn = this.add.rectangle(540, 1720, 580, 110, theme.accent).setInteractive().setDepth(3);
+        this.nextTxt = this.add.text(540, 1720, 'NEXT  ›', {
+            fontFamily: 'Arial, sans-serif', fontSize: '50px', color: '#000000', fontStyle: 'bold'
+        }).setOrigin(0.5).setDepth(4);
+        this.tweens.add({ targets: this.nextBtn, scaleX: 1.02, scaleY: 1.02, duration: 600, yoyo: true, repeat: -1 });
+        this.nextBtn.on('pointerdown', () => this.nextStep());
+
+        let skipBtn = this.add.text(540, 1860, 'SKIP TUTORIAL', {
+            fontFamily: 'Arial, sans-serif', fontSize: '34px', color: '#555566', letterSpacing: 4
+        }).setOrigin(0.5).setDepth(3).setInteractive();
+        skipBtn.on('pointerdown', () => this.finishTutorial());
+        skipBtn.on('pointerover', () => skipBtn.setColor('#aaaaaa'));
+        skipBtn.on('pointerout',  () => skipBtn.setColor('#555566'));
+
+        this.steps = [
+            { icon: '⭕', title: 'ORBIT',         desc: 'Your dot orbits\naround the ring.',              anim: () => this.playOrbitAnim()   },
+            { icon: '👆', title: 'TAP TO LAUNCH', desc: 'Tap to launch toward\nthe next ring.',           anim: () => this.playLaunchAnim()  },
+            { icon: '🎯', title: 'PERFECT HIT',   desc: 'Land ON the ring edge\nfor a PERFECT bonus!',    anim: () => this.playPerfectAnim() },
+            { icon: '🔥', title: 'BUILD COMBOS',  desc: '5+ perfects = x2 pts\n10+ perfects = x3 pts!',  anim: () => this.playComboAnim()   },
+        ];
+
+        this.showStep(0);
+    }
+
+    clearDemo() {
+        this.demoGraphics.clear();
+        this.demoObjects.forEach(o => { try { o.destroy(); } catch(e){} });
+        this.demoObjects = [];
+        if (this.activeDemoTween) {
+            try {
+                if (this.activeDemoTween.stop)   this.activeDemoTween.stop();
+                if (this.activeDemoTween.remove) this.activeDemoTween.remove();
+            } catch(e) {}
+            this.activeDemoTween = null;
+        }
+    }
+
+    showStep(index) {
+        const theme = getTheme();
+        const s = this.steps[index];
+        Synth.play('tutorial');
+        this.clearDemo();
+
+        this.tweens.add({
+            targets: [this.stepIcon, this.stepTitle, this.stepDesc],
+            alpha: 0, x: '-=60', duration: 180, ease: 'Sine.easeIn',
+            onComplete: () => {
+                this.stepIcon.setText(s.icon).setX(540).setAlpha(0);
+                this.stepTitle.setText(s.title).setX(540).setAlpha(0);
+                this.stepDesc.setText(s.desc).setX(540).setAlpha(0);
+                this.tweens.add({
+                    targets: [this.stepIcon, this.stepTitle, this.stepDesc],
+                    alpha: 1, x: 540, duration: 280, ease: 'Back.easeOut'
+                });
+            }
+        });
+
+        s.anim();
+
+        this.dots.forEach((d, i) => {
+            d.clear();
+            d.fillStyle(i === index ? theme.accent : 0x444455, 1);
+            d.fillCircle(540 + (i - 1.5) * 50, 1620, i === index ? 12 : 8);
+        });
+
+        this.nextTxt.setText(index === this.steps.length - 1 ? "LET'S GO!" : 'NEXT  ›');
+    }
+
+    playOrbitAnim() {
+        const cx = 540, cy = 640, r = 140;
+        this.demoGraphics.lineStyle(5, 0xffffff, 0.35);
+        this.demoGraphics.strokeCircle(cx, cy, r);
+        this.demoGraphics.fillStyle(0xffffff, 0.12);
+        this.demoGraphics.fillCircle(cx, cy, 10);
+
+        let dot  = this.add.image(cx + r, cy, 'dot').setScale(1.5).setTint(getTheme().accent).setDepth(4);
+        let glow = this.add.image(cx + r, cy, 'dot').setScale(3.0).setTint(getTheme().accent).setAlpha(0.2).setDepth(3).setBlendMode('ADD');
+        this.demoObjects.push(dot, glow);
+
+        let angle = 0;
+        this.activeDemoTween = this.tweens.addCounter({
+            from: 0, to: Math.PI * 2, duration: 2200, repeat: -1, ease: 'Linear',
+            onUpdate: (t) => {
+                angle = t.getValue();
+                dot.x  = cx + Math.cos(angle) * r;
+                dot.y  = cy + Math.sin(angle) * r;
+                glow.x = dot.x; glow.y = dot.y;
+            }
+        });
+    }
+
+    playLaunchAnim() {
+        const theme = getTheme();
+        const cx = 540, cy1 = 780, cy2 = 500, r1 = 110, r2 = 90;
+
+        this.demoGraphics.lineStyle(4, 0xffffff, 0.3);
+        this.demoGraphics.strokeCircle(cx, cy1, r1);
+        this.demoGraphics.lineStyle(5, theme.accent, 0.9);
+        this.demoGraphics.strokeCircle(cx, cy2, r2);
+
+        let dot  = this.add.image(cx + r1, cy1, 'dot').setScale(1.5).setTint(theme.accent).setDepth(4);
+        let glow = this.add.image(cx + r1, cy1, 'dot').setScale(3.0).setTint(theme.accent).setAlpha(0.2).setDepth(3).setBlendMode('ADD');
+        let tapTxt = this.add.text(cx + 200, cy1 - 15, '👆 TAP', {
+            fontFamily: 'Arial, sans-serif', fontSize: '38px', color: '#ffffff'
+        }).setOrigin(0.5).setDepth(4).setAlpha(0);
+        this.demoObjects.push(dot, glow, tapTxt);
+        this.tweens.add({ targets: tapTxt, alpha: 1, duration: 300, delay: 600, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+
+        this.activeDemoTween = this.tweens.addCounter({
+            from: 0, to: 100, duration: 2400, repeat: -1, ease: 'Linear',
+            onUpdate: (t) => {
+                const v = t.getValue();
+                if (v < 45) {
+                    const a = (v / 45) * Math.PI * 2;
+                    dot.x = cx + Math.cos(a) * r1;
+                    dot.y = cy1 + Math.sin(a) * r1;
+                } else if (v < 68) {
+                    const p = (v - 45) / 23;
+                    dot.x = Phaser.Math.Linear(cx + r1, cx + r2, p);
+                    dot.y = Phaser.Math.Linear(cy1, cy2, p);
+                } else {
+                    const a = ((v - 68) / 32) * Math.PI;
+                    dot.x = cx + Math.cos(a) * r2;
+                    dot.y = cy2 + Math.sin(a) * r2;
+                }
+                glow.x = dot.x; glow.y = dot.y;
+            }
+        });
+    }
+
+    playPerfectAnim() {
+        const theme = getTheme();
+        const cx = 540, cy = 640, r = 140;
+
+        this.demoGraphics.lineStyle(5, theme.accent, 0.85);
+        this.demoGraphics.strokeCircle(cx, cy, r);
+
+        let dot  = this.add.image(cx + r, cy, 'dot').setScale(1.5).setTint(0xffffff).setDepth(4);
+        let glow = this.add.image(cx + r, cy, 'dot').setScale(3.0).setTint(0xffffff).setAlpha(0.2).setDepth(3).setBlendMode('ADD');
+        let perfectTxt = this.add.text(cx, cy - 200, 'PERFECT!', {
+            fontFamily: 'Impact, sans-serif', fontSize: '80px', color: '#ffffff'
+        }).setOrigin(0.5).setAlpha(0).setDepth(4);
+        perfectTxt.setShadow(0, 0, theme.accentStr, 20, false, true);
+        this.demoObjects.push(dot, glow, perfectTxt);
+
+        let flashing = false;
+        this.activeDemoTween = this.tweens.addCounter({
+            from: 0, to: Math.PI * 2, duration: 2600, repeat: -1, ease: 'Linear',
+            onUpdate: (t) => {
+                const a = t.getValue();
+                dot.x  = cx + Math.cos(a) * r;
+                dot.y  = cy + Math.sin(a) * r;
+                glow.x = dot.x; glow.y = dot.y;
+                if (a > Math.PI * 1.88 && !flashing) {
+                    flashing = true;
+                    this.tweens.add({
+                        targets: perfectTxt, alpha: 1, scale: 1.2, duration: 180, yoyo: true,
+                        onComplete: () => { perfectTxt.setAlpha(0).setScale(1); flashing = false; }
+                    });
+                }
+            }
+        });
+    }
+
+    playComboAnim() {
+        const theme = getTheme();
+        const cx = 540, cy = 630;
+        this.demoGraphics.lineStyle(2, theme.accent, 0.18);
+        this.demoGraphics.strokeCircle(cx, cy, 160);
+
+        const labels    = ['x1', 'x2', 'x3'];
+        const colors    = ['#aaaaaa', '#FFE500', '#FF6600'];
+        const subtitles = ['PERFECT STREAK', 'COMBO x2!', 'MAX COMBO x3!'];
+        let idx = 0;
+
+        let badge = this.add.text(cx, cy - 10, 'x1', {
+            fontFamily: 'Impact, sans-serif', fontSize: '210px', color: '#aaaaaa'
+        }).setOrigin(0.5).setDepth(3);
+        badge.setShadow(0, 0, '#aaaaaa', 12, false, true);
+
+        let subTxt = this.add.text(cx, cy + 150, 'PERFECT STREAK', {
+            fontFamily: 'Arial, sans-serif', fontSize: '38px', color: '#666677', letterSpacing: 4
+        }).setOrigin(0.5).setDepth(3);
+
+        this.demoObjects.push(badge, subTxt);
+        this.activeDemoTween = this.time.addEvent({
+            delay: 950, repeat: -1,
+            callback: () => {
+                idx = (idx + 1) % labels.length;
+                badge.setText(labels[idx]).setColor(colors[idx]);
+                badge.setShadow(0, 0, colors[idx], 15, false, true);
+                subTxt.setText(subtitles[idx]).setColor(colors[idx]);
+                this.tweens.add({ targets: badge, scale: 1.25, duration: 180, yoyo: true });
+            }
+        });
+    }
+
+    nextStep() {
+        this.step++;
+        if (this.step >= this.steps.length) this.finishTutorial();
+        else this.showStep(this.step);
+    }
+
+    finishTutorial() {
+        this.clearDemo();
+        localStorage.setItem('forzaOrbit_tutorialDone', '1');
+        this.cameras.main.fadeOut(400, 11, 15, 25);
+        this.cameras.main.once('camerafadeoutcomplete', () => this.scene.start('MenuScene'));
+    }
+}
+
+class BootScene extends Phaser.Scene {
+    constructor() { super('BootScene'); }
+    create() {
+        let g = this.make.graphics({ x: 0, y: 0, add: false });
+        g.fillStyle(0xffffff); g.fillCircle(16, 16, 16); g.generateTexture('dot', 32, 32); g.clear();
+        g.lineStyle(8, 0xffffff); g.strokeCircle(160, 160, 156); g.generateTexture('ring', 320, 320); g.clear();
+        g.fillStyle(0xffffff); g.fillRect(0, 0, 8, 8); g.generateTexture('square', 8, 8); g.clear();
+
+        const vigCanvas = document.createElement('canvas');
+        vigCanvas.width = 1080; vigCanvas.height = 160;
+        const ctx2 = vigCanvas.getContext('2d');
+        const grad = ctx2.createLinearGradient(0, 0, 0, 160);
+        grad.addColorStop(0, 'rgba(0,0,0,0.85)');
+        grad.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx2.fillStyle = grad;
+        ctx2.fillRect(0, 0, 1080, 160);
+        this.textures.addCanvas('vignette_strip', vigCanvas);
+
+        const vigSideCanvas = document.createElement('canvas');
+        vigSideCanvas.width = 160; vigSideCanvas.height = 1920;
+        const ctxS = vigSideCanvas.getContext('2d');
+        const gradS = ctxS.createLinearGradient(0, 0, 160, 0);
+        gradS.addColorStop(0, 'rgba(0,0,0,0.85)');
+        gradS.addColorStop(1, 'rgba(0,0,0,0)');
+        ctxS.fillStyle = gradS;
+        ctxS.fillRect(0, 0, 160, 1920);
+        this.textures.addCanvas('vignette_side', vigSideCanvas);
+
+        g.destroy();
+        this.scene.start('IntroScene');
+    }
+}
+
+class IntroScene extends Phaser.Scene {
+    constructor() { super('IntroScene'); }
+    create() {
+        createStarBackground(this);
+        this.cameras.main.fadeIn(1000, 11, 15, 25);
+        this.input.once('pointerdown', () => Synth.init());
+        let logoText = this.add.text(540, 960, 'ARDEKO STUDIOS', {
+            fontFamily: 'Arial, sans-serif', fontSize: '55px', color: '#ffffff', letterSpacing: 20, fontStyle: 'bold'
+        }).setOrigin(0.5).setAlpha(0);
+        const tutorialDone = localStorage.getItem('forzaOrbit_tutorialDone');
+        this.tweens.add({
+            targets: logoText, alpha: 1, scale: 1.05, duration: 1500, ease: 'Sine.easeOut',
+            yoyo: true, hold: 800,
+            onComplete: () => this.scene.start(tutorialDone ? 'MenuScene' : 'TutorialScene')
+        });
+    }
+}
+
+class MenuScene extends Phaser.Scene {
+    constructor() { super('MenuScene'); }
+    create() {
+        this.cameras.main.fadeIn(500, 11, 15, 25);
+        const theme = getTheme();
+        const highScore = parseInt(localStorage.getItem('forzaOrbit_highScore') || '0');
+        const streak = checkAndUpdateStreak();
+
+        this.starLayers = createStarBackground(this);
+
+        this.add.text(540, 550, 'FORZA\nORBIT', {
+            fontFamily: 'Impact, sans-serif', fontSize: '180px', color: theme.accentStr, align: 'center', lineSpacing: -20
+        }).setOrigin(0.5).setShadow(0, 0, theme.accentStr, 30, false, true);
+
+        this.add.text(540, 870, 'BEST: ' + highScore, {
+            fontFamily: 'Arial, sans-serif', fontSize: '42px', color: '#ffffff', letterSpacing: 5
+        }).setOrigin(0.5).setAlpha(0.6);
+
+        if (streak > 1) {
+            let streakTxt = this.add.text(540, 940, '🔥 ' + streak + ' DAY STREAK', {
+                fontFamily: 'Arial, sans-serif', fontSize: '34px', color: '#FF6600', fontStyle: 'bold'
+            }).setOrigin(0.5);
+            this.tweens.add({ targets: streakTxt, scaleX: 1.05, scaleY: 1.05, duration: 600, yoyo: true, repeat: -1 });
+        }
+
+        let playText = this.add.text(540, 1250, 'TAP TO START', {
+            fontFamily: 'Arial, sans-serif', fontSize: '60px', color: '#ffffff', fontStyle: 'bold', letterSpacing: 8
+        }).setOrigin(0.5);
+        this.tweens.add({ targets: playText, alpha: 0.2, scale: 0.95, duration: 800, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+
+        this.add.text(540, 1450, 'THEME', {
+            fontFamily: 'Arial, sans-serif', fontSize: '30px', color: '#ffffff', letterSpacing: 8
+        }).setOrigin(0.5).setAlpha(0.4);
+
+        window.THEMES.forEach((t, i) => {
+            const x = 270 + i * 270;
+            const unlocked = highScore >= t.unlockScore;
+            const isActive = t.id === window.activeThemeId;
+            let circle = this.add.graphics();
+            if (isActive) {
+                circle.lineStyle(6, t.accent, 1); circle.strokeCircle(x, 1570, 45);
+                circle.fillStyle(t.accent, 0.3); circle.fillCircle(x, 1570, 45);
+            } else if (unlocked) {
+                circle.lineStyle(4, t.accent, 0.6); circle.strokeCircle(x, 1570, 40);
+            } else {
+                circle.lineStyle(3, 0x444455, 1); circle.strokeCircle(x, 1570, 40);
+            }
+            this.add.text(x, 1640, unlocked ? t.name : '🔒 ' + t.unlockScore, {
+                fontFamily: 'Arial, sans-serif', fontSize: '26px', color: unlocked ? t.accentStr : '#444455'
+            }).setOrigin(0.5);
+            if (unlocked) {
+                let hit = this.add.rectangle(x, 1590, 120, 140, 0xffffff, 0).setInteractive();
+                hit.on('pointerdown', (p, lx, ly, ev) => {
+                    ev.stopPropagation();
+                    window.activeThemeId = t.id;
+                    localStorage.setItem('forzaOrbit_theme', t.id);
+                    this.scene.restart();
+                });
+            }
+        });
+
+        let soundText = this.add.text(540, 1830, window.audioEnabled ? 'SOUND: ON' : 'SOUND: OFF', {
+            fontFamily: 'Arial, sans-serif', fontSize: '35px', color: '#ffffff'
+        }).setOrigin(0.5).setInteractive().setAlpha(0.5);
+        soundText.on('pointerdown', (p, lx, ly, ev) => {
+            ev.stopPropagation();
+            window.audioEnabled = !window.audioEnabled;
+            soundText.setText(window.audioEnabled ? 'SOUND: ON' : 'SOUND: OFF');
+            if (window.audioEnabled) Synth.init();
+        });
+
+        let tutBtn = this.add.text(540, 1730, '? HOW TO PLAY', {
+            fontFamily: 'Arial, sans-serif', fontSize: '32px', color: '#555566', letterSpacing: 3
+        }).setOrigin(0.5).setInteractive().setAlpha(0.7);
+        tutBtn.on('pointerdown', (p, lx, ly, ev) => {
+            ev.stopPropagation();
+            localStorage.removeItem('forzaOrbit_tutorialDone');
+            this.cameras.main.fadeOut(300, 11, 15, 25);
+            this.cameras.main.once('camerafadeoutcomplete', () => this.scene.start('TutorialScene'));
+        });
+        tutBtn.on('pointerover', () => tutBtn.setColor('#aaaaaa'));
+        tutBtn.on('pointerout',  () => tutBtn.setColor('#555566'));
+
+        this.input.on('pointerdown', (pointer) => {
+            if (pointer.y > 1430) return;
+            Synth.init();
+            if (navigator.vibrate) navigator.vibrate(15);
+            this.cameras.main.fadeOut(300, 11, 15, 25);
+            this.cameras.main.once('camerafadeoutcomplete', () => this.scene.start('GameScene'));
+        });
+    }
+
+    update() {
+        if (this.starLayers) updateStarParallax(this.starLayers);
+    }
+}
+
+class GameScene extends Phaser.Scene {
+    constructor() { super('GameScene'); }
+
+    create() {
+        this.cameras.main.fadeIn(300, 11, 15, 25);
+        this.time.timeScale = 1;
+        this.targetTimeScale = 1;
+        this.isPaused = false;
+
+        this.score = 0;
+        this.highScore = parseInt(localStorage.getItem('forzaOrbit_highScore') || '0');
+        this.state = 'ORBITING';
+        this.orbitRadius = 140;
+        this.angle = 0;
+        this.direction = 1;
+        this.moveTween = null;
+
+        this.perfectStreak = 0;
+        this.comboMultiplier = 1;
+        this.reviveUsed = false;
+        this.newBestShown = false;
+        this._uiScale = 1;
+
+        const theme = getTheme();
+        this.themeAccent = theme.accent;
+        this.themeAccentStr = theme.accentStr;
+
+        this.colors = [
+            Phaser.Display.Color.ValueToColor(theme.accent),
+            Phaser.Display.Color.ValueToColor(0xFF00E5),
+            Phaser.Display.Color.ValueToColor(0x00FF44),
+            Phaser.Display.Color.ValueToColor(0xFFE500),
+            Phaser.Display.Color.ValueToColor(0xFF4400)
+        ];
+        this.currentColorIndex = 0;
+        this.currentColor = this.colors[0];
+
+        this.add.rectangle(540, 960, 1280, 2200, 0x0B0F19).setDepth(-1);
+
+        this.starLayers = createStarBackground(this);
+
+        this.bgScoreText = this.add.text(540, 960, '0', {
+            fontFamily: 'Impact, sans-serif', fontSize: '800px', color: '#ffffff'
+        }).setOrigin(0.5).setAlpha(0.03).setDepth(1);
+
+        this.scoreText = this.add.text(540, 220, '0', {
+            fontFamily: 'Arial, sans-serif', fontSize: '140px', color: '#ffffff', fontStyle: 'bold'
+        }).setOrigin(0.5).setShadow(0, 0, this.themeAccentStr, 20, false, true).setDepth(5).setPadding(30);
+
+        this.comboText = this.add.text(540, 380, '', {
+            fontFamily: 'Arial, sans-serif', fontSize: '52px', color: '#FFE500', fontStyle: 'bold', letterSpacing: 4
+        }).setOrigin(0.5).setAlpha(0).setDepth(5);
+
+        this.multiplierBadge = this.add.text(870, 200, '', {
+            fontFamily: 'Impact, sans-serif', fontSize: '70px', color: '#FFE500'
+        }).setOrigin(0.5).setAlpha(0).setDepth(5);
+
+        this.levelLabel = this.add.text(100, 185, 'LV', {
+            fontFamily: 'Arial, sans-serif', fontSize: '28px', color: '#ffffff', letterSpacing: 3
+        }).setOrigin(0.5).setAlpha(0.4).setDepth(5);
+        this.levelNumText = this.add.text(100, 225, '1', {
+            fontFamily: 'Impact, sans-serif', fontSize: '52px', color: this.themeAccentStr
+        }).setOrigin(0.5).setDepth(5);
+
+        this.speedBarBg = this.add.graphics().setDepth(5);
+        this.speedBarFill = this.add.graphics().setDepth(5);
+        this.drawSpeedBar(0);
+
+        this.pauseBtn = this.add.text(980, 80, '⏸', {
+            fontFamily: 'Arial, sans-serif', fontSize: '65px', color: '#ffffff'
+        }).setOrigin(0.5).setAlpha(0.6).setDepth(6).setInteractive();
+        this.pauseBtn.on('pointerdown', (p, lx, ly, ev) => {
+            ev.stopPropagation();
+            this.togglePause();
+        });
+        this.pauseBtn.on('pointerover', () => this.pauseBtn.setAlpha(1));
+        this.pauseBtn.on('pointerout',  () => this.pauseBtn.setAlpha(0.6));
+
+        this.vigTop    = this.add.image(540, 0,    'vignette_strip').setOrigin(0.5, 0).setAlpha(0).setDepth(7);
+        this.vigBottom = this.add.image(540, 1920, 'vignette_strip').setOrigin(0.5, 1).setAlpha(0).setDepth(7).setFlipY(true);
+        this.vigLeft   = this.add.image(0,    0, 'vignette_side').setOrigin(0, 0).setAlpha(0).setDepth(7);
+        this.vigRight  = this.add.image(1080, 0, 'vignette_side').setOrigin(1, 0).setAlpha(0).setDepth(7).setFlipX(true);
+
+        this.currentCircle = this.add.image(540, 1400, 'ring').setAlpha(0.4).setScale(0.8).setDepth(2);
+        this.nextCircle    = this.add.image(540, 600,  'ring').setAlpha(0.8).setScale(0.8).setDepth(2);
+
+        this.pulseTween = this.tweens.add({
+            targets: this.nextCircle, scale: 0.88, alpha: 1, yoyo: true, repeat: -1, duration: 500, ease: 'Sine.easeInOut'
+        });
+
+        this.trailGlow = this.add.particles(0, 0, 'dot', {
+            speed: { min: 0, max: 8 }, scale: { start: 2.2, end: 0 }, alpha: { start: 0.18, end: 0 },
+            tint: this.currentColor.color, blendMode: 'ADD', lifespan: 500, frequency: 20
+        }).setDepth(2);
+        this.trail = this.add.particles(0, 0, 'dot', {
+            speed: { min: 5, max: 20 }, scale: { start: 0.9, end: 0 }, alpha: { start: 0.75, end: 0 },
+            tint: this.currentColor.color, blendMode: 'ADD', lifespan: 350, frequency: 15
+        }).setDepth(3);
+        this.trailSpark = this.add.particles(0, 0, 'dot', {
+            speed: { min: 20, max: 60 }, scale: { start: 0.35, end: 0 }, alpha: { start: 1, end: 0 },
+            tint: 0xffffff, blendMode: 'ADD', lifespan: 250, frequency: 25,
+            angle: { min: 0, max: 360 }
+        }).setDepth(4);
+
+        this.burst = this.add.particles(0, 0, 'dot', {
+            speed: { min: 150, max: 500 }, scale: { start: 1, end: 0 }, alpha: { start: 1, end: 0 },
+            tint: this.currentColor.color, blendMode: 'ADD', lifespan: 700, emitting: false
+        }).setDepth(3);
+
+        this.fireParticles = this.add.particles(0, 0, 'dot', {
+            speed: { min: 30, max: 80 },
+            scale: { start: 0.4, end: 0 },
+            alpha: { start: 0.9, end: 0 },
+            tint: [0xFF6600, 0xFF2200, 0xFFAA00],
+            blendMode: 'ADD',
+            lifespan: 400,
+            angle: { min: 0, max: 360 },
+            emitting: false
+        }).setDepth(3);
+        this.fireEmitting = false;
+
+        this.player = this.add.image(540, 1400, 'dot').setTint(this.currentColor.color).setScale(1.2).setDepth(4);
+        this.trailGlow.startFollow(this.player);
+        this.trail.startFollow(this.player);
+        this.trailSpark.startFollow(this.player);
+
+        this.tapIndicator = this.add.graphics().setDepth(3).setAlpha(0);
+        this.launchCount = 0;
+
+        this.scoreHistory = [];
+        this.miniGraphGfx = this.add.graphics().setDepth(5).setAlpha(0.55);
+        this.drawMiniGraph();
+
+        this.pauseOverlayItems = null;
+
+        this.input.on('pointerdown', this.launch, this);
+
+        const uiObjects = [
+            this.scoreText, this.comboText, this.multiplierBadge,
+            this.levelLabel, this.levelNumText, this.speedBarBg, this.speedBarFill,
+            this.pauseBtn, this.miniGraphGfx
+        ];
+        this.uiCamera = this.cameras.add(0, 0, 1080, 1920);
+        this.uiCamera.clearBeforeRender = false;
+        this.cameras.main.ignore(uiObjects);
+        this.children.getAll().forEach(child => {
+            if (!uiObjects.includes(child)) this.uiCamera.ignore(child);
+        });
+    }
+
+    drawMiniGraph() {
+        const gfx = this.miniGraphGfx;
+        gfx.clear();
+        const history = this.scoreHistory;
+        if (history.length < 2) return;
+        const barW = 6, gap = 3, maxBars = 10;
+        const barAreaH = 120;
+        const baseX = 1040, baseY = 500;
+        const maxVal = Math.max(...history, 1);
+        const slice = history.slice(-maxBars);
+        slice.forEach((val, i) => {
+            const h = Math.max(4, (val / maxVal) * barAreaH);
+            const x = baseX - (slice.length - 1 - i) * (barW + gap);
+            const alpha = 0.3 + 0.7 * (i / (slice.length - 1));
+            gfx.fillStyle(this.themeAccent, alpha);
+            gfx.fillRoundedRect(x - barW / 2, baseY - h, barW, h, 2);
+        });
+        gfx.fillStyle(0xffffff, 0.2);
+        gfx.lineStyle(1, 0xffffff, 0.15);
+        gfx.lineBetween(baseX - (maxBars - 1) * (barW + gap) - 4, baseY + 2, baseX + barW / 2 + 2, baseY + 2);
+    }
+
+    drawSpeedBar(level) {
+        const maxLevel = 10;
+        const clampedLevel = Math.min(level, maxLevel);
+        const barW = 120, barH = 6, barX = 38, barY = 260;
+
+        this.speedBarBg.clear();
+        this.speedBarBg.fillStyle(0x333344, 1);
+        this.speedBarBg.fillRoundedRect(barX, barY, barW, barH, 3);
+
+        this.speedBarFill.clear();
+        const fillW = (clampedLevel / maxLevel) * barW;
+        if (fillW > 0) {
+            const fillColor = level < 5 ? this.themeAccent : (level < 8 ? 0xFFE500 : 0xFF2200);
+            this.speedBarFill.fillStyle(fillColor, 1);
+            this.speedBarFill.fillRoundedRect(barX, barY, fillW, barH, 3);
+        }
+    }
+
+    updateVignette(dangerAlpha) {
+        [this.vigTop, this.vigBottom, this.vigLeft, this.vigRight].forEach(v => {
+            v.setAlpha(dangerAlpha * 0.7);
+        });
+    }
+
+    togglePause() {
+        if (this.state === 'GAMEOVER') return;
+        this.isPaused = !this.isPaused;
+        Synth.play('pause');
+
+        if (this.isPaused) {
+            this.time.paused = true;
+            this.pauseBtn.setText('▶');
+
+            this.pauseOverlayItems = [];
+            const padd = (obj) => { this.pauseOverlayItems.push(obj); this.cameras.main.ignore(obj); return obj; };
+
+            padd(this.add.rectangle(540, 960, 1080, 1920, 0x000000, 0.75).setDepth(20));
+            padd(this.add.text(540, 750, 'PAUSED', {
+                fontFamily: 'Impact, sans-serif', fontSize: '130px', color: '#ffffff'
+            }).setOrigin(0.5).setDepth(20));
+
+            let resumeBtn = padd(this.add.rectangle(540, 1050, 550, 120, this.themeAccent).setDepth(20).setInteractive());
+            padd(this.add.text(540, 1050, '▶  RESUME', {
+                fontFamily: 'Arial, sans-serif', fontSize: '50px', color: '#000000', fontStyle: 'bold'
+            }).setOrigin(0.5).setDepth(21));
+
+            let menuBtn = padd(this.add.rectangle(540, 1220, 550, 100, 0x222233).setDepth(20).setInteractive());
+            padd(this.add.text(540, 1220, 'MAIN MENU', {
+                fontFamily: 'Arial, sans-serif', fontSize: '44px', color: '#aaaaaa'
+            }).setOrigin(0.5).setDepth(21));
+
+            let soundTxt = padd(this.add.text(540, 1370, window.audioEnabled ? '🔊 SOUND ON' : '🔇 SOUND OFF', {
+                fontFamily: 'Arial, sans-serif', fontSize: '38px', color: '#888888'
+            }).setOrigin(0.5).setDepth(21).setInteractive());
+
+            soundTxt.on('pointerdown', (p, lx, ly, ev) => {
+                ev.stopPropagation();
+                window.audioEnabled = !window.audioEnabled;
+                soundTxt.setText(window.audioEnabled ? '🔊 SOUND ON' : '🔇 SOUND OFF');
+                if (window.audioEnabled) Synth.init();
+            });
+            resumeBtn.on('pointerdown', (p, lx, ly, ev) => { ev.stopPropagation(); this.togglePause(); });
+            menuBtn.on('pointerdown', (p, lx, ly, ev) => {
+                ev.stopPropagation();
+                this.time.paused = false;
+                this.cameras.main.fadeOut(300, 11, 15, 25);
+                if (this.uiCamera) this.uiCamera.fadeOut(300, 11, 15, 25);
+                this.cameras.main.once('camerafadeoutcomplete', () => this.scene.start('MenuScene'));
+            });
+
+            this.pauseOverlayItems.forEach(o => o.setAlpha(0));
+            this.tweens.add({ targets: this.pauseOverlayItems, alpha: 1, duration: 200, ease: 'Sine.easeOut' });
+
+        } else {
+            if (this.pauseOverlayItems) {
+                this.pauseOverlayItems.forEach(o => o.destroy());
+                this.pauseOverlayItems = null;
+            }
+            this.pauseBtn.setText('⏸');
+            this.time.paused = false;
+            this.input.off('pointerdown', this.launch, this);
+            this.time.delayedCall(150, () => {
+                if (!this.isPaused && this.state !== 'GAMEOVER') {
+                    this.input.on('pointerdown', this.launch, this);
+                }
+            });
+        }
+    }
+
+    updateColor() {
+        let targetIndex = Math.floor(this.score / 5) % this.colors.length;
+        if (targetIndex !== this.currentColorIndex) {
+            this.currentColorIndex = targetIndex;
+            let targetColor = this.colors[targetIndex];
+            let startColor = { r: this.currentColor.r, g: this.currentColor.g, b: this.currentColor.b };
+            this.tweens.addCounter({
+                from: 0, to: 100, duration: 1000,
+                onUpdate: (tween) => {
+                    let value = tween.getValue();
+                    let colorObject = Phaser.Display.Color.Interpolate.ColorWithColor(startColor, targetColor, 100, value);
+                    let hexColor = Phaser.Display.Color.GetColor(colorObject.r, colorObject.g, colorObject.b);
+                    this.player.setTint(hexColor);
+                    this.scoreText.setShadow(0, 0, `rgb(${colorObject.r},${colorObject.g},${colorObject.b})`, 20, false, true);
+                    this.trailGlow.tint = hexColor;
+                    this.trail.tint = hexColor;
+                    this.trailSpark.tint = hexColor;
+                    this.burst.tint = hexColor;
+                    if (this.nextCircle && this.nextCircle.active) this.nextCircle.setTint(hexColor);
+                },
+                onComplete: () => { this.currentColor = targetColor; }
+            });
+        }
+    }
+
+    launch() {
+        if (this.state !== 'ORBITING' || this.isPaused) return;
+        this.state = 'FLYING';
+        Synth.play('shoot');
+        if (navigator.vibrate) navigator.vibrate(15);
+        this.launchCount++;
+        if (this.launchCount === 5) {
+            this.tweens.add({ targets: this.tapIndicator, alpha: 0, duration: 600 });
+        }
+        let tangentAngle = this.angle + (this.direction > 0 ? Math.PI / 2 : -Math.PI / 2);
+        const speed = Math.min(22 + this.score * 0.13, 35);
+        this.vx = Math.cos(tangentAngle) * speed;
+        this.vy = Math.sin(tangentAngle) * speed;
+        this.cameras.main.shake(80, 0.003);
+    }
+
+    update(time, delta) {
+        if (this.isPaused) return;
+
+        const dt = delta / 16.667;
+
+        this.time.timeScale += (this.targetTimeScale - this.time.timeScale) * 0.15 * dt;
+        let ts = this.time.timeScale;
+        let targetZoom = 1 + ((1 - ts) * 0.15);
+        this.cameras.main.zoom += (targetZoom - this.cameras.main.zoom) * 0.1 * dt;
+        this.currentCircle.rotation += 0.005 * ts * dt;
+        this.nextCircle.rotation -= 0.005 * ts * dt;
+
+        const targetUiScale = 1 + (1 - ts) * 0.267;
+        this._uiScale += (targetUiScale - this._uiScale) * 0.08 * dt;
+        if (!this.tweens.isTweening(this.scoreText)) this.scoreText.setScale(this._uiScale);
+        if (!this.tweens.isTweening(this.multiplierBadge)) this.multiplierBadge.setScale(this._uiScale);
+
+        updateStarParallax(this.starLayers);
+
+        if (this.fireEmitting) {
+            this.fireParticles.emitParticleAt(this.player.x, this.player.y, 2);
+        }
+
+        if (this.state === 'ORBITING') {
+            this.angle += 0.075 * this.direction * ts * dt;
+            this.player.x = this.currentCircle.x + Math.cos(this.angle) * this.orbitRadius;
+            this.player.y = this.currentCircle.y + Math.sin(this.angle) * this.orbitRadius;
+            this.updateVignette(0);
+
+            const tAngle = this.angle + (this.direction > 0 ? Math.PI / 2 : -Math.PI / 2);
+            const len = 90;
+            this.tapIndicator.clear();
+            this.tapIndicator.lineStyle(2, this.themeAccent, 0.45);
+            this.tapIndicator.lineBetween(
+                this.player.x, this.player.y,
+                this.player.x + Math.cos(tAngle) * len,
+                this.player.y + Math.sin(tAngle) * len
+            );
+            this.tapIndicator.lineStyle(2, this.themeAccent, 0.45);
+            const tipX = this.player.x + Math.cos(tAngle) * len;
+            const tipY = this.player.y + Math.sin(tAngle) * len;
+            this.tapIndicator.lineBetween(tipX, tipY, tipX + Math.cos(tAngle + 2.5) * 18, tipY + Math.sin(tAngle + 2.5) * 18);
+            this.tapIndicator.lineBetween(tipX, tipY, tipX + Math.cos(tAngle - 2.5) * 18, tipY + Math.sin(tAngle - 2.5) * 18);
+            this.tapIndicator.setAlpha(this.launchCount < 5 ? 0.7 : 0);
+        } else if (this.state === 'FLYING') {
+            this.tapIndicator.setAlpha(0);
+            this.player.x += this.vx * ts * dt;
+            this.player.y += this.vy * ts * dt;
+            let dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, this.nextCircle.x, this.nextCircle.y);
+
+            const px = this.player.x, py = this.player.y;
+            const margin = 200;
+            const edgeDist = Math.min(px, 1080 - px, py, 1920 - py);
+            const dangerAlpha = Phaser.Math.Clamp((margin - edgeDist) / margin, 0, 1);
+            this.updateVignette(dangerAlpha);
+
+            if (dist <= this.orbitRadius + 20) {
+                this.targetTimeScale = 1;
+                this.attach(dist);
+            } else if (dist < this.orbitRadius + 250) {
+                this.targetTimeScale = 0.25;
+            } else {
+                this.targetTimeScale = 1;
+            }
+
+            if (px < -100 || px > 1180 || py < -100 || py > 2020) {
+                this.targetTimeScale = 1;
+                this.time.timeScale = 1;
+                this.gameOver();
+            }
+        }
+    }
+
+    showFloatingText(x, y, msg, color, size) {
+        let txt = this.add.text(x, y, msg, {
+            fontFamily: 'Arial, sans-serif', fontSize: size || '50px', color: color, fontStyle: 'bold'
+        }).setOrigin(0.5).setDepth(6);
+        if (this.uiCamera) this.uiCamera.ignore(txt);
+        this.tweens.add({
+            targets: txt, y: y - 120, alpha: 0, duration: 900, ease: 'Cubic.easeOut',
+            onComplete: () => txt.destroy()
+        });
+    }
+
+    updateComboDisplay() {
+        if (this.comboMultiplier > 1) {
+            this.multiplierBadge.setText('x' + this.comboMultiplier).setAlpha(1);
+            this.tweens.add({ targets: this.multiplierBadge, scale: 1.3, duration: 120, yoyo: true });
+        } else {
+            this.multiplierBadge.setAlpha(0);
+        }
+
+        const shouldFire = this.perfectStreak >= 5;
+        if (shouldFire && !this.fireEmitting) {
+            this.fireEmitting = true;
+        } else if (!shouldFire && this.fireEmitting) {
+            this.fireEmitting = false;
+        }
+    }
+
+    checkMilestone() {
+        const milestone = window.MILESTONES.find(m => m.score === this.score);
+        if (!milestone) return;
+        Synth.play('milestone');
+        if (navigator.vibrate) navigator.vibrate([30, 20, 60, 20, 100]);
+
+        let bannerBg = this.add.rectangle(540, 960, 900, 180, 0x000000, 0.8)
+            .setStrokeStyle(3, Phaser.Display.Color.HexStringToColor(milestone.color).color)
+            .setDepth(9).setAlpha(0).setScale(0.7);
+        let iconTxt = this.add.text(540, 930, milestone.icon + '  ' + milestone.label, {
+            fontFamily: 'Impact, sans-serif', fontSize: '72px', color: milestone.color, align: 'center'
+        }).setOrigin(0.5).setDepth(10).setAlpha(0);
+        let subTxt = this.add.text(540, 1010, 'SCORE: ' + milestone.score, {
+            fontFamily: 'Arial, sans-serif', fontSize: '36px', color: '#aaaaaa', letterSpacing: 4
+        }).setOrigin(0.5).setDepth(10).setAlpha(0);
+        this.tweens.add({
+            targets: [bannerBg, iconTxt, subTxt], alpha: 1, scale: 1, duration: 350, ease: 'Back.easeOut',
+            onComplete: () => {
+                this.tweens.add({
+                    targets: [bannerBg, iconTxt, subTxt], alpha: 0, y: '-=60', duration: 600, delay: 1200, ease: 'Sine.easeIn',
+                    onComplete: () => { bannerBg.destroy(); iconTxt.destroy(); subTxt.destroy(); }
+                });
+            }
+        });
+    }
+
+    attach(dist) {
+        this.state = 'TRANSITION';
+        if (this.moveTween) this.moveTween.stop();
+
+        let isPerfect = Math.abs(dist - this.orbitRadius) < 8;
+        let pointsEarned = 0;
+
+        if (isPerfect) {
+            this.perfectStreak++;
+            if (this.perfectStreak >= 10) this.comboMultiplier = 3;
+            else if (this.perfectStreak >= 5) this.comboMultiplier = 2;
+            else this.comboMultiplier = 1;
+            pointsEarned = 2 * this.comboMultiplier;
+            Synth.play(this.perfectStreak >= 5 ? 'combo' : 'perfect');
+            if (navigator.vibrate) navigator.vibrate([20, 30, 20]);
+            this.cameras.main.shake(150, 0.012);
+            if (this.perfectStreak >= 3) {
+                this.comboText.setText('🔥 x' + this.perfectStreak + ' PERFECT').setAlpha(1);
+                this.tweens.add({ targets: this.comboText, alpha: 0, duration: 1200, delay: 600 });
+            }
+            if (this.perfectStreak === 5)  this.showFloatingText(540, 600, 'COMBO x2!', '#FFE500', '70px');
+            if (this.perfectStreak === 10) this.showFloatingText(540, 600, 'COMBO x3!', '#FF6600', '80px');
+            this.showFloatingText(this.player.x, this.player.y - 50,
+                this.comboMultiplier > 1 ? 'PERFECT! +' + pointsEarned : 'PERFECT!', '#FFFFFF');
+        } else {
+            if (this.perfectStreak >= 3) this.showFloatingText(540, 700, 'COMBO LOST!', '#FF4444', '45px');
+            this.perfectStreak = 0;
+            this.comboMultiplier = 1;
+            pointsEarned = 1;
+            Synth.play('attach');
+            if (navigator.vibrate) navigator.vibrate(30);
+            this.cameras.main.shake(120, 0.008);
+        }
+
+        this.score += pointsEarned;
+        this.checkMilestone();
+        this.updateComboDisplay();
+        this.updateColor();
+        this.burst.emitParticleAt(this.player.x, this.player.y, isPerfect ? 60 : 40);
+        this.scoreText.setText(this.score);
+        this.bgScoreText.setText(this.score);
+        this.tweens.add({ targets: this.scoreText, scale: 1.5, duration: 100, yoyo: true });
+
+        this.scoreHistory.push(this.score);
+        if (this.scoreHistory.length > 20) this.scoreHistory.shift();
+        this.drawMiniGraph();
+
+        const level = Math.floor(this.score / 10) + 1;
+        this.levelNumText.setText(level.toString());
+        this.drawSpeedBar(level - 1);
+        if (this.score > 0 && this.score % 10 === 0) {
+            this.showFloatingText(100, 260, 'LV UP!', this.themeAccentStr, '38px');
+            this.cameras.main.flash(350, 255, 220, 50, false);
+            if (this.uiCamera) this.uiCamera.flash(350, 255, 220, 50, false);
+            this.cameras.main.shake(180, 0.018);
+            if (navigator.vibrate) navigator.vibrate([20, 15, 20, 15, 60]);
+            Synth.play('milestone');
+        }
+
+        if (this.score > this.highScore) {
+            this.highScore = this.score;
+            localStorage.setItem('forzaOrbit_highScore', this.highScore);
+            if (this.score > 5 && !this.newBestShown) {
+                this.newBestShown = true;
+                this.showFloatingText(540, 450, '★ NEW BEST!', '#FFD700', '55px');
+                this.cameras.main.flash(500, 255, 215, 0, false);
+                if (this.uiCamera) this.uiCamera.flash(500, 255, 215, 0, false);
+                this.cameras.main.shake(300, 0.025);
+                if (navigator.vibrate) navigator.vibrate([40, 20, 40, 20, 120]);
+                Synth.play('newbest');
+            }
+            window.THEMES.forEach(t => {
+                if (this.score === t.unlockScore) {
+                    this.showFloatingText(540, 550, t.name + ' THEME UNLOCKED!', t.accentStr, '50px');
+                    Synth.play('unlock');
+                    if (navigator.vibrate) navigator.vibrate([30, 20, 30, 20, 100]);
+                }
+            });
+        }
+
+        let oldCircle = this.currentCircle;
+        this.currentCircle = this.nextCircle;
+        this.pulseTween.stop();
+        this.currentCircle.setScale(0.8).setAlpha(0.4);
+        this.angle = Phaser.Math.Angle.Between(this.currentCircle.x, this.currentCircle.y, this.player.x, this.player.y);
+        this.direction *= -1;
+        let randomX = Phaser.Math.Between(300, 780);
+        let distanceY = 800;
+        const ringHue = (this.score * 37) % 360;
+        const ringColor = Phaser.Display.Color.HSVToRGB(ringHue / 360, 0.85, 1.0);
+        const ringTint = Phaser.Display.Color.GetColor(ringColor.r, ringColor.g, ringColor.b);
+        this.nextCircle = this.add.image(randomX, this.currentCircle.y - distanceY, 'ring')
+            .setAlpha(0).setScale(0).setDepth(2).setTint(ringTint);
+        if (this.uiCamera) this.uiCamera.ignore(this.nextCircle);
+        this.pulseTween = this.tweens.add({
+            targets: this.nextCircle, scale: 0.88, alpha: 1, yoyo: true, repeat: -1, duration: 500, ease: 'Sine.easeInOut'
+        });
+        if (this.score > 5) {
+            let moveAmount = Math.min(100 + (this.score * 5), 300);
+            this.moveTween = this.tweens.add({
+                targets: this.nextCircle,
+                x: randomX + (Math.random() > 0.5 ? moveAmount : -moveAmount),
+                duration: Math.max(800, 2500 - (this.score * 20)),
+                yoyo: true, repeat: -1, ease: 'Sine.easeInOut'
+            });
+        }
+        this.tweens.add({
+            targets: [oldCircle, this.currentCircle, this.player, this.nextCircle],
+            y: '+=' + distanceY, duration: 550, ease: 'Back.easeOut',
+            onComplete: () => { oldCircle.destroy(); this.state = 'ORBITING'; }
+        });
+    }
+
+    gameOver() {
+        if (this.state === 'GAMEOVER') return;
+        this.state = 'GAMEOVER';
+        this.fireEmitting = false;
+        this.input.off('pointerdown', this.launch, this);
+        if (this.moveTween) { this.moveTween.stop(); this.moveTween = null; }
+        if (this.pulseTween) { this.pulseTween.stop(); this.pulseTween = null; }
+        Synth.play('die');
+        if (navigator.vibrate) navigator.vibrate([50, 50, 50]);
+        this.cameras.main.shake(400, 0.03);
+        this.updateVignette(0);
+        let overlay = this.add.rectangle(540, 960, 1080, 1920, 0xff0044).setAlpha(0).setDepth(8);
+        if (this.uiCamera) this.uiCamera.ignore(overlay);
+        this.tweens.add({
+            targets: overlay, alpha: 0.4, duration: 200, yoyo: true,
+            onComplete: () => {
+                if (!this.reviveUsed && this.score > 2) this.showReviveScreen();
+                else this.goToGameOver();
+            }
+        });
+    }
+
+    showReviveScreen() {
+        this.reviveUsed = true;
+        const bg       = this.add.rectangle(540, 960, 1080, 1920, 0x000000).setAlpha(0.85).setDepth(10);
+        const skull    = this.add.text(540, 700, '💀', { fontSize: '120px' }).setOrigin(0.5).setDepth(11);
+        const contTxt  = this.add.text(540, 870, 'CONTINUE?', { fontFamily: 'Impact, sans-serif', fontSize: '100px', color: '#ffffff' }).setOrigin(0.5).setDepth(11);
+        const scoreLbl = this.add.text(540, 990, 'SCORE: ' + this.score, { fontFamily: 'Arial, sans-serif', fontSize: '55px', color: '#aaaaaa' }).setOrigin(0.5).setDepth(11);
+        let countdown  = 5;
+        let countText  = this.add.text(540, 1120, countdown.toString(), {
+            fontFamily: 'Impact, sans-serif', fontSize: '130px', color: this.themeAccentStr
+        }).setOrigin(0.5).setDepth(11);
+        let adBtn   = this.add.rectangle(540, 1350, 600, 120, this.themeAccent).setDepth(11).setInteractive();
+        const adLbl = this.add.text(540, 1350, '▶ WATCH AD TO REVIVE', { fontFamily: 'Arial, sans-serif', fontSize: '38px', color: '#000000', fontStyle: 'bold' }).setOrigin(0.5).setDepth(12);
+        this.tweens.add({ targets: adBtn, scaleX: 1.03, scaleY: 1.03, duration: 500, yoyo: true, repeat: -1 });
+        let skipBtn  = this.add.rectangle(540, 1520, 400, 90, 0x222233).setDepth(11).setInteractive();
+        let skipText = this.add.text(540, 1520, 'SKIP', { fontFamily: 'Arial, sans-serif', fontSize: '40px', color: '#aaaaaa' }).setOrigin(0.5).setDepth(12);
+        [bg, skull, contTxt, scoreLbl, countText, adBtn, adLbl, skipBtn, skipText].forEach(o => this.cameras.main.ignore(o));
+
+        const disableBtns = () => { adBtn.disableInteractive(); skipBtn.disableInteractive(); };
+
+        let timer = this.time.addEvent({
+            delay: 1000, repeat: countdown - 1,
+            callback: () => {
+                countdown--;
+                countText.setText(countdown.toString());
+                this.tweens.add({ targets: countText, scale: 1.3, duration: 100, yoyo: true });
+                if (countdown <= 0) { disableBtns(); this.goToGameOver(); }
+            }
+        });
+        adBtn.on('pointerdown', () => {
+            this.revivePlayer(bg, countText, timer, adBtn, skipBtn, skipText);
+        });
+        skipBtn.on('pointerdown', () => { disableBtns(); if (timer) timer.remove(); this.goToGameOver(); });
+    }
+
+    revivePlayer(bg, countText, timer, adBtn, skipBtn, skipText) {
+        if (timer) timer.remove();
+        this.children.getAll().forEach(child => { if (child.depth >= 10) child.destroy(); });
+        Synth.play('revive');
+        if (navigator.vibrate) navigator.vibrate([30, 20, 100]);
+        this.cameras.main.flash(300, 0, 229, 255);
+        if (this.uiCamera) this.uiCamera.flash(300, 0, 229, 255);
+        this.state = 'ORBITING';
+        this.time.timeScale = 1;
+        this.targetTimeScale = 1;
+        this.cameras.main.zoom = 1;
+        this.perfectStreak = 0;
+        this.comboMultiplier = 1;
+        this.fireEmitting = false;
+        this.updateComboDisplay();
+        this.input.off('pointerdown', this.launch, this);
+        this.input.on('pointerdown', this.launch, this);
+        this.showFloatingText(540, 800, 'REVIVED!', this.themeAccentStr, '80px');
+    }
+
+    goToGameOver() {
+        this.cameras.main.fadeOut(500, 11, 15, 25);
+        if (this.uiCamera) this.uiCamera.fadeOut(500, 11, 15, 25);
+        this.cameras.main.once('camerafadeoutcomplete', () => {
+            this.scene.start('GameOverScene', {
+                score: this.score, highScore: this.highScore,
+                perfectStreak: this.perfectStreak, isNewBest: this.newBestShown
+            });
+        });
+    }
+}
+
+class GameOverScene extends Phaser.Scene {
+    constructor() { super('GameOverScene'); }
+    init(data) { this.finalScore = data.score || 0; this.highScore = data.highScore || 0; this.bestPerfect = data.perfectStreak || 0; this.isNewBest = data.isNewBest || false; }
+    create() {
+        this.cameras.main.fadeIn(600, 11, 15, 25);
+        const theme = getTheme();
+        const isNewBest = this.finalScore > 0 && this.isNewBest;
+
+        createStarBackground(this);
+        this.add.rectangle(540, 960, 1080, 1920, 0x000000, 0.55);
+
+        let title = this.add.text(540, 400, isNewBest ? 'NEW BEST!' : 'GAME OVER', {
+            fontFamily: 'Impact, sans-serif', fontSize: '110px', color: isNewBest ? theme.accentStr : '#FF4444'
+        }).setOrigin(0.5).setAlpha(0);
+        this.tweens.add({ targets: title, alpha: 1, y: 370, duration: 600, ease: 'Back.easeOut' });
+        if (isNewBest) {
+            this.tweens.add({ targets: title, scale: 1.08, duration: 600, yoyo: true, repeat: -1, delay: 600 });
+            title.setShadow(0, 0, theme.accentStr, 25, false, true);
+            Synth.play('newbest');
+
+            const confettiColors = [theme.accent, 0xFF00E5, 0x00FF44, 0xFFE500, 0xFF4400, 0xffffff];
+            confettiColors.forEach((color, i) => {
+                this.time.delayedCall(200 + i * 60, () => {
+                    let cx = this.add.particles(540, 750, 'dot', {
+                        speed: { min: 200, max: 700 },
+                        scale: { start: 0.8, end: 0 },
+                        alpha: { start: 1, end: 0 },
+                        tint: color,
+                        blendMode: 'ADD',
+                        lifespan: 900,
+                        angle: { min: 0, max: 360 },
+                        emitting: false
+                    }).setDepth(15);
+                    cx.emitParticleAt(540, 750, 18);
+                    this.time.delayedCall(1000, () => cx.destroy());
+                });
+            });
+
+            const rain = this.add.particles(0, 0, 'dot', {
+                x: { min: 0, max: 1080 },
+                y: { min: -20, max: -20 },
+                speedY: { min: 300, max: 700 },
+                speedX: { min: -80, max: 80 },
+                scale: { start: 0.5, end: 0.1 },
+                alpha: { start: 0.9, end: 0 },
+                tint: confettiColors,
+                blendMode: 'ADD',
+                lifespan: 1800,
+                frequency: 40,
+                quantity: 3,
+                emitting: true
+            }).setDepth(14);
+            this.time.delayedCall(2200, () => { rain.stop(); this.time.delayedCall(2000, () => rain.destroy()); });
+        }
+
+        let scoreDisplay = this.add.text(540, 750, this.finalScore.toString(), {
+            fontFamily: 'Impact, sans-serif', fontSize: '280px', color: '#ffffff'
+        }).setOrigin(0.5).setAlpha(0).setScale(0.5);
+        this.tweens.add({ targets: scoreDisplay, alpha: 1, scale: 1, duration: 500, delay: 200, ease: 'Back.easeOut' });
+        scoreDisplay.setShadow(0, 0, theme.accentStr, 20, false, true);
+
+        let line = this.add.graphics();
+        line.lineStyle(2, 0x333344); line.lineBetween(150, 1030, 930, 1030);
+
+        const stats = [
+            { label: 'BEST SCORE', value: this.highScore, y: 1080 },
+            { label: 'BEST STREAK', value: this.bestPerfect, y: 1200 },
+        ];
+        stats.forEach(s => {
+            this.add.text(300, s.y, s.label + ':', { fontFamily: 'Arial, sans-serif', fontSize: '36px', color: '#aaaaaa', letterSpacing: 3 }).setOrigin(0, 0.5);
+            this.add.text(780, s.y, s.value.toString(), { fontFamily: 'Impact, sans-serif', fontSize: '52px', color: theme.accentStr }).setOrigin(1, 0.5);
+        });
+
+        let shareBtn = this.add.rectangle(540, 1380, 650, 120, theme.accent, 0.15).setStrokeStyle(3, theme.accent).setInteractive();
+        this.add.text(540, 1380, '📤  SHARE SCORE', { fontFamily: 'Arial, sans-serif', fontSize: '44px', color: theme.accentStr, fontStyle: 'bold' }).setOrigin(0.5);
+        shareBtn.on('pointerdown', () => this.shareScore());
+        shareBtn.on('pointerover', () => shareBtn.setFillStyle(theme.accent, 0.3));
+        shareBtn.on('pointerout',  () => shareBtn.setFillStyle(theme.accent, 0.15));
+
+        let playBtn = this.add.rectangle(540, 1540, 650, 120, theme.accent).setInteractive();
+        this.add.text(540, 1540, '▶  PLAY AGAIN', { fontFamily: 'Arial, sans-serif', fontSize: '48px', color: '#000000', fontStyle: 'bold' }).setOrigin(0.5);
+        playBtn.on('pointerdown', () => {
+            Synth.init();
+            if (navigator.vibrate) navigator.vibrate(15);
+            this.cameras.main.fadeOut(300, 11, 15, 25);
+            this.cameras.main.once('camerafadeoutcomplete', () => this.scene.start('GameScene'));
+        });
+        this.tweens.add({ targets: playBtn, scaleX: 1.02, scaleY: 1.02, duration: 700, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+
+        let menuBtn = this.add.rectangle(540, 1690, 650, 90, 0x222233).setInteractive();
+        this.add.text(540, 1690, 'MAIN MENU', { fontFamily: 'Arial, sans-serif', fontSize: '40px', color: '#aaaaaa' }).setOrigin(0.5);
+        menuBtn.on('pointerdown', () => {
+            this.cameras.main.fadeOut(300, 11, 15, 25);
+            this.cameras.main.once('camerafadeoutcomplete', () => this.scene.start('MenuScene'));
+        });
+    }
+
+    shareScore() {
+        const text = `🎮 Forza Orbit\nScore: ${this.finalScore}\nBest: ${this.highScore}\n\nCan you beat me? #ForzaOrbit #ArdekoStudios`;
+        if (navigator.share) { navigator.share({ title: 'Forza Orbit', text }).catch(() => {}); }
+        else {
+            navigator.clipboard && navigator.clipboard.writeText(text);
+            let msg = this.add.text(540, 1300, '✓ Copied!', { fontFamily: 'Arial, sans-serif', fontSize: '34px', color: '#00FF88' }).setOrigin(0.5);
+            this.tweens.add({ targets: msg, alpha: 0, y: 1260, duration: 1500, delay: 500, onComplete: () => msg.destroy() });
+        }
+    }
+}
+
+const config = {
+    type: Phaser.AUTO,
+    scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH, width: 1080, height: 1920 },
+    backgroundColor: '#0B0F19',
+    scene: [BootScene, IntroScene, TutorialScene, MenuScene, GameScene, GameOverScene]
+};
+const game = new Phaser.Game(config);
+</script>
+</body>
+</html>

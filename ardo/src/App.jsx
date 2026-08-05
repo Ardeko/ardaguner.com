@@ -522,6 +522,30 @@ function App() {
                 </Tilt>
               </Reveal>
               {/* --- APEX SHIFT KARTI BİTİŞİ --- */}
+              {/* --- FORZA SHIFT KARTI BAŞLANGICI --- */}
+              <Reveal as="section" className="switch-master-wrapper">
+                <Tilt as="div" className="ardeko-card" strength={5}>
+                  <span className="ardeko-badge">
+                    {language === "tr" ? "YENİ · OYNA" : "NEW · PLAY NOW"}
+                  </span>
+                  <h2>🪐 Forza Orbit</h2>
+                  <p>
+                    {language === "tr"
+                      ? "Reflekslerinizi test eden yörünge tabanlı arcade deneyimi! Mükemmel atışlar yapın, komboları toplayın ve yeni sekmede rekor kırın."
+                      : "Orbit-based arcade experience that tests your reflexes! Make perfect shots, build up combos, and set new high scores in a new tab."}
+                  </p>
+                  <a
+                    href="/forza-orbit.html"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="revo-button"
+                  >
+                    <span>🎮</span>
+                    {language === "tr" ? "Oyuna Başla" : "Play Game"}
+                  </a>
+                </Tilt>
+              </Reveal>
+              {/* --- FORZA SHIFT KARTI BİTİŞİ --- */}
               <Reveal as="section" className="switch-master-wrapper">
                 <Tilt as="div" className="ardeko-card" strength={5}>
                   <span className="ardeko-badge">
