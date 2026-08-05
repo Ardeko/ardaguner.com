@@ -498,7 +498,30 @@ function App() {
                   </div>
                 </Tilt>
               </Reveal>
-
+              {/* --- APEX SHIFT KARTI BAŞLANGICI --- */}
+              <Reveal as="section" className="switch-master-wrapper">
+                <Tilt as="div" className="ardeko-card" strength={5}>
+                  <span className="ardeko-badge">
+                    {language === "tr" ? "CANLI · OYNA" : "LIVE · PLAY NOW"}
+                  </span>
+                  <h2>🏎️ Apex Shift</h2>
+                  <p>
+                    {language === "tr"
+                      ? "Yüksek tempolu tarayıcı içi yarış deneyimi! Klavyenizi hazırlayın, hemen yeni sekmede yarışa katılın."
+                      : "High-paced in-browser racing experience! Prepare your keyboard and jump into the race in a new tab."}
+                  </p>
+                  <a
+                    href="/apex-shift.html"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="revo-button"
+                  >
+                    <span>🎮</span>
+                    {language === "tr" ? "Oyuna Başla" : "Play Game"}
+                  </a>
+                </Tilt>
+              </Reveal>
+              {/* --- APEX SHIFT KARTI BİTİŞİ --- */}
               <Reveal as="section" className="switch-master-wrapper">
                 <Tilt as="div" className="ardeko-card" strength={5}>
                   <span className="ardeko-badge">
