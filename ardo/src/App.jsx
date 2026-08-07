@@ -549,23 +549,53 @@ function App() {
               <Reveal as="section" className="switch-master-wrapper">
                 <Tilt as="div" className="ardeko-card" strength={5}>
                   <span className="ardeko-badge">
-                    {language === "tr" ? "CANLI · TARAYICIDA ÇALIŞIR" : "LIVE · RUNS IN BROWSER"}
+                    {language === "tr" ? "CANLI · WEB & WINDOWS" : "LIVE · WEB & WINDOWS"}
                   </span>
                   <h2>💬 Revo</h2>
                   <p>
                     {language === "tr"
-                      ? "SignalR ve WebRTC ile güçlendirilmiş, tarayıcı üzerinden anlık sesli ve yazılı sohbet platformu. Kurulum yok — tek tıkla bir odaya katıl, arkadaşlarınla aynı frekansta buluş."
-                      : "A browser-based instant voice & text chat platform powered by SignalR and WebRTC. No install — join a room in one click and connect with friends instantly."}
+                      ? "Uçtan uca şifreli, düşük gecikmeli sesli sohbet. Odanı saniyeler içinde kur ve linki paylaş — karşı tarafın hesap açmasına bile gerek yok."
+                      : "End-to-end encrypted, low-latency voice chat. Spin up a room in seconds and share the link — no account needed on the other end."}
                   </p>
-                  <a
-                    href="https://ardekostudios.xyz"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="revo-button"
-                  >
-                    <span>🚀</span>
-                    {language === "tr" ? "Sohbete Başla" : "Start Chatting"}
-                  </a>
+
+                  {/* Özellikleri paragrafa gömmek yerine taranabilir rozetlere
+                      ayırdık: kart içinde göz bir cümleyi baştan sona okumaz,
+                      tarar. Üç kısa etiket, üç sıfatlı bir cümleden daha hızlı
+                      okunuyor. */}
+                  <ul className="revo-features">
+                    <li>{language === "tr" ? "Uçtan uca şifreli" : "End-to-end encrypted"}</li>
+                    <li>{language === "tr" ? "Ekran paylaşımı" : "Screen sharing"}</li>
+                    <li>{language === "tr" ? "Gürültü engelleme" : "Noise suppression"}</li>
+                  </ul>
+
+                  {/* İki ayrı yol, iki ayrı buton. Tek butonla "tarayıcıda aç"
+                      ve "indir" aynı yere gidiyordu; masaüstü sürümü çıkınca
+                      bu ayrım netleşmeliydi. Birincil eylem dolu, ikincil
+                      eylem çerçeveli — hiyerarşi renkten değil ağırlıktan
+                      geliyor. */}
+                  <div className="revo-actions">
+                    <a
+                      href="https://ardekostudios.xyz"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="revo-button"
+                    >
+                      <span>🚀</span>
+                      {language === "tr" ? "Sohbete Başla" : "Start Chatting"}
+                    </a>
+                    <a
+                      href="https://github.com/Ardeko/Revo/releases/latest/download/REVO-Setup.exe"
+                      className="revo-button revo-button--ghost"
+                    >
+                      <span aria-hidden="true">⬇</span>
+                      {language === "tr" ? "Windows için indir" : "Download for Windows"}
+                    </a>
+                  </div>
+                  <small className="revo-note">
+                    {language === "tr"
+                      ? "Windows 10/11 · 64-bit · Kurulum dosyası"
+                      : "Windows 10/11 · 64-bit · Installer"}
+                  </small>
                 </Tilt>
               </Reveal>
 
