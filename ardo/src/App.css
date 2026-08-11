@@ -927,6 +927,34 @@ body.custom-cursor-active [contenteditable] {
   }
 }
 
+.hero-content h1 {
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  /* Hero alanının kapsayıcısını tam merkeze zorluyoruz */
+  .hero-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center !important;    /* İçindeki tüm elemanları (kart, buton vb.) yatayda ortalar */
+    justify-content: center;
+    text-align: center !important;     /* İçindeki tüm metinleri ortalar */
+    width: 100%;
+    margin: 0 auto;                    /* Kapsayıcının sağdan soldan eşit boşluk almasını sağlar */
+    padding-left: 1rem;
+    padding-right: 1rem;
+    box-sizing: border-box;
+  }
+
+  /* Başlık ve paragrafın kendi içlerinde sağa-sola kaymasını engellemek için */
+  .hero-content h1,
+  .hero-content p {
+    text-align: center !important;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
 
 /* --- Özellik rozetleri --- */
 .revo-features {
