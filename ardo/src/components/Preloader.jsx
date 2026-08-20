@@ -1,13 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 
 /* ------------------------------------------------------------------
-   Açılış ekranı: 000'dan 100'e sayan bir sayaç ve dönen üç kelime.
+   Açılış ekranı: altta ilerleyen ince bir çubuk ve dönen üç kelime.
 
    Neden var: eski sitede ilk kare, yarısı yüklenmiş bir hero'ydu —
-   fontlar geç geldiği için başlık zıplıyordu. Sayaç o boşluğu
+   fontlar geç geldiği için başlık zıplıyordu. Perde o boşluğu
    doldurup girişe bir ritim veriyor.
 
-   Sayaç sahte DEĞİL ama gerçek yükleme yüzdesi de değil: tarayıcı
+   Sağ alttaki 000–100 sayacı kaldırıldı; ilerlemeyi tek başına çubuk
+   anlatıyor. `ilerleme` state'i duruyor çünkü çubuğun scaleX'ini o
+   besliyor — sadece artık ekranda rakam olarak yazılmıyor.
+
+   İlerleme sahte DEĞİL ama gerçek yükleme yüzdesi de değil: tarayıcı
    böyle bir sayı vermiyor. Sabit süre boyunca ilerliyor, `document`
    hazırsa erken kapanıyor. Yani en kötü ihtimalle 2 saniye tutuyor,
    sayfa hazırsa daha az.
@@ -16,7 +20,7 @@ import { useEffect, useRef, useState } from "react";
 const SURE = 1900;
 
 function Preloader({ words, onDone }) {
-  const [sayi, setSayi] = useState(0);
+  const [ilerleme, setIlerleme] = useState(0);
   const [kelime, setKelime] = useState(0);
   const [kapaniyor, setKapaniyor] = useState(false);
   const bittiRef = useRef(false);
@@ -34,7 +38,7 @@ function Preloader({ words, onDone }) {
     const bitir = () => {
       if (bittiRef.current) return;
       bittiRef.current = true;
-      setSayi(100);
+      setIlerleme(100);
       setKapaniyor(true);
       // Kapanış geçişi 600ms; onDone'ı sonunda çağırıyoruz ki hero
       // perde tam kalkmadan animasyonuna başlamasın.
@@ -43,10 +47,10 @@ function Preloader({ words, onDone }) {
 
     const tik = (simdi) => {
       const oran = Math.min((simdi - bas) / SURE, 1);
-      // easeOutCubic — sayaç sonlara doğru yavaşlıyor, birden 100'e
+      // easeOutCubic — çubuk sonlara doğru yavaşlıyor, birden dolup
       // sıçramıyor.
       const yumusak = 1 - Math.pow(1 - oran, 3);
-      setSayi(Math.round(yumusak * 100));
+      setIlerleme(Math.round(yumusak * 100));
       if (oran < 1) raf = requestAnimationFrame(tik);
       else bitir();
     };
@@ -75,12 +79,8 @@ function Preloader({ words, onDone }) {
         ))}
       </div>
 
-      <span className="preloader-count display">
-        {String(sayi).padStart(3, "0")}
-      </span>
-
       <div className="preloader-bar">
-        <span style={{ transform: `scaleX(${sayi / 100})` }} />
+        <span style={{ transform: `scaleX(${ilerleme / 100})` }} />
       </div>
     </div>
   );

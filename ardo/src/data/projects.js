@@ -109,7 +109,13 @@ export const PROJECTS = [
     status: 'source',
     platforms: 'DESKTOP',
     tech: ['Python', 'Pygame'],
-    image: null,
+    // Arda'nın gönderdiği anahtar görsel (LORE — Echoes). Kaynak 1536x1024
+    // PNG'ydi; 1080x720 JPEG'e indirildi (2 MB → 137 KB). Diğer oyun
+    // görselleri 720x480, bu vitrinde büyük bastığı için iki katı.
+    image: '/games/legend-of-rey.jpg',
+    // Forza Orbit'ten devraldığı 4. sıra: katalogdaki tek gerçek "oyun
+    // yapımı" işi ve elde tek düzgün anahtar görsel bunda.
+    featured: 4,
     links: { github: `${GH}/Legend-Of-Rey` },
   },
   {
@@ -261,9 +267,9 @@ export const PROJECTS = [
     platforms: 'WEB · BROWSER',
     tech: ['JavaScript', 'Canvas'],
     image: '/games/forza.jpg',
-    // ardekostudios.com'un bıraktığı 4. sırayı aldı: tarayıcıda tek
-    // tıkla oynanabiliyor, vitrindeki tek doğrudan etkileşim bu.
-    featured: 4,
+    // Vitrinden çıkarıldı (featured kaldırıldı): 4. sıra Legend of Rey'e
+    // geçti. Proje katalogda, arşivde ve çizelgede duruyor, oynanabilir
+    // linki de yerinde — sadece öne çıkanlarda değil.
     // "forza shift" reposunun ilk commit'i 2026-06-15 ama çalışma ağacı
     // boş; güvenilir tarih dosyanın public/ altına eklendiği gün.
     unverified: true,

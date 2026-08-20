@@ -6,7 +6,7 @@ import { featuredProjects } from "../data/projects";
    Vitrin — dört seçilmiş iş.
 
    Sıra `projects.js` içindeki `featured` numarasından geliyor, burada
-   sabit değil: 1 REVO, 2 Switch Master, 3 Sarteks, 4 ardekostudios.com.
+   sabit değil: 1 REVO, 2 Switch Master, 3 Sarteks, 4 Legend of Rey.
 
    Izgara 12 sütun ve açıklıklar 7/5/5/7 diye dönüşüyor — dört eşit
    kutu yerine iki farklı genişlik, gözün satır satır taramasını

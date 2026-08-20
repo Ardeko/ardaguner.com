@@ -58,19 +58,13 @@
   transform: translateY(0);
 }
 
-.preloader-count {
-  justify-self: end;
-  font-size: clamp(3.5rem, 14vw, 8rem);
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
-  color: var(--text);
-}
-
+/* Sağ alttaki .preloader-count kaldırıldı. Perde artık üç satır:
+   isim (auto) · kelimeler (1fr) · çubuk (auto). Çubuk eskiden sayacın
+   altındaki dördüncü satırdaydı, şimdi doğrudan tabanda oturuyor. */
 .preloader-bar {
-  grid-column: 1 / -1;
+  align-self: end;
   height: 2px;
   background: var(--stroke);
-  margin-top: 1.25rem;
 }
 
 .preloader-bar span {
