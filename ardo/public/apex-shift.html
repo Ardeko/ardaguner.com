@@ -179,7 +179,7 @@ canvas{display:block;width:100%;height:auto;touch-action:none}
         <button class="btn btn-sm" id="randBtn" title="Rastgele oda kodu" aria-label="Rastgele oda kodu">🎲</button>
       </div>
       <button class="btn btn-go" id="joinBtn">Odaya Katıl</button>
-      <p class="hint">💡 Arkadaşınla bu artifact'in <b>aynı linkini</b> açıp <b>aynı oda kodunu</b> girin.</p>
+      <p class="hint" id="joinHint">💡 Arkadaşınla <b>aynı linki</b> açıp <b>aynı oda kodunu</b> girin.</p>
       <p class="hint">🎮 <b>↑W</b> gaz · <b>↓S</b> fren · <b>←→ AD</b> dönüş · <b>Shift</b> NOS</p>
     </div>
   </div>
@@ -226,7 +226,7 @@ canvas{display:block;width:100%;height:auto;touch-action:none}
         <label id="lpCountLabel">Odadakiler</label>
         <div id="lpPlayerList"></div>
         <button class="btn btn-go" id="startRaceBtn">🏁 Yarışı Başlat</button>
-        <p class="hint">Bastığında odadaki herkes aynı anda, 3-2-1 ile başlar.</p>
+        <p class="hint" id="startHint">Bastığında odadaki herkes aynı anda, 3-2-1 ile başlar.</p>
       </div>
     </div>
 
@@ -262,6 +262,8 @@ canvas{display:block;width:100%;height:auto;touch-action:none}
 
 /* ── constants ─────────────────────────── */
 const SYNC_MS=450, STALE_MS=6000, PRUNE_MS=14000, LEAD_MS=3000, TOTAL_LAPS=3;
+const PODIUM_MS=5000, PHASE_GUARD_MS=2600, NET_FAIL_LIMIT=3;
+const FB_BASE='https://switch-master-687ff-default-rtdb.europe-west1.firebasedatabase.app';
 const CW=1000,CH=600,CX=500,CY=300;
 const OA=430,OB=260, IA=230,IB=110, MA=330,MB=185;
 const FINISH_GATE={x1:CX,y1:CY-OB,x2:CX,y2:CY-IB};
@@ -278,11 +280,11 @@ const TRAIL_LIFE=800, TRAIL_GAP=52, TRAIL_MAX=350, DUST_LIFE=520;
 const NITRO_MS=1200, NITRO_SPEED_MULT=1.32, NITRO_ACCEL_MULT=1.7, NITRO_CHARGES=3;
 
 /* ── state ─────────────────────────────── */
-const hasStorage=!!(window.storage&&typeof window.storage.get==='function');
 const isTouch=('ontouchstart' in window)||navigator.maxTouchPoints>0;
 const uid='p'+Date.now().toString(36)+(Math.random()*1e6|0).toString(36);
 
-let pName='',roomCode='',roomKey='';
+let pName='',roomCode='';
+let netOk=null, netFails=0, clockOffset=0, phaseGuardUntil=0, finishShownAt=0, isHost=false;
 let localPhase='menu'; // menu | lobby | waiting | racing
 let car=null, remoteCars={}, trailPts=[], dustPts=[];
 let keys={}, touch={l:0,r:0,g:0,b:0};
@@ -367,6 +369,14 @@ tctx.setTransform(dpr,0,0,dpr,0,0);
 
 /* ── helpers ───────────────────────────── */
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function nowSync(){return Date.now()+clockOffset;}
+function flashHint(el,msg){
+  if(!el) return;
+  if(!el.dataset.base) el.dataset.base=el.innerHTML;
+  el.innerHTML=msg; el.style.color='var(--red)';
+  clearTimeout(el._ht);
+  el._ht=setTimeout(()=>{ el.innerHTML=el.dataset.base; el.style.color=''; },3800);
+}
 const lerp=(a,b,t)=>a+(b-a)*t;
 function lerpAngle(a,b,t){let d=((b-a+Math.PI)%(Math.PI*2))-Math.PI;if(d<-Math.PI)d+=Math.PI*2;return a+d*t;}
 function fmtTime(ms){if(!isFinite(ms)||ms<0)ms=0;const s=ms/1000,m=Math.floor(s/60),sec=Math.floor(s%60),d=Math.floor((ms%1000)/100);return String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0')+'.'+d;}
@@ -380,45 +390,99 @@ function segsect(p1,p2,p3,p4){function ccw(a,b,c){return(c.y-a.y)*(b.x-a.x)-(b.y
 function isOnTrack(x,y){const dx=x-CX,dy=y-CY;return(dx*dx)/(OA*OA)+(dy*dy)/(OB*OB)<=1.02&&(dx*dx)/(IA*IA)+(dy*dy)/(IB*IB)>=0.98;}
 function rrp(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();}
 
-/* ── shared storage networking ─────────── */
-async function getRoomState(){
-  const empty={phase:'lobby',raceStartAt:null,players:{}};
-  if(!hasStorage) return empty;
-  try{
-    const res=await window.storage.get(roomKey,true);
-    if(res&&res.value){
-      const p=JSON.parse(res.value);
-      return{phase:p.phase==='racing'?'racing':'lobby',raceStartAt:safeN(p.raceStartAt,null),players:(p.players&&typeof p.players==='object')?p.players:{}};
-    }
-    return empty;
-  }catch(e){ return empty; }
+/* ── firebase realtime db networking ───── */
+/* Oda düzeni:  /apex/rooms/<KOD>/meta            {phase, raceStartAt, ts}
+                /apex/rooms/<KOD>/players/<uid>   {name,color,x,y,angle,...}
+   Her istemci YALNIZCA kendi players/<uid> yolunu yazar; tüm odayı geri
+   yazmadığı için eşzamanlı güncellemeler birbirini ezmez. meta'yı sadece
+   "host" (canlı oyuncular arasında en küçük uid) yazar.                    */
+const roomPath=p=>FB_BASE+'/apex/rooms/'+encodeURIComponent(roomCode)+(p||'')+'.json';
+const JSON_HDR={'Content-Type':'application/json'};
+
+/* Tarayıcı saatleri saniyelerce kayabiliyor; geri sayım ve tur süreleri
+   ortak olsun diye Date başlığından sunucu saatine kilitleniyoruz. */
+function syncClock(res,sentAt){
+  const h=res.headers.get('date'); if(!h) return;
+  const srv=Date.parse(h); if(!isFinite(srv)) return;
+  const off=srv+(Date.now()-sentAt)/2-Date.now();
+  clockOffset=(netOk===null)?off:lerp(clockOffset,off,.25);
 }
-async function setRoomState(state){
-  if(!hasStorage) return true;
-  try{ await window.storage.set(roomKey,JSON.stringify(state),true); return true; }
-  catch(e){ return false; }
+async function fbFetch(url,opts){
+  const sentAt=Date.now();
+  const res=await fetch(url,opts);
+  syncClock(res,sentAt);
+  if(!res.ok) throw new Error('HTTP '+res.status);
+  return res;
+}
+function netUp(){ netFails=0; if(netOk!==true){ netOk=true; setConn(true); } }
+function netDown(){ netFails++; if(netFails>=NET_FAIL_LIMIT&&netOk!==false){ netOk=false; setConn(false); } }
+
+async function netGetRoom(){
+  try{
+    const res=await fbFetch(roomPath(),{cache:'no-store'});
+    const raw=await res.json();
+    netUp();
+    const meta=(raw&&raw.meta&&typeof raw.meta==='object')?raw.meta:{};
+    return{
+      phase:meta.phase==='racing'?'racing':'lobby',
+      raceStartAt:safeN(meta.raceStartAt,0),
+      players:(raw&&raw.players&&typeof raw.players==='object')?raw.players:{}
+    };
+  }catch(e){ netDown(); return null; }
+}
+async function netPutMe(entry){
+  try{ await fbFetch(roomPath('/players/'+uid)+'?print=silent',{method:'PUT',headers:JSON_HDR,body:JSON.stringify(entry)}); netUp(); return true; }
+  catch(e){ netDown(); return false; }
+}
+async function netSetMeta(phase,raceStartAt){
+  try{ await fbFetch(roomPath('/meta')+'?print=silent',{method:'PUT',headers:JSON_HDR,body:JSON.stringify({phase:phase,raceStartAt:raceStartAt||null,ts:nowSync()})}); netUp(); return true; }
+  catch(e){ netDown(); return false; }
+}
+function netDropPlayer(pid,keepalive){
+  return fetch(roomPath('/players/'+pid)+'?print=silent',{method:'DELETE',keepalive:!!keepalive}).catch(()=>{});
+}
+function netDropRoom(){
+  return fetch(roomPath()+'?print=silent',{method:'DELETE',keepalive:true}).catch(()=>{});
 }
 function setConn(ok){
-  const cls='dot'+(!hasStorage?' warn':(ok?'':' bad'));
+  const cls='dot'+(ok?'':' bad');
   dot.className=cls; lpDot.className=cls;
-  const txt=!hasStorage?'Tek oyunculu':(ok?'Bağlı':'Bağlantı sorunu');
+  const txt=ok?'Bağlı':'Bağlantı yok';
   connText.textContent=txt; lpConnText.textContent=txt;
+}
+function livePlayers(players,now){
+  const out={};
+  for(const pid in players){
+    const p=players[pid];
+    if(!p||typeof p!=='object') continue;
+    if(pid!==uid&&now-safeN(p.ts,0)>PRUNE_MS) continue;
+    out[pid]=p;
+  }
+  return out;
 }
 function buildMyEntry(now){
   return{name:pName,color:car.color,x:Math.round(car.x*10)/10,y:Math.round(car.y*10)/10,angle:Math.round(car.angle*1000)/1000,
-    laps:car.laps,finished:car.finished,totalTime:car.finished?car.finishTime:(localPhase==='racing'?now-car.raceStart:0),
+    laps:car.laps,finished:car.finished,finishedAt:car.finishAt||0,
+    totalTime:car.finished?car.finishTime:(localPhase==='racing'?now-car.raceStart:0),
     racing:(localPhase==='racing'),ts:now};
 }
+/* Bitiş ekranı en az PODIUM_MS görünsün, lobiye anında düşmeyelim. */
+function canLeaveResults(now){ return !(car.finished&&finishShownAt&&now-finishShownAt<PODIUM_MS); }
+
 async function syncTick(){
-  if(!car||syncBusy) return;
+  if(!car||syncBusy||localPhase==='menu') return;
   syncBusy=true;
   try{
-    const now=Date.now();
-    const state=await getRoomState();
-    for(const pid in state.players){ if(pid!==uid&&now-(state.players[pid].ts||0)>PRUNE_MS) delete state.players[pid]; }
-    for(const pid in state.players){
+    const now=nowSync();
+    const [state]=await Promise.all([netGetRoom(),netPutMe(buildMyEntry(now))]);
+    if(!state) return;   // ağ hatası: faz kararı verme, mevcut durumu koru
+
+    const players=livePlayers(state.players,now);
+    const view=Object.assign({},players); view[uid]=buildMyEntry(now);
+
+    for(const pid in players){
       if(pid===uid) continue;
-      const p=state.players[pid];
+      const p=players[pid];
       const rx=safeN(p.x,CX),ry=safeN(p.y,CY),ra=safeN(p.angle,0);
       let rc=remoteCars[pid];
       if(!rc){ rc={prevX:rx,prevY:ry,prevAngle:ra,targetX:rx,targetY:ry,targetAngle:ra,renderX:rx,renderY:ry,renderAngle:ra,updStart:performance.now(),lastT:0}; remoteCars[pid]=rc; }
@@ -426,28 +490,37 @@ async function syncTick(){
       rc.name=String(p.name||'?').slice(0,14); rc.color=String(p.color||'#888');
       rc.laps=safeN(p.laps,0); rc.finished=!!p.finished; rc.totalTime=safeN(p.totalTime,0); rc.racing=!!p.racing; rc.ts=safeN(p.ts,now);
     }
-    for(const pid in remoteCars){ if(!state.players[pid]) delete remoteCars[pid]; }
+    for(const pid in remoteCars){ if(!players[pid]) delete remoteCars[pid]; }
 
-    if(state.phase==='racing'&&localPhase==='lobby') enterRacingPhase(state.raceStartAt);
-    else if(state.phase==='lobby'&&(localPhase==='racing'||localPhase==='waiting')) resetToLobby();
+    const live=Object.keys(view).filter(pid=>pid===uid||now-safeN(view[pid].ts,0)<=STALE_MS).sort();
+    isHost=(live[0]===uid);
 
-    state.players[uid]=buildMyEntry(now);
-
-    if(state.phase==='racing'){
-      let sawActive=false,allDone=true;
-      for(const pid in state.players){
-        const p=state.players[pid];
-        const stale=pid!==uid&&(now-(p.ts||0)>STALE_MS);
-        if(p.racing&&!stale){ sawActive=true; if(!p.finished) allDone=false; }
-      }
-      if(sawActive&&allDone){ state.phase='lobby'; state.raceStartAt=null; }
+    if(now>=phaseGuardUntil){
+      if(state.phase==='racing'&&localPhase==='lobby') enterRacingPhase(state.raceStartAt||now);
+      else if(state.phase==='lobby'&&(localPhase==='racing'||localPhase==='waiting')&&canLeaveResults(now)) resetToLobby();
     }
 
-    const ok=await setRoomState(state);
-    setConn(ok);
-    if(localPhase==='lobby'||localPhase==='waiting') renderLobbyList(state.players,now);
+    if(state.phase==='racing'&&isHost&&now>=phaseGuardUntil){
+      let allDone=true,lastFin=0;
+      for(const pid of live){
+        const p=view[pid];
+        if(!p.racing) continue;
+        if(!p.finished){ allDone=false; break; }
+        lastFin=Math.max(lastFin,safeN(p.finishedAt,0));
+      }
+      if(allDone&&(lastFin===0||now-lastFin>=PODIUM_MS)) await netSetMeta('lobby',null);
+    }
+
+    if(isHost){
+      for(const pid in state.players){
+        if(pid===uid) continue;
+        if(now-safeN((state.players[pid]||{}).ts,0)>PRUNE_MS) netDropPlayer(pid);
+      }
+    }
+
+    if(localPhase==='lobby'||localPhase==='waiting') renderLobbyList(players,now);
     else updateLB();
-  }catch(e){ console.warn('sync',e); setConn(false); }
+  }catch(e){ console.warn('sync',e); }
   finally{ syncBusy=false; }
 }
 
@@ -485,7 +558,7 @@ function renderColorPicker(rows){
 
 /* ── leaderboard + position ─────────────── */
 function updateLB(){
-  const now=Date.now();
+  const now=nowSync();
   const list=[{name:pName,laps:car.laps,finished:car.finished,totalTime:car.finished?car.finishTime:(now-car.raceStart),me:true}];
   for(const pid in remoteCars){
     const rc=remoteCars[pid];
@@ -519,16 +592,16 @@ function applyPhaseVisibility(){
 function enterRacingPhase(startAt){
   localPhase='racing';
   car.raceStart=startAt; car.lastLapTs=startAt;
-  car.locked=startAt>Date.now();
+  car.locked=startAt>nowSync();
   applyPhaseVisibility();
 }
 function resetToLobby(){
   const slot=START_SLOTS[slotIdx(uid)];
   car.x=slot.x; car.y=slot.y; car.angle=0; car.speed=0;
-  car.laps=0; car.passedHalf=false; car.finished=false; car.finishTime=0;
+  car.laps=0; car.passedHalf=false; car.finished=false; car.finishTime=0; car.finishAt=0;
   car.locked=false; car.lastTrail=0; car.lastDust=0; car.bestLap=null; car.lastLapTs=null; car.nitroCharges=NITRO_CHARGES;
   trailPts=[]; dustPts=[];
-  hideFinish();
+  hideFinish(); finishShownAt=0;
   localPhase='lobby';
   applyPhaseVisibility();
 }
@@ -539,7 +612,7 @@ function makeCar(){
   return{x:slot.x,y:slot.y,angle:0,speed:0,
     color:COLORS[Math.floor(Math.random()*COLORS.length)],
     laps:0,passedHalf:false,finished:false,finishTime:0,
-    raceStart:Date.now(),lastTrail:0,lastDust:0,locked:true,
+    raceStart:nowSync(),finishAt:0,lastTrail:0,lastDust:0,locked:true,
     bestLap:null,lastLapTs:null,nitroCharges:NITRO_CHARGES};
 }
 function tryActivateNitro(){
@@ -551,7 +624,7 @@ function tryActivateNitro(){
   playNitroWhoosh();
 }
 function updateCar(dt){
-  if(localPhase==='racing'&&car.locked&&Date.now()>=car.raceStart){ car.locked=false; playGoHorn(); }
+  if(localPhase==='racing'&&car.locked&&nowSync()>=car.raceStart){ car.locked=false; playGoHorn(); }
   if(localPhase!=='racing'||car.locked){ car.speed=0; return; }
 
   const up=!!(keys['arrowup']||keys['w']||touch.g);
@@ -598,10 +671,10 @@ function checkLap(px,py,cx,cy){
     if(segsect(p1,p2,{x:HALF_GATE.x1,y:HALF_GATE.y1},{x:HALF_GATE.x2,y:HALF_GATE.y2})) car.passedHalf=true;
   } else if(segsect(p1,p2,{x:FINISH_GATE.x1,y:FINISH_GATE.y1},{x:FINISH_GATE.x2,y:FINISH_GATE.y2})){
     car.laps++; car.passedHalf=false;
-    const now=Date.now();
+    const now=nowSync();
     if(car.lastLapTs){ const lt=now-car.lastLapTs; if(car.bestLap===null||lt<car.bestLap) car.bestLap=lt; }
     car.lastLapTs=now;
-    if(car.laps>=TOTAL_LAPS){ car.finished=true; car.finishTime=now-car.raceStart; showFinish(); playFinishFanfare(); }
+    if(car.laps>=TOTAL_LAPS){ car.finished=true; car.finishTime=now-car.raceStart; car.finishAt=now; showFinish(); playFinishFanfare(); }
     else playLapChime();
   }
 }
@@ -787,7 +860,7 @@ function renderFrame(){
   ctx.save(); ctx.setTransform(1,0,0,1,0,0); ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(trackCv,0,0); ctx.restore();
   drawTrails();
   drawDust();
-  const now=Date.now();
+  const now=nowSync();
   for(const pid in remoteCars){
     const rc=remoteCars[pid];
     if(now-rc.ts>STALE_MS) continue;
@@ -798,7 +871,7 @@ function renderFrame(){
 }
 function updateHUD(){
   lapText.textContent='Tur '+Math.min(car.laps,TOTAL_LAPS)+'/'+TOTAL_LAPS;
-  const el=car.finished?car.finishTime:(Date.now()-car.raceStart);
+  const el=car.finished?car.finishTime:(nowSync()-car.raceStart);
   timeText.textContent=fmtTime(el);
   speedText.textContent=Math.round(Math.abs(car.speed))+' km/h';
   bestLapText.textContent='En iyi tur: '+(car.bestLap!==null?fmtTime(car.bestLap):'–');
@@ -806,7 +879,7 @@ function updateHUD(){
 }
 function updateCountdownUI(){
   if(localPhase!=='racing'||!car.locked){ countdownEl.style.display='none'; return; }
-  const msLeft=car.raceStart-Date.now();
+  const msLeft=car.raceStart-nowSync();
   if(msLeft<=0){ countdownEl.style.display='none'; return; }
   countdownEl.style.display='flex';
   const txt=String(Math.ceil(msLeft/1000));
@@ -836,35 +909,39 @@ function stopLoops(){ if(rafId) cancelAnimationFrame(rafId); rafId=null; if(sync
 function showFinish(){
   finTimeEl.textContent=fmtTime(car.finishTime);
   finBestLapEl.textContent=car.bestLap!==null?('En iyi tur: '+fmtTime(car.bestLap)):'';
-  finishEl.style.display='flex';
+  finishEl.style.display='flex'; finishShownAt=nowSync();
 }
 function hideFinish(){ finishEl.style.display='none'; }
 
 /* ── start race ─────────────────────────── */
 async function onStartClicked(){
-  if(startingRace||syncBusy) return;
-  startingRace=true; syncBusy=true; startRaceBtn.disabled=true;
+  if(startingRace) return;
+  startingRace=true; startRaceBtn.disabled=true;
+  // devam eden syncTick bizi lobiye geri atmasın diye korumayı hemen kur
+  phaseGuardUntil=nowSync()+PHASE_GUARD_MS;
   try{
-    const state=await getRoomState();
-    const now=Date.now(); const startAt=now+LEAD_MS;
+    // syncTick 450 ms'de iki ağ turu yapıyor; sürüyorsa tıklamayı düşürme, sırasını bekle
+    for(let i=0;i<40&&syncBusy;i++) await new Promise(r=>setTimeout(r,50));
+    const startAt=nowSync()+LEAD_MS;
+    phaseGuardUntil=nowSync()+PHASE_GUARD_MS;
+    const wrote=await netSetMeta('racing',startAt);
+    if(!wrote){ phaseGuardUntil=0; flashHint($('startHint'),'⚠ Bağlantı kurulamadı — tekrar dene.'); return; }
     enterRacingPhase(startAt);
-    state.phase='racing'; state.raceStartAt=startAt;
-    state.players[uid]=buildMyEntry(Date.now());
-    await setRoomState(state);
-  } finally { startingRace=false; syncBusy=false; startRaceBtn.disabled=false; }
+    await netPutMe(buildMyEntry(nowSync()));
+  } finally { startingRace=false; startRaceBtn.disabled=false; }
 }
 
 /* ── leave room ────────────────────────── */
 async function leaveRoom(){
   stopLoops();
-  if(hasStorage&&roomKey&&!syncBusy){
-    syncBusy=true;
-    try{ const state=await getRoomState(); delete state.players[uid]; await setRoomState(state); }catch(e){}
-    finally{ syncBusy=false; }
-  }
-  remoteCars={}; trailPts=[];
-  hideFinish(); countdownEl.style.display='none';
   localPhase='menu';
+  const alone=Object.keys(remoteCars).length===0;
+  if(roomCode){
+    try{ await netDropPlayer(uid); if(alone) await netDropRoom(); }catch(e){}
+  }
+  remoteCars={}; trailPts=[]; dustPts=[];
+  hideFinish(); countdownEl.style.display='none';
+  phaseGuardUntil=0; finishShownAt=0; isHost=false; netOk=null; netFails=0;
   crossFade(gameEl, menuEl);
 }
 
@@ -926,37 +1003,48 @@ $('randBtn').addEventListener('click',()=>{
 });
 
 $('joinBtn').addEventListener('click', async ()=>{
+  const btn=$('joinBtn');
+  if(btn.disabled) return;
   initAudio(); startEngine();
+  btn.disabled=true; btn.textContent='Bağlanılıyor…';
   pName=sanitName($('nameInput').value);
   roomCode=sanitRoom($('roomInput').value)||randRoom();
-  roomKey='race_room_'+roomCode;
   $('roomInput').value=roomCode;
   lpRoomCode.textContent=roomCode;
 
-  car=makeCar(); remoteCars={}; trailPts=[];
+  car=makeCar(); remoteCars={}; trailPts=[]; dustPts=[];
 
-  const state=await getRoomState();
-  const now=Date.now();
+  const state=await netGetRoom();
+  btn.disabled=false; btn.textContent='Odaya Katıl';
+  if(!state){ flashHint($('joinHint'),'⚠ Sunucuya ulaşılamadı. Bağlantını kontrol edip tekrar dene.'); return; }
+
+  const now=nowSync();
+  const players=livePlayers(state.players,now);
   let activeCount=0;
-  for(const pid in state.players){ const p=state.players[pid]; if(p.racing&&(now-(p.ts||0))<STALE_MS) activeCount++; }
+  for(const pid in players){
+    if(pid===uid) continue;
+    if(players[pid].racing&&(now-safeN(players[pid].ts,0))<STALE_MS) activeCount++;
+  }
   if(state.phase==='racing'&&activeCount>0){
     localPhase='waiting';
   } else {
     localPhase='lobby';
-    if(state.phase==='racing'){
-      state.phase='lobby'; state.raceStartAt=null;
-      await setRoomState(state);
-    }
+    if(state.phase==='racing') await netSetMeta('lobby',null); // terk edilmiş yarış kalıntısı
   }
 
-  const taken=new Set(Object.keys(state.players||{}).map(pid=>state.players[pid].color));
+  const taken=new Set(Object.keys(players).filter(pid=>pid!==uid).map(pid=>String(players[pid].color||'')));
   const free=COLORS.find(c=>!taken.has(c));
   car.color=free||COLORS[Math.floor(Math.random()*COLORS.length)];
+
+  await netPutMe(buildMyEntry(nowSync()));
 
   crossFade(menuEl, gameEl);
   applyPhaseVisibility();
   startLoops();
 });
+
+// sekme kapanırsa lobide hayalet bırakma
+window.addEventListener('pagehide',()=>{ if(roomCode&&localPhase!=='menu') netDropPlayer(uid,true); });
 
 $('leaveBtn').addEventListener('click',leaveRoom);
 startRaceBtn.addEventListener('click',onStartClicked);
