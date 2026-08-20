@@ -1,7 +1,7 @@
 .studio-section {
   padding: 5.5rem 1.5rem 6rem;
   text-align: center;
-  border-top: 1px solid var(--line);
+  border-top: 1px solid var(--stroke);
 }
 
 .studio-inner {
@@ -20,14 +20,16 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   border-radius: 999px;
-  background: var(--accent-violet-soft);
-  color: var(--accent-violet);
-  border: 1px solid rgba(167, 139, 250, 0.4);
+  /* Mor rozet kaldırıldı — sitenin geri kalanında vurgu rengi yok,
+     tek bir yerde kalması yamalı duruyordu. */
+  background: transparent;
+  color: var(--faint);
+  border: 1px solid var(--stroke);
   opacity: 0;
 }
 
 .reveal-visible .studio-eyebrow {
-  animation: studio-fade-up var(--duration-slow) var(--ease-out) forwards;
+  animation: studio-fade-up var(--slow) var(--ease) forwards;
   animation-delay: 0.05s;
 }
 
@@ -40,7 +42,7 @@
 }
 
 .reveal-visible .studio-kickoff {
-  animation: studio-fade-up var(--duration-slow) var(--ease-out) forwards;
+  animation: studio-fade-up var(--slow) var(--ease) forwards;
   animation-delay: 0.18s;
 }
 
@@ -51,7 +53,7 @@
   transform: translateX(-50%);
   width: 92px;
   height: 1px;
-  background: var(--line-strong);
+  background: var(--stroke-strong);
 }
 
 .studio-shadow {
@@ -108,7 +110,7 @@
 }
 
 .reveal-visible .studio-logo-wrap {
-  animation: studio-fade-up var(--duration-slow) var(--ease-out) forwards;
+  animation: studio-fade-up var(--slow) var(--ease) forwards;
   animation-delay: 0.26s;
 }
 
@@ -149,12 +151,12 @@
   max-width: 460px;
   font-size: 1.02rem;
   line-height: 1.65;
-  color: var(--text-secondary);
+  color: var(--muted);
   opacity: 0;
 }
 
 .reveal-visible .studio-tagline {
-  animation: studio-fade-up var(--duration-slow) var(--ease-out) forwards;
+  animation: studio-fade-up var(--slow) var(--ease) forwards;
   animation-delay: 0.46s;
 }
 
@@ -176,29 +178,30 @@
   gap: 0.55rem;
   margin-top: 2rem;
   padding: 0.85rem 1.9rem;
-  border-radius: var(--radius-sm);
-  background: var(--gradient-brand);
-  color: #0a0c12;
-  font-weight: 700;
-  font-size: 0.95rem;
+  border-radius: 999px;
+  /* Gradient ve parıltı gitti; birincil buton sitenin her yerinde
+     olduğu gibi düz beyaz. */
+  background: var(--text);
+  color: var(--bg);
+  font-weight: 500;
+  font-size: 0.9rem;
   text-decoration: none;
-  box-shadow: var(--shadow-glow-cyan);
   opacity: 0;
-  transition: transform var(--duration-fast) ease, box-shadow var(--duration-fast) ease;
+  transition: transform var(--fast) ease, background var(--fast) ease;
 }
 
 .reveal-visible .studio-cta {
-  animation: studio-fade-up var(--duration-slow) var(--ease-out) forwards;
+  animation: studio-fade-up var(--slow) var(--ease) forwards;
   animation-delay: 0.6s;
 }
 
 .studio-cta:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-glow-violet);
+  transform: translateY(-2px);
+  background: #ffffff;
 }
 
 .studio-cta-arrow {
-  transition: transform var(--duration-fast) ease;
+  transition: transform var(--fast) ease;
 }
 
 .studio-cta:hover .studio-cta-arrow {

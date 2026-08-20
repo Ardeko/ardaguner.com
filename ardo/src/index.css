@@ -1,44 +1,55 @@
+/* ------------------------------------------------------------------
+   Temel katman: jetonlar, sıfırlama, tipografi ölçeği ve site geneline
+   yayılan üç efekt (particles, reveal, konami confetti).
+
+   PALET NOTU — eski dosyada cyan (#22d3ee) + mor (#a78bfa) gradient
+   vardı. O ikili her yerde tekrarlandığı için site "şablon" gibi
+   duruyordu; kaldırıldı. Yerine tek renkli, kontrastı tipografiden ve
+   boşluktan alan bir palet geldi. Geriye kalan tek renkli vurgu, durum
+   noktaları (yayında / geliştiriliyor) — onlar da bilgi taşıdığı için
+   duruyor, süs değiller.
+------------------------------------------------------------------- */
+
 :root {
-  --bg-void: #0a0c12;
-  --bg-surface: rgba(20, 22, 32, 0.66);
-  --bg-surface-strong: rgba(20, 22, 32, 0.86);
-  --line: rgba(255, 255, 255, 0.09);
-  --line-strong: rgba(255, 255, 255, 0.18);
+  --bg: #0a0a0a;
+  --bg-elevated: #101010;
+  --surface: #141414;
+  --surface-hover: #1a1a1a;
 
-  --text-primary: #f3f5f9;
-  --text-secondary: rgba(243, 245, 249, 0.7);
-  --text-tertiary: rgba(243, 245, 249, 0.48);
+  --stroke: rgba(255, 255, 255, 0.08);
+  --stroke-strong: rgba(255, 255, 255, 0.16);
 
-  --accent-cyan: #22d3ee;
-  --accent-cyan-soft: rgba(34, 211, 238, 0.16);
-  --accent-violet: #a78bfa;
-  --accent-violet-soft: rgba(167, 139, 250, 0.16);
-  --accent-green: #34d399;
-  --accent-amber: #fbbf24;
+  --text: #f5f5f4;
+  --muted: rgba(245, 245, 244, 0.56);
+  --faint: rgba(245, 245, 244, 0.32);
 
-  --gradient-brand: linear-gradient(120deg, var(--accent-cyan), var(--accent-violet));
+  /* Vurgu — şimdilik yalnızca arka plan katmanı (Backdrop) kullanıyor.
+     Metin ve butonlar hâlâ tek renkli; palet burada patlamasın. */
+  --accent: #89aacc;
 
-  --radius-sm: 10px;
-  --radius-md: 16px;
+  /* Durum renkleri — sadece rozetlerde, dekorasyonda değil. */
+  --live: #4ade80;
+  --wip: #fbbf24;
+
+  --font-body: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Instrument Serif", Georgia, serif;
+
+  --radius: 14px;
   --radius-lg: 24px;
 
-  --shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.28);
-  --shadow-md: 0 14px 34px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 24px 54px rgba(0, 0, 0, 0.48);
-  --shadow-glow-cyan: 0 0 26px rgba(34, 211, 238, 0.28);
-  --shadow-glow-violet: 0 0 28px rgba(167, 139, 250, 0.28);
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --fast: 0.2s;
+  --base: 0.4s;
+  --slow: 0.8s;
 
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --duration-fast: 0.2s;
-  --duration-base: 0.4s;
-  --duration-slow: 0.8s;
+  --gutter: clamp(1.25rem, 5vw, 4rem);
+  --max: 1200px;
 
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  font-family: var(--font-body);
+  line-height: 1.55;
   color-scheme: dark;
-  color: var(--text-primary);
-  background-color: var(--bg-void);
+  color: var(--text);
+  background-color: var(--bg);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -52,31 +63,121 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background: var(--bg-void);
+  background: var(--bg);
   overflow-x: hidden;
-  isolation: isolate;
 }
 
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -2;
-  background:
-    linear-gradient(180deg, rgba(6, 7, 11, 0.78), rgba(6, 7, 11, 0.88)),
-    url("./assets/ardobg.jpg") center / cover no-repeat;
-  animation: bg-drift 32s ease-in-out infinite alternate;
+#root {
+  width: 100%;
 }
 
-@keyframes bg-drift {
-  from { transform: scale(1); }
-  to { transform: scale(1.08); }
+html {
+  scroll-behavior: smooth;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+::selection {
+  background: var(--text);
+  color: var(--bg);
+}
+
+:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* --- Tipografi ölçeği ---------------------------------------------
+   Display yazıtipi yalnızca başlıklarda ve italik. Sitenin "editoryal"
+   hissi buradan geliyor: gövde nötr bir grotesk, başlıklar serif.
+------------------------------------------------------------------- */
+
+h1,
+h2,
+h3 {
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  margin: 0;
+}
+
+.display {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+.eyebrow {
+  font-size: 0.7rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--faint);
+  font-weight: 500;
+}
+
+.lede {
+  color: var(--muted);
+  font-size: clamp(0.95rem, 1.4vw, 1.05rem);
+  line-height: 1.7;
+}
+
+/* --- Bölüm iskeleti ------------------------------------------------ */
+
+.section {
+  padding: clamp(4rem, 10vw, 8rem) var(--gutter);
+}
+
+.shell {
+  max-width: var(--max);
+  margin: 0 auto;
+}
+
+.section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: clamp(2.5rem, 6vw, 4.5rem);
+}
+
+.section-head h2 {
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  margin-top: 0.6rem;
+}
+
+.section-head .lede {
+  max-width: 34ch;
+}
+
+/* --- Particles ------------------------------------------------------
+   Arda'nın açıkça istediği tek efekt. Eskiden cyan/mor parlıyordu;
+   artık tek renk ve çok daha soluk — arka planda kalması, dikkat
+   çekmemesi gerekiyor.
+------------------------------------------------------------------- */
 
 .particles {
   position: fixed;
   inset: 0;
-  z-index: -1;
+  z-index: 0;
   overflow: hidden;
   pointer-events: none;
 }
@@ -85,30 +186,44 @@ body::before {
   position: absolute;
   bottom: -10px;
   border-radius: 50%;
-  background: var(--accent-cyan);
-  box-shadow: 0 0 8px 1px var(--accent-cyan);
+  background: rgba(255, 255, 255, 0.5);
   opacity: 0;
   animation-name: particle-rise;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
 }
 
-.particle:nth-child(odd) {
-  background: var(--accent-violet);
-  box-shadow: 0 0 8px 1px var(--accent-violet);
-}
-
 @keyframes particle-rise {
-  0% { transform: translateY(0); opacity: 0; }
-  10% { opacity: 0.7; }
-  90% { opacity: 0.35; }
-  100% { transform: translateY(-100vh); opacity: 0; }
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.24;
+  }
+  88% {
+    opacity: 0.1;
+  }
+  100% {
+    transform: translateY(-100vh);
+    opacity: 0;
+  }
 }
 
-.tilt {
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: transform;
+/* --- Reveal (IntersectionObserver ile) ----------------------------- */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity var(--slow) var(--ease), transform var(--slow) var(--ease);
 }
+
+.reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* --- Konami confetti (gizli easter egg) ---------------------------- */
 
 .confetti-burst {
   position: fixed;
@@ -138,476 +253,60 @@ body::before {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) scale(0.8);
-  font-size: 1.2rem;
-  font-weight: 800;
-  color: var(--text-primary);
-  background: var(--bg-surface-strong);
-  border: 1px solid var(--line-strong);
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--stroke-strong);
   padding: 0.9rem 1.6rem;
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
+  border-radius: var(--radius);
   opacity: 0;
-  animation: confetti-message-pop 0.4s var(--ease-out) forwards,
+  animation: confetti-message-pop 0.4s var(--ease) forwards,
     confetti-message-fade 0.4s ease 3s forwards;
   white-space: nowrap;
 }
 
 @keyframes confetti-message-pop {
-  from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
 }
 
 @keyframes confetti-message-fade {
-  to { opacity: 0; }
+  to {
+    opacity: 0;
+  }
 }
 
-#root {
-  width: 100%;
-}
+/* --- Code Lab yükleme göstergesi (rota geçişinde) ------------------ */
 
-html {
-  scroll-behavior: smooth;
-}
-
-::selection {
-  background: var(--accent-violet);
-  color: #0a0c12;
-}
-
-:focus-visible {
-  outline: 2px solid var(--accent-cyan);
-  outline-offset: 2px;
-}
-
-.reveal {
-  opacity: 0;
-  transform: translateY(28px);
-  transition: opacity var(--duration-slow) var(--ease-out),
-    transform var(--duration-slow) var(--ease-out);
-}
-
-.reveal-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.shimmer-text {
-  font-weight: 800;
-  background: linear-gradient(
-    to right,
-    var(--accent-cyan) 0%,
-    var(--accent-violet) 50%,
-    var(--accent-cyan) 100%
-  );
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: textShine 4s linear infinite;
-}
-
-@keyframes textShine {
-  to { background-position: 200% center; }
-}
-
-.return-button {
-  position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  background: var(--gradient-brand);
-  color: #0a0c12;
-  border: none;
-  padding: 1rem;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: transform var(--duration-fast) var(--ease-out),
-    box-shadow var(--duration-fast) var(--ease-out);
-  box-shadow: var(--shadow-sm);
-}
-
-.return-button:hover {
-  transform: scale(1.1);
-  box-shadow: var(--shadow-glow-cyan);
-}
-
-.header {
-  width: 100%;
-  text-align: center;
-  padding: 2rem 1rem 1.5rem;
-}
-
-.header h1 {
-  font-size: 2.6rem;
-  margin: 0 0 0.35rem;
-  letter-spacing: -0.01em;
-}
-
-.header p {
-  color: var(--text-secondary);
-  margin: 0 0 1.25rem;
-}
-
-.header ul {
-  display: flex;
-  justify-content: center;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.header ul li {
-  margin: 0;
-}
-
-.header ul li a {
-  position: relative;
-  display: inline-block;
-  padding: 0.4rem 0.9rem;
-  color: var(--text-secondary);
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 0.95rem;
-  transition: color var(--duration-fast) ease;
-}
-
-.header ul li a::after {
-  content: "";
-  position: absolute;
-  left: 0.9rem;
-  right: 0.9rem;
-  bottom: 0.2rem;
-  height: 1px;
-  background: var(--gradient-brand);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform var(--duration-base) var(--ease-out);
-}
-
-.header ul li a:hover {
-  color: var(--text-primary);
-}
-
-.header ul li a:hover::after {
-  transform: scaleX(1);
-}
-
-.hero {
-  width: 100%;
-  min-height: calc(100vh - 140px);
+.lab-loading {
+  min-height: 60vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  color: var(--text-primary);
-  text-align: center;
-  padding: 2rem;
-}
-
-.hero h1 {
-  font-size: 3.2rem;
-  margin-bottom: 1rem;
-  max-width: 80%;
-  letter-spacing: -0.01em;
-}
-
-.hero p {
-  font-size: 1.3rem;
-  margin-bottom: 2rem;
-  color: var(--text-secondary);
-  max-width: 640px;
-}
-
-.hero button {
-  background: var(--gradient-brand);
-  color: #0a0c12;
-  border: none;
-  padding: 0.9rem 2rem;
-  border-radius: var(--radius-sm);
-  font-weight: 700;
-  cursor: pointer;
-  transition: transform var(--duration-fast) var(--ease-out),
-    box-shadow var(--duration-fast) var(--ease-out);
-  box-shadow: var(--shadow-sm);
-}
-
-.hero button:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-glow-cyan);
-}
-
-@media (max-width: 1024px) {
-  .hero {
-    min-height: calc(100vh - 150px);
-  }
-
-  .hero h1 {
-    font-size: 2.5rem;
-  }
-
-  .hero p {
-    font-size: 1.15rem;
-    max-width: 90%;
-  }
-}
-
-@media (max-width: 768px) {
-  .hero {
-    padding: 3rem 1rem;
-  }
-
-  .hero h1 {
-    font-size: 2rem;
-  }
-
-  .hero p {
-    font-size: 1rem;
-    max-width: 90%;
-  }
-
-  .hero button {
-    font-size: 0.95rem;
-    padding: 0.8rem 1.6rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .hero h1 {
-    font-size: 1.75rem;
-  }
-
-  .hero p {
-    font-size: 0.92rem;
-  }
-}
-
-.about-container {
-  max-width: 860px;
-  margin: 3rem auto;
-  padding: 2.5rem;
-  text-align: left;
-  background: var(--bg-surface);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
-  color: var(--text-primary);
-  display: flex;
-  gap: 2rem;
-  align-items: flex-start;
-}
-
-.profile-picture {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid var(--line-strong);
-  box-shadow: var(--shadow-sm);
-  flex-shrink: 0;
-}
-
-.about-text {
-  flex: 1;
-}
-
-.about-container h2 {
-  text-align: center;
-  font-size: 2.3rem;
-  margin-bottom: 1.5rem;
-}
-
-.about-content p {
-  line-height: 1.8;
-  margin-bottom: 1.5rem;
-  color: var(--text-secondary);
-}
-
-.about-content h3 {
-  font-size: 1.3rem;
-  margin-top: 1.5rem;
-  margin-bottom: 0.9rem;
-  color: var(--accent-cyan);
-}
-
-.about-content ul {
-  list-style: none;
-  padding-left: 0;
-  margin-bottom: 1.5rem;
-}
-
-.about-content ul li {
-  position: relative;
-  padding-left: 1.2rem;
-  margin-bottom: 0.6rem;
-  color: var(--text-secondary);
-}
-
-.about-content ul li::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0.55rem;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--gradient-brand);
-}
-
-.about-content a {
-  color: var(--accent-cyan);
-  text-decoration: none;
-  font-weight: bold;
-  transition: color var(--duration-fast) ease;
-}
-
-.about-content a:hover {
-  color: var(--accent-violet);
-  text-decoration: underline;
-}
-
-@media (max-width: 768px) {
-  .about-container {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    width: 100%;
-    max-width: 92%;
-    margin: 2rem auto;
-    padding: 1.75rem;
-  }
-
-  .about-content ul {
-    text-align: left;
-  }
-
-  .about-content p {
-    max-width: 100%;
-  }
-}
-
-.footer {
-  width: 100%;
-  padding: 3rem 1.5rem 2.5rem;
-  text-align: center;
-  background: var(--bg-surface-strong);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border-top: 1px solid var(--line);
-  color: var(--text-primary);
+  justify-content: center;
+  gap: 1rem;
+  color: var(--muted);
   font-size: 0.9rem;
 }
 
-.footer h2 {
-  font-size: 1.9rem;
-  margin-bottom: 1.75rem;
-}
-
-.footer p {
-  font-size: 1rem;
-  margin: 0;
-  color: var(--accent-cyan);
-  cursor: pointer;
-  transition: color var(--duration-fast) ease;
-}
-
-.footer p:hover {
-  color: var(--accent-violet);
-}
-
-.contact-list {
-  list-style: none;
-  padding: 0;
-  margin: 0 auto 2rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-}
-
-.contact-list li {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.contact-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
+.lab-spinner {
+  width: 26px;
+  height: 26px;
+  border: 2px solid var(--stroke);
+  border-top-color: var(--text);
   border-radius: 50%;
-  background: var(--bg-surface);
-  border: 1px solid var(--line);
+  animation: lab-spin 0.8s linear infinite;
 }
 
-.contact-icon img {
-  width: 18px;
-  height: 18px;
-  object-fit: contain;
-}
-
-.contact-list a {
-  color: var(--text-secondary);
-  text-decoration: none;
-  font-size: 1rem;
-  font-weight: 600;
-  transition: color var(--duration-fast) ease;
-}
-
-.contact-list a:hover {
-  color: var(--accent-cyan);
-}
-
-.daily-tip-widget {
-  padding: 1.5rem 1.75rem;
-  margin: 2.5rem auto 0;
-  max-width: 480px;
-  background: linear-gradient(135deg, rgba(34, 211, 238, 0.16), rgba(167, 139, 250, 0.22));
-  border: 1px solid var(--line-strong);
-  color: var(--text-primary);
-  border-radius: var(--radius-md);
-  text-align: center;
-  box-shadow: var(--shadow-sm);
-}
-
-.daily-tip-widget h3 {
-  font-size: 1.2rem;
-  margin: 0 0 0.5rem;
-  color: var(--accent-amber);
-}
-
-.daily-tip-widget p {
-  font-size: 1rem;
-  line-height: 1.5;
-  margin: 0;
-  color: var(--text-secondary);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
-  body::before {
-    animation: none;
-  }
-
-  .particles {
-    display: none;
-  }
-
-  .reveal {
-    transition: none;
-    opacity: 1;
-    transform: none;
-  }
-
-  .shimmer-text {
-    animation: none;
-    background-position: 0% center;
+@keyframes lab-spin {
+  to {
+    transform: rotate(360deg);
   }
 }

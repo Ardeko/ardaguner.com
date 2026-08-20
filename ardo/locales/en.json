@@ -89,5 +89,142 @@
   "cv": {
     "title": "Resume",
     "downloadButton": "PDF File (EN)"
+  },
+  "projectLabels": {
+    "status": {
+      "live": "Live",
+      "source": "Source",
+      "wip": "In development",
+      "restricted": "Not shared — copyright"
+    },
+    "category": {
+      "game": "Game",
+      "app": "App",
+      "web": "Web",
+      "corporate": "Client work",
+      "rnd": "R&D"
+    },
+    "link": {
+      "github": "Source code",
+      "live": "Live",
+      "play": "Play",
+      "download": "Download",
+      "appStore": "App Store",
+      "googlePlay": "Google Play"
+    }
+  },
+  "projectItems": {
+    "protocol": {
+      "title": "Protocol",
+      "desc": "An exciting race of speed and strategy. One of my earliest game experiments."
+    },
+    "ardobot": {
+      "title": "Ardobot",
+      "desc": "An AI-powered, fully customizable Discord bot."
+    },
+    "teknofest": {
+      "title": "Teknofest Autonomous Underwater Drone",
+      "desc": "An underwater drone built around autonomous computer vision. The software side centred on real-time image analysis."
+    },
+    "wordeko": {
+      "title": "Wordeko",
+      "desc": "A fun word guessing game."
+    },
+    "legendOfRey": {
+      "title": "Legend of Rey",
+      "desc": "A Python-based adventure platformer. The first game I shipped on itch.io."
+    },
+    "renault": {
+      "title": "Renault Appointment & Inspection",
+      "desc": "An appointment and vehicle inspection app built for Renault MAIS."
+    },
+    "ardaguner": {
+      "title": "ardaguner.com",
+      "desc": "My personal portfolio site — projects, skills and contact in one place."
+    },
+    "stok": {
+      "title": "Stock Statement Web App",
+      "desc": "A filterable stock tracking application on ASP.NET Core MVC, backed by an MSSQL database."
+    },
+    "revo": {
+      "title": "REVO",
+      "desc": "Browser-based voice and text communication built with SignalR and WebRTC. End-to-end encrypted and low latency; noise suppression, screen sharing and per-person volume come built in."
+    },
+    "nebula": {
+      "title": "Nebula — Bubble Shooter",
+      "desc": "A cosmic-themed bubble shooter with 50 levels and an endless mode. Built with React, Phaser 3, FastAPI and MongoDB."
+    },
+    "switchMaster": {
+      "title": "Switch Master: Railway",
+      "desc": "My first game, live on the App Store and Google Play. A minimalist puzzle built on flipping railway switches at the right moment."
+    },
+    "ardekostudios": {
+      "title": "ardekostudios.com",
+      "desc": "The Ardeko Studios site — built on React 19, Vite 8 and Tailwind v4, bilingual TR/EN."
+    },
+    "kafa": {
+      "title": "Kafa Kafaya",
+      "desc": "A fast, physics-based head-to-head ball game where two players collide head-on. A competitive mobile experience with trophies, skill cards and online ranking."
+    },
+    "rushville": {
+      "title": "Rushville",
+      "desc": "Keep a growing city’s traffic flowing. Connect colorful neighborhoods with roads and untangle the jams — a simple yet deep city puzzle."
+    },
+    "skyline": {
+      "title": "Skyline Swinger",
+      "desc": "Swing from web to web across a twilight city. A reflex-driven endless runner built on pendulum physics."
+    },
+    "sarteks": {
+      "title": "Sarteks Makina",
+      "desc": "The corporate site for Sarteks Makina — Adana-based, supplying the world’s leading textile machinery, consumables and after-sales service to the Turkish spinning industry for over 50 years. Built on Next.js 16, shipped in 10 languages with RTL support."
+    },
+    "forza": {
+      "title": "Forza Orbit",
+      "desc": "Launch from ring to ring, land a ‘Perfect’ right on the edge. A minimalist, hypnotic arcade built on timing."
+    },
+    "apex": {
+      "title": "Apex Shift",
+      "desc": "A browser arcade experience built on high tempo and split-second decisions."
+    },
+    "dny": {
+      "title": "DNY Bilişim",
+      "desc": "A corporate website for DNY Bilişim: services, references, FAQ and remote support pages."
+    },
+    "torpidodan": {
+      "title": "Torpidodan",
+      "desc": "A used-car trading simulation. A car’s real worth stays hidden from you; all you get is a noisy estimate. Pay for an inspection to cut the noise — or take the risk and pay for it at the negotiating table."
+    },
+    "decoy": {
+      "title": "Decoy",
+      "desc": "The deceitful war of seven nations. What a region broadcasts is never what it actually holds; to win you have to surround your enemy and call the bluff at exactly the right moment."
+    },
+    "unichain": {
+      "title": "Unichain Blockchain Monitoring Chain",
+      "desc": "A system for tracking blockchain transactions."
+    },
+    "metroray": {
+      "title": "Metroray",
+      "desc": "A physics-based side-scrolling train driving game. Couple your wagons, cross rough terrain without tipping, deliver the cargo — then spend the gold you earn on engine and suspension upgrades. Built with Phaser 3 and Matter.js."
+    }
+  },
+  "work": {
+    "eyebrow": "Selected work",
+    "titleLead": "Featured",
+    "titleAccent": "projects",
+    "lede": ""
+  },
+  "gallery": {
+    "eyebrow": "",
+    "titleLead": "",
+    "titleAccent": "Archive",
+    "lede": ""
+  },
+  "journey": {
+    "eyebrow": "Timeline",
+    "titleLead": "Everything",
+    "titleAccent": "so far",
+    "lede": "{n} projects since 2023 — games, apps and client work.",
+    "filterLabel": "Filter by category",
+    "all": "All"
   }
 }

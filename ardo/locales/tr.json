@@ -9,7 +9,7 @@
   },
   "hero": {
     "title": "Merhaba, Ben Arda!",
-    "subtitle": "Yazılım mühendisliğine tutkuyla bağlı bir geliştiriciyim.",
+    "subtitle": "Yazılım mühendisliğine tutkuyla bağlı bir geliştirici.",
     "tipTitle": "Yazılım İpucu",
     "aboutButton": "Hakkımda Daha Fazla",
     "revoButton": "💬 REVO ile Sohbet Et"
@@ -87,5 +87,142 @@
   "cv": {
     "title": "Özgeçmiş",
     "downloadButton": "PDF Dosyası (TR)"
+  },
+  "projectLabels": {
+    "status": {
+      "live": "Yayında",
+      "source": "Kaynak kodu",
+      "wip": "Geliştiriliyor",
+      "restricted": "Telif nedeniyle paylaşılmıyor"
+    },
+    "category": {
+      "game": "Oyun",
+      "app": "Uygulama",
+      "web": "Web",
+      "corporate": "Kurumsal",
+      "rnd": "Ar-Ge"
+    },
+    "link": {
+      "github": "Kaynak kodu",
+      "live": "Canlı",
+      "play": "Oyna",
+      "download": "İndir",
+      "appStore": "App Store",
+      "googlePlay": "Google Play"
+    }
+  },
+  "projectItems": {
+    "protocol": {
+      "title": "Protocol",
+      "desc": "Heyecan dolu bir hız ve strateji yarışı. İlk oyun denemelerimden biri."
+    },
+    "ardobot": {
+      "title": "Ardobot",
+      "desc": "Yapay zeka destekli, özelleştirilebilir bir Discord botu."
+    },
+    "teknofest": {
+      "title": "Teknofest Otonom Su Altı Dronu",
+      "desc": "Otonom görüntü işleme teknolojisiyle tasarlanan su altı dronu. Yazılım tarafı gerçek zamanlı görüntü analizi üzerine kuruldu."
+    },
+    "wordeko": {
+      "title": "Wordeko",
+      "desc": "Eğlenceli bir kelime tahmin oyunu."
+    },
+    "legendOfRey": {
+      "title": "Legend of Rey",
+      "desc": "Python tabanlı macera platform oyunu. itch.io’da yayınladığım ilk oyun."
+    },
+    "renault": {
+      "title": "Renault Randevu & Muayene",
+      "desc": "Renault MAIS için geliştirilen randevu ve muayene uygulaması."
+    },
+    "ardaguner": {
+      "title": "ardaguner.com",
+      "desc": "Kişisel portfolyo sitem — projeler, yetenekler ve iletişim tek adreste."
+    },
+    "stok": {
+      "title": "Stok Ekstresi Web Uygulaması",
+      "desc": "MSSQL veritabanı ile çalışan, filtrelenebilir ASP.NET Core MVC tabanlı stok takibi uygulaması."
+    },
+    "revo": {
+      "title": "REVO",
+      "desc": "SignalR ve WebRTC ile geliştirilen, tarayıcı üzerinden sesli ve yazılı iletişim uygulaması. Uçtan uca şifreli ve düşük gecikmeli; gürültü engelleme, ekran paylaşımı ve kişi başı ses kontrolü hazır gelir."
+    },
+    "nebula": {
+      "title": "Nebula — Balon Patlatma",
+      "desc": "50 seviyelik ve sonsuz modlu, kozmik temalı bir bubble shooter. React, Phaser 3, FastAPI ve MongoDB ile geliştirildi."
+    },
+    "switchMaster": {
+      "title": "Switch Master: Railway",
+      "desc": "App Store ve Google Play’de yayında olan ilk oyunum. Demiryolu makaslarını doğru zamanda çevirmeye dayanan minimalist bulmaca."
+    },
+    "ardekostudios": {
+      "title": "ardekostudios.com",
+      "desc": "Ardeko Studios’un kendi sitesi — React 19, Vite 8 ve Tailwind v4 üzerine kurulu, TR/EN iki dilli."
+    },
+    "kafa": {
+      "title": "Kafa Kafaya",
+      "desc": "İki oyuncunun kıyasıya çarpıştığı, fizik tabanlı hızlı bir kafa topu oyunu. Kupalar, yetenek kartları ve çevrimiçi sıralamayla rekabetçi mobil deneyim."
+    },
+    "rushville": {
+      "title": "Rushville",
+      "desc": "Büyüyen şehrin trafiğini akışta tut. Renk renk mahalleleri yollarla bağla, tıkanıklığı çöz — sade ama derin bir şehir-bulmaca."
+    },
+    "skyline": {
+      "title": "Skyline Swinger",
+      "desc": "Alacakaranlık şehrinde ağdan ağa savrul. Sarkaç fiziğiyle çalışan, refleks odaklı sonsuz koşu."
+    },
+    "sarteks": {
+      "title": "Sarteks Makina",
+      "desc": "Adana merkezli, 50 yılı aşkın süredir Türk iplik sektörüne tekstil makinesi, sarfiyat ve satış sonrası servis sağlayan Sarteks Makina’nın kurumsal sitesi. Next.js 16 üzerine kurulu; RTL desteğiyle birlikte 10 dilde yayında."
+    },
+    "forza": {
+      "title": "Forza Orbit",
+      "desc": "Halkadan halkaya fırla, tam kenarda ‘Perfect’ yakala. Zamanlama üzerine kurulu minimalist, hipnotik bir arcade."
+    },
+    "apex": {
+      "title": "Apex Shift",
+      "desc": "Yüksek tempoya ve anlık kararlara dayanan, tarayıcıda oynanan bir arcade deneyimi."
+    },
+    "dny": {
+      "title": "DNY Bilişim",
+      "desc": "DNY Bilişim için kurumsal web sitesi: hizmetler, referanslar, SSS ve uzaktan destek sayfaları."
+    },
+    "torpidodan": {
+      "title": "Torpidodan",
+      "desc": "İkinci el araba alım-satım simülasyonu. Bir aracın gerçek değeri sana kapalı; elinde sadece gürültülü bir tahmin var. Ekspertize öde, gürültüyü azalt — ya da riske gir ve pazarlık masasında öde."
+    },
+    "decoy": {
+      "title": "Decoy",
+      "desc": "Yedi ulusun hileli savaşı. Bir bölgenin yayınladığı güç ile gerçek gücü aynı şey değildir; kazanmak için düşmanını kuşatman ve yalanı doğru anda yakalaman gerekir."
+    },
+    "unichain": {
+      "title": "Unichain Blockchain İzleme Zinciri",
+      "desc": "Blockchain işlemlerini takip eden bir sistem."
+    },
+    "metroray": {
+      "title": "Metroray",
+      "desc": "Fizik tabanlı yan görünüm tren sürüş oyunu. Vagonları bağla, engebeli araziyi devirmeden aş, kargoyu teslim et; kazandığın altınla motoru ve süspansiyonu yükselt. Phaser 3 ve Matter.js ile geliştiriliyor."
+    }
+  },
+  "work": {
+    "eyebrow": "Seçilmiş işler",
+    "titleLead": "Öne çıkan",
+    "titleAccent": "projeler",
+    "lede": ""
+  },
+  "gallery": {
+    "eyebrow": "",
+    "titleLead": "",
+    "titleAccent": "Arşiv",
+    "lede": ""
+  },
+  "journey": {
+    "eyebrow": "Çizelge",
+    "titleLead": "Bugüne kadar",
+    "titleAccent": "yaptıklarım",
+    "lede": "2023’ten bugüne {n} proje — oyunlar, uygulamalar ve kurumsal işler.",
+    "filterLabel": "Kategoriye göre filtrele",
+    "all": "Hepsi"
   }
 }

@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 440" width="640" height="440" role="img" aria-label="Torpidodan">
+  <defs>
+    <linearGradient id="tdBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f4eee2"/>
+      <stop offset="100%" stop-color="#dcd4c2"/>
+    </linearGradient>
+    <linearGradient id="tdBody" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2c4270"/>
+      <stop offset="100%" stop-color="#16233d"/>
+    </linearGradient>
+    <linearGradient id="tdRoof" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#33507f"/>
+      <stop offset="100%" stop-color="#1d2f52"/>
+    </linearGradient>
+    <radialGradient id="tdGlass" cx="36%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#78beff" stop-opacity="0.22"/>
+    </radialGradient>
+    <pattern id="tdRule" width="22" height="22" patternUnits="userSpaceOnUse">
+      <path d="M0 0H22M0 0V22" fill="none" stroke="#1a4fa0" stroke-opacity="0.07" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <rect width="640" height="440" fill="url(#tdBg)"/>
+  <rect width="640" height="440" fill="url(#tdRule)"/>
+
+  <!-- başlık -->
+  <text x="40" y="70" font-family="Arial Black, Arial, sans-serif" font-size="42" font-weight="900" letter-spacing="2" fill="#14233b">TORPİDODAN</text>
+  <text x="42" y="94" font-family="Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="4" fill="#1a4fa0">GERÇEK DEĞERİ ASLA GÖREMEZSİN</text>
+
+  <!-- ekspertiz kaşesi -->
+  <g transform="rotate(-8 540 76)">
+    <rect x="470" y="52" width="132" height="44" rx="7" fill="none" stroke="#1a4fa0" stroke-opacity="0.45" stroke-width="3" stroke-dasharray="9 6"/>
+    <text x="536" y="80" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" font-weight="900" letter-spacing="3" fill="#1a4fa0" fill-opacity="0.6">EKSPERTİZ</text>
+  </g>
+
+  <!-- araç -->
+  <g transform="translate(150 168)">
+    <ellipse cx="170" cy="132" rx="185" ry="12" fill="#14233b" opacity="0.14"/>
+    <rect x="72" y="6" width="164" height="52" rx="26" fill="url(#tdRoof)"/>
+    <rect x="84" y="16" width="66" height="34" rx="10" fill="#bedeff" fill-opacity="0.78"/>
+    <rect x="158" y="16" width="70" height="34" rx="10" fill="#bedeff" fill-opacity="0.78"/>
+    <rect x="0" y="52" width="340" height="56" rx="22" fill="url(#tdBody)"/>
+    <circle cx="72" cy="112" r="26" fill="#111827"/>
+    <circle cx="72" cy="112" r="17" fill="none" stroke="#4b5563" stroke-width="7"/>
+    <circle cx="268" cy="112" r="26" fill="#111827"/>
+    <circle cx="268" cy="112" r="17" fill="none" stroke="#4b5563" stroke-width="7"/>
+
+    <!-- tramer kayıtları -->
+    <g stroke="#d1443c" stroke-width="5" stroke-linecap="round">
+      <path d="M42 66l24 24M66 66l-24 24"/>
+      <path d="M244 72l24 24M268 72l-24 24"/>
+    </g>
+  </g>
+
+  <!-- mercek -->
+  <g transform="translate(414 218)">
+    <path d="M46 46l30 30" stroke="#14233b" stroke-width="14" stroke-linecap="round"/>
+    <circle cx="0" cy="0" r="56" fill="url(#tdGlass)" stroke="#14233b" stroke-width="9"/>
+    <g transform="translate(-100 -110)">
+      <rect x="62" y="0" width="86" height="26" rx="6" fill="#d1443c"/>
+      <text x="105" y="18" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="900" letter-spacing="2" fill="#ffffff">TRAMER</text>
+    </g>
+  </g>
+
+  <!-- plaka -->
+  <g transform="translate(40 356)">
+    <rect width="150" height="46" rx="7" fill="#ffffff" stroke="#14233b" stroke-width="3"/>
+    <path d="M3 3h27v40H3z" fill="#1a4fa0"/>
+    <text x="16" y="38" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="900" fill="#ffffff">TR</text>
+    <text x="94" y="34" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="23" font-weight="900" letter-spacing="2" fill="#14233b">34 ARD 34</text>
+  </g>
+
+  <!-- belirsizlik bandı -->
+  <g transform="translate(330 356)">
+    <text x="0" y="12" font-family="Arial, sans-serif" font-size="11" font-weight="900" letter-spacing="3" fill="#14233b" fill-opacity="0.62">TAHMİNİ DEĞER</text>
+    <text x="270" y="12" text-anchor="end" font-family="Arial Black, Arial, sans-serif" font-size="15" font-weight="900" letter-spacing="2" fill="#14233b">₺ ? ? ?</text>
+    <rect x="0" y="24" width="270" height="14" rx="7" fill="#14233b" fill-opacity="0.14"/>
+    <rect x="86" y="24" width="98" height="14" rx="7" fill="#1a4fa0"/>
+  </g>
+
+  <rect width="640" height="440" fill="none" stroke="#14233b" stroke-opacity="0.1" stroke-width="2"/>
+</svg>

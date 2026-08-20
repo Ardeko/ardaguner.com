@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 440" width="640" height="440" role="img" aria-label="Decoy">
+  <defs>
+    <radialGradient id="dcBg" cx="50%" cy="42%" r="72%">
+      <stop offset="0%" stop-color="#1a2244"/>
+      <stop offset="100%" stop-color="#05070f"/>
+    </radialGradient>
+    <linearGradient id="dcTitle" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#a5b4fc"/>
+    </linearGradient>
+    <filter id="dcGlow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="9" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <pattern id="dcGrid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#6366f1" stroke-opacity="0.09" stroke-width="1"/>
+    </pattern>
+    <symbol id="dcHex" viewBox="0 0 104 92">
+      <polygon points="26,0 78,0 104,46 78,92 26,92 0,46"/>
+    </symbol>
+  </defs>
+
+  <rect width="640" height="440" fill="url(#dcBg)"/>
+  <rect width="640" height="440" fill="url(#dcGrid)"/>
+
+  <!-- bal peteği: merkez + 6 komşu -->
+  <g>
+    <!-- üst -->
+    <g transform="translate(268 76)">
+      <use href="#dcHex" width="104" height="92" fill="#22d3ee" opacity="0.9"/>
+      <use href="#dcHex" x="6" y="5" width="92" height="82" fill="#080c1b"/>
+      <text x="52" y="52" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="24" font-weight="900" fill="#22d3ee">9</text>
+    </g>
+    <!-- sol üst -->
+    <g transform="translate(190 122)">
+      <use href="#dcHex" width="104" height="92" fill="#818cf8" opacity="0.9"/>
+      <use href="#dcHex" x="6" y="5" width="92" height="82" fill="#080c1b"/>
+      <text x="52" y="52" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="24" font-weight="900" fill="#818cf8">14</text>
+    </g>
+    <!-- sağ üst -->
+    <g transform="translate(346 122)">
+      <use href="#dcHex" width="104" height="92" fill="#c084fc" opacity="0.9"/>
+      <use href="#dcHex" x="6" y="5" width="92" height="82" fill="#080c1b"/>
+      <text x="52" y="52" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="24" font-weight="900" fill="#c084fc">11</text>
+    </g>
+    <!-- sol alt -->
+    <g transform="translate(190 214)">
+      <use href="#dcHex" width="104" height="92" fill="#34d399" opacity="0.9"/>
+      <use href="#dcHex" x="6" y="5" width="92" height="82" fill="#080c1b"/>
+      <text x="52" y="52" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="24" font-weight="900" fill="#34d399">18</text>
+    </g>
+    <!-- sağ alt -->
+    <g transform="translate(346 214)">
+      <use href="#dcHex" width="104" height="92" fill="#fbbf24" opacity="0.9"/>
+      <use href="#dcHex" x="6" y="5" width="92" height="82" fill="#080c1b"/>
+      <text x="52" y="52" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="24" font-weight="900" fill="#fbbf24">7</text>
+    </g>
+    <!-- alt -->
+    <g transform="translate(268 260)">
+      <use href="#dcHex" width="104" height="92" fill="#fb7185" opacity="0.9"/>
+      <use href="#dcHex" x="6" y="5" width="92" height="82" fill="#080c1b"/>
+      <text x="52" y="52" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="24" font-weight="900" fill="#fb7185">13</text>
+    </g>
+
+    <!-- kuşatılan merkez -->
+    <g transform="translate(258 158)" filter="url(#dcGlow)">
+      <use href="#dcHex" x="-10" y="-9" width="124" height="110" fill="#f43f5e" opacity="0.22"/>
+      <use href="#dcHex" width="104" height="92" fill="#f43f5e"/>
+      <use href="#dcHex" x="6" y="5" width="92" height="82" fill="#0b0f1f"/>
+      <text x="52" y="46" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="26" font-weight="900" fill="#fda4af">27</text>
+      <text x="52" y="66" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="700" letter-spacing="1" fill="#f43f5e">12</text>
+    </g>
+  </g>
+
+  <!-- kuşatma okları -->
+  <g fill="#f43f5e" opacity="0.95">
+    <polygon points="242,150 254,168 230,168"/>
+    <polygon points="398,150 410,168 386,168" transform="rotate(180 398 159)"/>
+    <polygon points="320,120 332,138 308,138" transform="rotate(180 320 129)"/>
+  </g>
+
+  <!-- başlık -->
+  <text x="40" y="70" font-family="Arial Black, Arial, sans-serif" font-size="46" font-weight="900" letter-spacing="4" fill="url(#dcTitle)">DECOY</text>
+  <text x="42" y="94" font-family="Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="5" fill="#818cf8">YEDİ ULUSUN HİLELİ SAVAŞI</text>
+
+  <!-- yayın / gerçek etiketi -->
+  <g transform="translate(40 372)">
+    <rect width="196" height="34" rx="17" fill="#05070f" fill-opacity="0.85" stroke="#ffffff" stroke-opacity="0.12"/>
+    <text x="18" y="22" font-family="Arial, sans-serif" font-size="11" font-weight="900" letter-spacing="2" fill="#94a3b8">YAYIN 27</text>
+    <text x="112" y="22" font-family="Arial, sans-serif" font-size="11" font-weight="900" letter-spacing="2" fill="#f43f5e">GERÇEK 12</text>
+  </g>
+
+  <rect width="640" height="440" fill="none" stroke="#ffffff" stroke-opacity="0.08" stroke-width="2"/>
+</svg>

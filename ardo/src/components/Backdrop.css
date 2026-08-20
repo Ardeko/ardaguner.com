@@ -1,0 +1,241 @@
+/* ------------------------------------------------------------------
+   Backdrop — sitenin arka plan katmanı.
+
+   Arka plan eskiden düz siyahtı (--bg). Sayfa boşluklarında hiçbir şey
+   olmadığı için "bitmemiş" duruyordu. Bu katman o boşluğu doldurur ama
+   dikkat çekmez: hiçbir varyantın toplam parlaklığı %15'i geçmiyor.
+
+   KATMAN SIRASI (App.jsx içinde bu sırayla basılıyor)
+     Backdrop  z-index 0   ← burası
+     Particles z-index 0   (Backdrop'tan sonra geldiği için üstte)
+     .page     z-index 1
+     Nav       z-index 900
+
+   Canvas yok, WebGL yok, ek paket yok. Boyanan tek şey birkaç
+   gradient; hepsi GPU'da compositor katmanında kalıyor.
+
+   DEĞİŞKENLER — Backdrop.jsx tarafından yazılıyor:
+     --mx / --my   imleç konumu, yüzde   (ışığın merkezi)
+     --px / --py   aynı konum, -1..1     (paralaks çarpanı)
+   Hepsinin fallback'i var: JS hiç çalışmasa da (dokunmatik cihaz,
+   reduced-motion, hidrasyon öncesi) katman sabit bir kompozisyon
+   olarak doğru görünüyor.
+
+   VURGU RENGİ: --accent (#89AACC, çelik mavi). index.css'te tanımlı
+   değilse fallback devreye girer, site yine çalışır.
+------------------------------------------------------------------- */
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: var(--bg);
+  --bd-accent: var(--accent, #89aacc);
+}
+
+.backdrop > * {
+  position: absolute;
+  inset: 0;
+}
+
+/* --- İmleci takip eden ışık ---------------------------------------
+   Her iki varyantta da ortak. Sayfanın "canlı" hissini veren şey bu:
+   ziyaretçi fareyi kıpırdattığı anda zeminin tepki verdiğini görüyor.
+
+   `transition` yok — yumuşatma JS tarafında lerp ile yapılıyor. İkisi
+   birden olsaydı ışık fareden mahsus kaçıyormuş gibi görünürdü.
+------------------------------------------------------------------- */
+
+.bd-spot {
+  background: radial-gradient(
+    26rem 26rem at var(--mx, 50%) var(--my, 34%),
+    color-mix(in srgb, var(--bd-accent) 17%, transparent),
+    color-mix(in srgb, var(--bd-accent) 5%, transparent) 42%,
+    transparent 68%
+  );
+}
+
+/* Dokunmatik cihazda imleç yok; sabit bir noktada duran ışık lekesi
+   ekranda tuhaf bir kirlilik gibi görünüyordu. Kapatılıyor —
+   lekeler zaten sahneyi taşıyor. */
+@media (pointer: coarse) {
+  .bd-spot {
+    display: none;
+  }
+}
+
+/* --- Varyant: aurora ----------------------------------------------
+   Üç yumuşak leke. Renk tek: aksan mavisinin iki yoğunluğu ve bir
+   nötr. İkinci bir renk (mor/cyan) bilerek eklenmedi — o ikili siteyi
+   şablona çeviriyordu.
+
+   İki hareket üst üste biniyor:
+     transform → kendi yavaş sürüklenmesi (keyframes, imleçten bağımsız)
+     translate → imlece göre paralaks (ayrı CSS özelliği, çakışmıyor)
+   `transform` ve `translate` ayrı özellikler olduğu için ikisi aynı
+   anda çalışabiliyor; tek `transform` ile yapılsaydı animasyon
+   paralaksı her karede eziyordu.
+
+   Katsayılar kasıtlı olarak farklı (34/22/14 px): hepsi aynı miktarda
+   kaysaydı düz bir yüzey gibi görünürdü, farklı olunca derinlik çıkıyor.
+------------------------------------------------------------------- */
+
+.bd-blob {
+  border-radius: 50%;
+  filter: blur(90px);
+  will-change: transform, translate;
+}
+
+.bd-blob-a {
+  inset: auto auto 38% -12%;
+  width: 62vw;
+  height: 62vw;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--bd-accent) 30%, transparent),
+    transparent 68%
+  );
+  translate: calc(var(--px, 0) * 34px) calc(var(--py, 0) * 26px);
+  animation: bd-drift-a 34s ease-in-out infinite alternate;
+}
+
+.bd-blob-b {
+  inset: -20% -14% auto auto;
+  width: 56vw;
+  height: 56vw;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--bd-accent) 22%, transparent),
+    transparent 66%
+  );
+  translate: calc(var(--px, 0) * -22px) calc(var(--py, 0) * -16px);
+  animation: bd-drift-b 42s ease-in-out infinite alternate;
+}
+
+.bd-blob-c {
+  inset: auto 18% -30% auto;
+  width: 50vw;
+  height: 50vw;
+  background: radial-gradient(circle, rgba(245, 245, 244, 0.1), transparent 64%);
+  translate: calc(var(--px, 0) * 14px) calc(var(--py, 0) * 10px);
+  animation: bd-drift-c 50s ease-in-out infinite alternate;
+}
+
+@keyframes bd-drift-a {
+  to {
+    transform: translate3d(13vw, -7vh, 0) scale(1.14);
+  }
+}
+@keyframes bd-drift-b {
+  to {
+    transform: translate3d(-10vw, 9vh, 0) scale(0.9);
+  }
+}
+@keyframes bd-drift-c {
+  to {
+    transform: translate3d(8vw, -5vh, 0) scale(1.1);
+  }
+}
+
+/* --- Varyant: beams -----------------------------------------------
+   Eğik ışık huzmeleri, sinema perdesine düşen ışık gibi. Tek başına
+   ekranın tamamına yayılsaydı çizgili duvar kağıdı olurdu; maske
+   sayesinde yalnızca imlecin çevresinde beliriyor.
+
+   Yani huzmeler kalıcı bir desen değil, ziyaretçinin fareyle
+   "aydınlattığı" bir doku. Etkileşim burada dekorasyondan çok
+   keşfetme hissi veriyor.
+------------------------------------------------------------------- */
+
+.bd-beams-field {
+  background: repeating-linear-gradient(
+    104deg,
+    transparent 0 108px,
+    color-mix(in srgb, var(--bd-accent) 20%, transparent) 108px 110px,
+    transparent 110px 236px
+  );
+  -webkit-mask-image: radial-gradient(
+    34rem 40rem at var(--mx, 50%) var(--my, 34%),
+    #000 0%,
+    rgba(0, 0, 0, 0.35) 40%,
+    transparent 72%
+  );
+  mask-image: radial-gradient(
+    34rem 40rem at var(--mx, 50%) var(--my, 34%),
+    #000 0%,
+    rgba(0, 0, 0, 0.35) 40%,
+    transparent 72%
+  );
+}
+
+/* Huzmelerin altında duran sabit ışık: imleç ekrandan çıksa bile
+   sayfanın üstü tamamen kararmasın diye. */
+.bd-beams-glow {
+  background: radial-gradient(
+    54% 46% at 58% -4%,
+    color-mix(in srgb, var(--bd-accent) 13%, transparent),
+    transparent 72%
+  );
+}
+
+@media (pointer: coarse) {
+  /* Maske imlece bağlı; dokunmatikte sabit kalıp ekranın ortasında
+     bir yama gibi duruyordu. Huzmeler tamamen kapatılıp yerini sadece
+     üstteki ışığa bırakıyor. */
+  .bd-beams-field {
+    display: none;
+  }
+}
+
+/* --- Grain -------------------------------------------------------
+   Her varyantın üstüne binen ince kum. İki işi var: düz siyahta
+   oluşan gradient bantlanmasını (banding) kırıyor ve ekrana kağıt
+   dokusu veriyor. feTurbulence bir kere raster'lanıyor, sürekli
+   maliyeti yok.
+------------------------------------------------------------------- */
+
+.bd-grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.045;
+}
+
+/* --- Alt kenar geçişi ---------------------------------------------
+   Footer koyu bir yüzey; arka plan aydınlığı oraya kadar sürerse
+   footer havada duruyor. Bu katman viewport'un altını --bg'ye
+   geri indiriyor.
+------------------------------------------------------------------- */
+
+.bd-fade {
+  background: linear-gradient(to bottom, transparent 58%, var(--bg) 100%);
+}
+
+/* --- Erişilebilirlik ---------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .bd-blob {
+    animation: none;
+    translate: none;
+  }
+}
+
+/* Dar ekranda blur yarıçapı orantısız pahalıya geliyor; küçültülüyor.
+   Lekeler de büyütülüyor, yoksa telefonda üç ayrı benek gibi duruyor. */
+@media (max-width: 640px) {
+  .bd-blob {
+    filter: blur(64px);
+  }
+  .bd-blob-a {
+    width: 108vw;
+    height: 108vw;
+  }
+  .bd-blob-b {
+    width: 96vw;
+    height: 96vw;
+  }
+  .bd-blob-c {
+    width: 86vw;
+    height: 86vw;
+  }
+}

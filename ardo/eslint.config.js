@@ -29,6 +29,11 @@ export default [
       ...react.configs['jsx-runtime'].rules,
       ...reactHooks.configs.recommended.rules,
       'react/jsx-no-target-blank': 'off',
+      // Projede hiçbir bileşen PropTypes kullanmıyor ve TypeScript de
+      // yok; bu kural açıkken lint 160'tan fazla hata basıp gerçek
+      // sorunları görünmez kılıyordu. Tip doğrulaması istenirse doğru
+      // adım TypeScript'e geçmek, her dosyaya PropTypes serpmek değil.
+      'react/prop-types': 'off',
       'react-refresh/only-export-components': [
         'warn',
         { allowConstantExport: true },
