@@ -16,13 +16,13 @@
   },
   "about": {
     "title": "About Me",
-    "description": "Hi, I'm Arda Güner. I started my software journey with JavaScript and developed projects in modern technologies.",
+    "description": "Hi, I'm Arda Güner. I started with C++ and today I build projects across web, mobile and game development.",
     "detailedDescription": [
-      "Hello, I’m Arda Güner. I started my software development journey with JavaScript and over time specialized in modern web technologies, building a strong technical foundation in this field. I develop sustainable, high-performance, and user-focused web applications using tools from the JavaScript ecosystem, especially React and Node.js. I see software not just as a job, but as a continuously evolving problem-solving discipline.",
-      "In mobile application development, I have built user-friendly and scalable applications using Flutter and Dart. I am currently deepening my knowledge of Kotlin and actively working to improve my technical expertise on mobile platforms. I closely follow emerging technologies and place strong importance on continuous learning and staying up to date.",
-      "In the past, I worked as a coding and computer science instructor, helping children develop algorithmic thinking and problem-solving skills. In Scratch-based workshops, my focus was not only on teaching how to code, but on building systematic thinking, step-by-step reasoning, and a creative, productive mindset.",
-      "Alongside these, I solo-develop unique independent (indie) games under my own game studio, Ardeko Studios, bringing my creative concepts and gaming passions to life."
-    ],
+  "Hello, I'm Arda Güner. I started my software development journey with C++, and the grounding it gave me in algorithms and memory management still shapes how I approach every new technology. Over time I moved into modern web technologies and built a strong technical foundation there. I develop sustainable, high-performance, user-focused web applications with the JavaScript ecosystem — React, TypeScript and Node.js in particular — as well as Next.js and ASP.NET Core. I see software not just as a job, but as a continuously evolving problem-solving discipline.",
+  "These days my focus is on game development: desktop game projects in Python and Delphi, and mobile and web games with Godot 4 and Phaser 3 + Matter.js. On mobile I build user-friendly, scalable applications with Flutter and Dart, and use Capacitor to bring my web-based games to mobile platforms. I'm also actively learning Kotlin and continually working to deepen my technical expertise on mobile platforms.",
+  "In the past, I worked as a coding and computer science instructor, helping children develop algorithmic thinking and problem-solving skills. In Scratch-based workshops, my focus was not only on teaching how to code, but on building systematic thinking, step-by-step reasoning, and a creative, productive mindset.",
+  "Alongside these, I solo-develop independent (indie) games under my own game studio, Ardeko Studios, bringing my creative concepts and gaming passions to life."
+],
     "workExperience": "Work Experience",
     "education": "Education",
     "educationDetails": "2018-2023: Altınbaş University, Software Engineering",
