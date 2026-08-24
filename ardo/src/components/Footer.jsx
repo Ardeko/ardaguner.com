@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import Reveal from "../Reveal";
 import Icon from "./Icon";
@@ -15,6 +16,19 @@ import Icon from "./Icon";
 const MAILLER = ["ardaguner2000@gmail.com", "ardaguner@hotmail.com"];
 
 function Footer({ strings, language, tip }) {
+  // Mobilde mailto: bir uygulama açar; çoğu ziyaretçi adresi başka bir
+  // yere yapıştırmak ister. Kopyala düğmesi o adımı kısaltıyor.
+  const [kopyalanan, setKopyalanan] = useState("");
+  const kopyala = async (mail) => {
+    try {
+      await navigator.clipboard.writeText(mail);
+      setKopyalanan(mail);
+      window.setTimeout(() => setKopyalanan(""), 1800);
+    } catch {
+      /* pano izni yoksa mailto linki zaten duruyor */
+    }
+  };
+
   const serit = language === "tr" ? "YAZILIM · OYUN · TASARIM · " : "SOFTWARE · GAMES · DESIGN · ";
 
   return (
@@ -45,6 +59,14 @@ function Footer({ strings, language, tip }) {
               <li key={mail}>
                 <Icon name="mail" size={17} />
                 <a href={`mailto:${mail}`}>{mail}</a>
+                <button
+                  type="button"
+                  className="copy-btn"
+                  onClick={() => kopyala(mail)}
+                  aria-label={`${strings.footer.copy}: ${mail}`}
+                >
+                  {kopyalanan === mail ? strings.footer.copied : strings.footer.copy}
+                </button>
               </li>
             ))}
             <li>

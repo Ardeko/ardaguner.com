@@ -17,6 +17,11 @@ import { withImage, featuredProjects } from "../data/projects";
    kendiliğinden görünür olacaklar, kod değişmeyecek.
 ------------------------------------------------------------------- */
 
+/** Locale'de karşılığı olmayan proje sayfayı düşürmesin — bugün
+    `about.os` silindiğinde site tam olarak böyle beyaz ekrana düştü. */
+const metniAl = (strings, id) =>
+  strings.projectItems[id] || { title: id, desc: "" };
+
 function Gallery({ strings }) {
   const bolumRef = useRef(null);
   const [kayma, setKayma] = useState(0);
@@ -85,7 +90,7 @@ function Gallery({ strings }) {
               style={{ transform: `translate3d(0, ${si === 0 ? kayma : -kayma}px, 0)` }}
             >
               {sutun.map((p) => {
-                const metin = strings.projectItems[p.id];
+                const metin = metniAl(strings, p.id);
                 return (
                   <Reveal as="figure" key={p.id} className="gallery-item">
                     <img

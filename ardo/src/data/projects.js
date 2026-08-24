@@ -314,10 +314,24 @@ export const PROJECTS = [
     year: 2026,
     month: 8,
     category: 'game',
-    status: 'wip',
+    status: 'live',
     platforms: 'WEB · ONLINE',
     tech: ['JavaScript', 'Firebase', 'Firestore'],
     image: '/games/decoy.svg',
+    links: { play: 'https://ardekostudios.com/decoy/' },
+  },
+  {
+    id: 'erafront',
+    // Delphi ile geliştirilen tek proje. Metinde "Python ve Delphi ile
+    // masaüstü oyunları" deniyor; katalogda karşılığı olmadan o cümle
+    // doğrulanamıyordu. Windows-only, mobil/web hedefi yok.
+    year: 2026,
+    month: 8,
+    category: 'game',
+    status: 'wip',
+    platforms: 'WINDOWS',
+    tech: ['Delphi', 'FireMonkey'],
+    image: null,
     links: {},
   },
   {
@@ -341,6 +355,16 @@ export const PROJECTS = [
 /** Öne çıkanlar — `featured` sırasına göre. Vitrin bölümü bunu kullanır. */
 export const featuredProjects = () =>
   PROJECTS.filter((p) => p.featured).sort((a, b) => a.featured - b.featured);
+
+/**
+ * Hero'daki üç rakam. Elle yazılmıyor: yeni proje eklenince kendiliğinden
+ * güncelleniyor, yoksa "23 proje" yazısı ilk eklemede yalan olurdu.
+ */
+export const stats = () => ({
+  projects: PROJECTS.length,
+  live: PROJECTS.filter((p) => p.status === 'live').length,
+  games: PROJECTS.filter((p) => p.category === 'game').length,
+});
 
 /** Görseli olan projeler — galeri bölümü bunu kullanır. */
 export const withImage = () => PROJECTS.filter((p) => p.image);

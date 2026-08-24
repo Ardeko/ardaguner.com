@@ -5,24 +5,31 @@
     "about": "About",
     "projects": "Projects",
     "contact": "Contact",
-    "games": "Games"
+    "games": "Games",
+    "skip": "Skip to content",
+    "top": "Back to top"
   },
   "hero": {
-    "title": "Hi, I'm Arda!",
-    "subtitle": "A software engineer passionate about development.",
+    "title": "Hi, I’m Arda!",
+    "subtitle": "I build web applications and independent games.",
     "tipTitle": "Software Tip",
     "aboutButton": "Learn More About Me",
-    "revoButton": "💬 Chat with REVO"
+    "revoButton": "💬 Chat with REVO",
+    "stats": {
+      "projects": "projects",
+      "live": "live",
+      "games": "games"
+    }
   },
   "about": {
     "title": "About Me",
-    "description": "Hi, I'm Arda Güner. I started with C++ and today I build projects across web, mobile and game development.",
+    "description": "Hi, I’m Arda Güner. I started with C++ and today I build projects across web, mobile and game development.",
     "detailedDescription": [
-  "Hello, I'm Arda Güner. I started my software development journey with C++, and the grounding it gave me in algorithms and memory management still shapes how I approach every new technology. Over time I moved into modern web technologies and built a strong technical foundation there. I develop sustainable, high-performance, user-focused web applications with the JavaScript ecosystem — React, TypeScript and Node.js in particular — as well as Next.js and ASP.NET Core. I see software not just as a job, but as a continuously evolving problem-solving discipline.",
-  "These days my focus is on game development: desktop game projects in Python and Delphi, and mobile and web games with Godot 4 and Phaser 3 + Matter.js. On mobile I build user-friendly, scalable applications with Flutter and Dart, and use Capacitor to bring my web-based games to mobile platforms. I'm also actively learning Kotlin and continually working to deepen my technical expertise on mobile platforms.",
-  "In the past, I worked as a coding and computer science instructor, helping children develop algorithmic thinking and problem-solving skills. In Scratch-based workshops, my focus was not only on teaching how to code, but on building systematic thinking, step-by-step reasoning, and a creative, productive mindset.",
-  "Alongside these, I solo-develop independent (indie) games under my own game studio, Ardeko Studios, bringing my creative concepts and gaming passions to life."
-],
+      "Hello, I’m Arda Güner. I started my software development journey with C++, and the grounding it gave me in algorithms and memory management still shapes how I approach every new technology. Over time I moved into modern web technologies and built a strong technical foundation there. I develop sustainable, high-performance, user-focused web applications with the JavaScript ecosystem — React, TypeScript and Node.js in particular — as well as Next.js and ASP.NET Core. I see software not just as a job, but as a continuously evolving problem-solving discipline.",
+      "These days my focus is on game development: desktop game projects in Python and Delphi, and mobile and web games with Godot 4 and Phaser 3 + Matter.js. On mobile I build user-friendly, scalable applications with Flutter and Dart, and use Capacitor to bring my web-based games to mobile platforms. I’m also actively learning Kotlin and continually working to deepen my technical expertise on mobile platforms.",
+      "In the past, I worked as a coding and computer science instructor, helping children develop algorithmic thinking and problem-solving skills. In Scratch-based workshops, my focus was not only on teaching how to code, but on building systematic thinking, step-by-step reasoning, and a creative, productive mindset.",
+      "Alongside these, I solo-develop independent (indie) games under my own game studio, Ardeko Studios, bringing my creative concepts and gaming passions to life."
+    ],
     "workExperience": "Work Experience",
     "education": "Education",
     "educationDetails": "2018-2023: Altınbaş University, Software Engineering",
@@ -35,17 +42,18 @@
       "2026-Present: Ardeko Studios, Founder & Game Developer"
     ],
     "skills": "My Skills",
-"languages": "Programming Languages: C++, C#, Python, JavaScript, TypeScript, Delphi (Object Pascal), Dart",
-"webTechnologies": "Web & Backend: React, Next.js, Node.js, Tailwind CSS, ASP.NET Core, FastAPI, SignalR",
-"gameTechnologies": "Game Development: Godot 4, Phaser 3 + Matter.js, Pygame, FireMonkey, Capacitor",
-"databases": "Databases: MSSQL, MySQL, MongoDB",
-"tools": "Tools & Practices: Git/GitHub, Vite, Docker, CI/CD, i18n & localization",
-"additionalSkills": [
-  "Algorithm design and problem solving",
-  "Physics-based game mechanics and performance optimization",
-  "Mobile release pipelines (App Store, Google Play)",
-  "Multilingual (i18n) and RTL-ready interface development"
-],
+    "languages": "Programming Languages: C++, C#, Python, JavaScript, TypeScript, Delphi (Object Pascal), Dart",
+    "webTechnologies": "Web & Backend: React, Next.js, Node.js, Tailwind CSS, ASP.NET Core, FastAPI, SignalR",
+    "gameTechnologies": "Game Development: Godot 4, Phaser 3 + Matter.js, Pygame, FireMonkey, Capacitor",
+    "databases": "Databases: MSSQL, MySQL, MongoDB",
+    "tools": "Tools & Practices: Git/GitHub, Vite, Docker, CI/CD, i18n & localization",
+    "os": "Platforms: Windows, macOS, Linux (Ubuntu), Android & iOS",
+    "additionalSkills": [
+      "Algorithm design and problem solving",
+      "Physics-based game mechanics and performance optimization",
+      "Mobile release pipelines (App Store, Google Play)",
+      "Multilingual (i18n) and RTL-ready interface development"
+    ],
     "hobbies": "Hobbies",
     "hobbyList": [
       "Developing creative game ideas",
@@ -59,34 +67,14 @@
     "githubLink": "GitHub Profile"
   },
   "projects": {
-    "title": "My Projects",
-    "legendOfRey": "Legend of Rey",
-    "legendOfReyDescription": "A Python-based adventure platformer game I developed.",
-    "underwaterDrone": "Teknofest Autonomous Underwater Drone",
-    "underwaterDescription": "Designed with autonomous image processing technology.",
-    "ardobot": "Ardobot - Discord Bot",
-    "ardobotDescription": "An AI-powered, customizable Discord bot.",
-    "renaultApp": "Renault Appointment Inspection App",
-    "renaultDescription": "Renault MAIS Inspection and Appointment application.",
-    "wordeko": "Wordeko Word Game",
-    "wordekoDescription": "A fun word guessing game.",
-    "protocolGame": "Protocol Racing Game",
-    "protocolDescription": "An exciting race of speed and strategy.",
-    "unichain": "Unichain Blockchain Monitoring Chain",
-    "unichainDescription": "A system for tracking blockchain transactions.",
-    "restricted": "This project is restricted due to copyright.",
-    "more": "Learn More",
-    "stokApp": "Stock Statement Web App",
-    "stokDescription": "A filterable ASP.NET Core MVC application that displays stock movements from a MSSQL database.",
-    "revoApp": "REVO - Real-Time Chat App",
-    "revoDescription": "A browser-based real-time communication app built with SignalR and WebRTC for voice and text chat.",
-    "nebula": "Nebula - Bubble Shooter",
-    "nebulaDescription": "A cosmic-themed bubble shooter game with 50 levels and an infinite mode. Built with React, Phaser 3, FastAPI, and MongoDB. Mobile-first design, power-ups, achievements, and more."
+    "restricted": "This project is restricted due to copyright."
   },
   "footer": {
     "title": "Contact",
     "thanks": "Special thanks to Soner and Çiğdem Güner!",
-    "copyright": "© 2026 Arda Güner. All rights reserved."
+    "copyright": "© 2026 Arda Güner. All rights reserved.",
+    "copy": "Copy",
+    "copied": "Copied"
   },
   "cv": {
     "title": "Resume",
@@ -134,7 +122,7 @@
     },
     "legendOfRey": {
       "title": "Legend of Rey",
-      "desc": "A Python-based adventure platformer. The first game I shipped on itch.io."
+      "desc": "A side-scrolling action RPG written in Python and Pygame. The first game I shipped on itch.io."
     },
     "renault": {
       "title": "Renault Appointment & Inspection",
@@ -207,13 +195,17 @@
     "metroray": {
       "title": "Metroray",
       "desc": "A physics-based side-scrolling train driving game. Couple your wagons, cross rough terrain without tipping, deliver the cargo — then spend the gold you earn on engine and suspension upgrades. Built with Phaser 3 and Matter.js."
+    },
+    "erafront": {
+      "title": "Erafront",
+      "desc": "A single-screen strategy game where you produce units and defend your base across five ages. Built on a tech tree running from the stone age to the future, auto-advancing units and an age-up economy. Made with Delphi and FireMonkey for Windows."
     }
   },
   "work": {
     "eyebrow": "Selected work",
     "titleLead": "Featured",
     "titleAccent": "projects",
-    "lede": ""
+    "lede": "Four selected projects: a communication app, a mobile game, a corporate site and a desktop game."
   },
   "gallery": {
     "eyebrow": "",
@@ -228,5 +220,10 @@
     "lede": "{n} projects since 2023 — games, apps and client work.",
     "filterLabel": "Filter by category",
     "all": "All"
+  },
+  "notFound": {
+    "title": "Nothing here",
+    "desc": "The page you’re looking for may have moved, or never existed.",
+    "cta": "Back to home"
   }
 }

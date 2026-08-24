@@ -15,6 +15,11 @@ import { CATEGORIES, groupByYear, chronological } from "../data/projects";
    basılmıyor.
 ------------------------------------------------------------------- */
 
+/** Locale'de karşılığı olmayan proje sayfayı düşürmesin — bugün
+    `about.os` silindiğinde site tam olarak böyle beyaz ekrana düştü. */
+const metniAl = (strings, id) =>
+  strings.projectItems[id] || { title: id, desc: "" };
+
 function Timeline({ strings, language }) {
   const [filtre, setFiltre] = useState("all");
   const L = strings.projectLabels;
@@ -46,6 +51,7 @@ function Timeline({ strings, language }) {
           <button
             type="button"
             className={filtre === "all" ? "is-on" : ""}
+            aria-pressed={filtre === "all"}
             onClick={() => setFiltre("all")}
           >
             {strings.journey.all} <span>{hepsi.length}</span>
@@ -55,6 +61,7 @@ function Timeline({ strings, language }) {
               key={c}
               type="button"
               className={filtre === c ? "is-on" : ""}
+              aria-pressed={filtre === c}
               onClick={() => setFiltre(c)}
             >
               {L.category[c]} <span>{sayilar[c]}</span>
@@ -69,7 +76,7 @@ function Timeline({ strings, language }) {
 
               <ul className="year-items">
                 {grup.items.map((p, i) => {
-                  const metin = strings.projectItems[p.id];
+                  const metin = metniAl(strings, p.id);
                   return (
                     <Reveal as="li" key={p.id} delay={Math.min(i, 4) * 60} className="entry">
                       <div className="entry-head">

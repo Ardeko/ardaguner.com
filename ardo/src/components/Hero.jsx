@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Magnetic from "../Magnetic";
 import Icon from "./Icon";
+import { stats } from "../data/projects";
 
 /* ------------------------------------------------------------------
    Hero — tek bir kompozisyon.
@@ -16,6 +17,7 @@ import Icon from "./Icon";
 
 function Hero({ language, strings, roles }) {
   const [rol, setRol] = useState(0);
+  const sayilar = stats();
 
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -67,6 +69,23 @@ function Hero({ language, strings, roles }) {
             {strings.cv.downloadButton}
           </Magnetic>
         </div>
+
+        {/* Üç rakam. Hepsi projects.js'ten sayılıyor, elle yazılmıyor:
+            yeni proje eklendiğinde burası kendiliğinden doğru kalıyor.
+            Rakamlar display serifiyle basılıyor — sitedeki her büyük
+            sayı (yıl başlıkları, vitrin numaraları) aynı ailede. */}
+        <dl className="hero-stats hero-anim" style={{ animationDelay: "560ms" }}>
+          {[
+            [sayilar.projects, strings.hero.stats.projects],
+            [sayilar.live, strings.hero.stats.live],
+            [sayilar.games, strings.hero.stats.games],
+          ].map(([deger, etiket]) => (
+            <div className="hero-stat" key={etiket}>
+              <dt className="display">{deger}</dt>
+              <dd className="eyebrow">{etiket}</dd>
+            </div>
+          ))}
+        </dl>
       </div>
 
       <span className="hero-scroll" aria-hidden="true">

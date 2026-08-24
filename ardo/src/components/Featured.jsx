@@ -17,6 +17,11 @@ import { featuredProjects } from "../data/projects";
    büyük yazıldığı sade bir yüzey geliyor.
 ------------------------------------------------------------------- */
 
+/** Locale'de karşılığı olmayan proje sayfayı düşürmesin — bugün
+    `about.os` silindiğinde site tam olarak böyle beyaz ekrana düştü. */
+const metniAl = (strings, id) =>
+  strings.projectItems[id] || { title: id, desc: "" };
+
 function Featured({ strings }) {
   const isler = featuredProjects();
   const L = strings.projectLabels;
@@ -39,7 +44,7 @@ function Featured({ strings }) {
 
         <div className="bento">
           {isler.map((p, i) => {
-            const metin = strings.projectItems[p.id];
+            const metin = metniAl(strings, p.id);
             return (
               <Reveal
                 as="article"

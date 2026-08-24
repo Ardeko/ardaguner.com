@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "./App.css";
+import "./components/Enhancements.css";
 
 import tr from "/locales/tr.json";
 import en from "/locales/en.json";
@@ -20,6 +21,9 @@ import Gallery from "./components/Gallery";
 import Timeline from "./components/Timeline";
 import About from "./components/About";
 import Footer from "./components/Footer";
+import ScrollProgress from "./components/ScrollProgress";
+import BackToTop from "./components/BackToTop";
+import NotFound from "./components/NotFound";
 
 import { lazy, Suspense } from "react";
 const CodeLab = lazy(() => import("./CodeLab"));
@@ -84,6 +88,14 @@ function App() {
         />
       )}
 
+      {/* Klavyeyle gezen ziyaretçi altı menü linkini tek tek geçmeden
+          içeriğe atlayabiliyor. Odaklanmadıkça görünmüyor. */}
+      <a href="#about" className="skip-link">
+        {strings.nav.skip}
+      </a>
+
+      <ScrollProgress />
+
       {/* Arka plan katmanı. Varyant: "aurora" | "beams" */}
       <Backdrop variant="aurora" />
       <Particles />
@@ -132,9 +144,14 @@ function App() {
         />
 
         <Route path="/privacy-policy" element={<PrivacyPolicy language={language} />} />
+
+        {/* Yakalayıcı rota. Yoksa /eskisayfa gibi bir adres üst çubuk
+            ile alt bilgi arasında bomboş bir gövde basıyordu. */}
+        <Route path="*" element={<NotFound strings={strings} />} />
       </Routes>
 
       <Footer strings={strings} language={language} tip={tips[language]?.[tipIndex]} />
+      <BackToTop label={strings.nav.top} />
     </Router>
   );
 }

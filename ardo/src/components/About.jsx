@@ -22,13 +22,23 @@ function ayir(satir) {
   return { yil: satir.slice(0, yer).trim(), rol: satir.slice(yer + 1).trim() };
 }
 
+/* Yetenek satırlarının sırası. Locale'de olmayan bir anahtar artık
+   sayfayı düşürmüyor: filter(Boolean) onu sessizce atlıyor. Eskiden
+   `strings.about.os` silindiğinde ayir(undefined) çağrılıyor ve tüm
+   site beyaz ekrana düşüyordu. */
+const YETENEK_ANAHTARLARI = [
+  "languages",
+  "webTechnologies",
+  "gameTechnologies",
+  "databases",
+  "tools",
+  "os",
+];
+
 function About({ strings, language }) {
-  const yetenekler = [
-    strings.about.languages,
-    strings.about.webTechnologies,
-    strings.about.databases,
-    strings.about.os,
-  ].map(ayir);
+  const yetenekler = YETENEK_ANAHTARLARI.map((k) => strings.about[k])
+    .filter(Boolean)
+    .map(ayir);
 
   return (
     <section className="section about" id="about">

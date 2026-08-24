@@ -36,6 +36,32 @@ function Nav({ language, setLanguage, strings }) {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+  /* Hangi bölümdeyiz? Üst çubukta altı link var ama hiçbiri nerede
+     olduğumuzu söylemiyordu; ziyaretçi dört ekran kaydırdıktan sonra
+     menüye baktığında bir işaret bulamıyor. IntersectionObserver
+     scroll dinleyicisinden ucuz: tarayıcı kesişimi kendi hesaplıyor.
+     rootMargin üst çubuğun yüksekliğini telafi ediyor. */
+  const [aktif, setAktif] = useState("");
+  useEffect(() => {
+    const bolumler = ["about", "work", "journey", "gallery", "studio", "contact"]
+      .map((id) => document.getElementById(id))
+      .filter(Boolean);
+    if (!bolumler.length) return undefined;
+
+    const gozlemci = new IntersectionObserver(
+      (girisler) => {
+        const gorunen = girisler
+          .filter((g) => g.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (gorunen) setAktif(gorunen.target.id);
+      },
+      { rootMargin: "-20% 0px -70% 0px", threshold: [0, 0.25, 0.5] }
+    );
+
+    bolumler.forEach((b) => gozlemci.observe(b));
+    return () => gozlemci.disconnect();
+  }, []);
+
   // Sıra sayfadaki bölüm sırasıyla birebir aynı. Menü, sayfanın
   // kendisinden farklı bir sıra öneriyorsa ziyaretçi nerede olduğunu
   // takip edemiyor.
@@ -59,11 +85,19 @@ function Nav({ language, setLanguage, strings }) {
         <span className="nav-divider" aria-hidden="true" />
 
         <nav className="nav-links" aria-label={strings.nav.home}>
-          {linkler.map((l) => (
-            <a key={l.href} href={l.href}>
-              {l.label}
-            </a>
-          ))}
+          {linkler.map((l) => {
+            const acik_mi = `#${aktif}` === l.href;
+            return (
+              <a
+                key={l.href}
+                href={l.href}
+                className={acik_mi ? "is-current" : ""}
+                aria-current={acik_mi ? "true" : undefined}
+              >
+                {l.label}
+              </a>
+            );
+          })}
           <Link to="/codelab">Code Lab</Link>
         </nav>
 
@@ -135,6 +169,7 @@ function Nav({ language, setLanguage, strings }) {
             key={l.href}
             href={l.href}
             onClick={kapat}
+            className={`#${aktif}` === l.href ? "is-current" : ""}
             style={{ transitionDelay: `${acik ? 120 + i * 55 : 0}ms` }}
           >
             {l.label}

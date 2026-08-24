@@ -4,17 +4,109 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="canonical" href="https://ardaguner.com/" />
+    <meta name="theme-color" content="#0a0a0a" />
+    <meta name="color-scheme" content="dark" />
+
+    <!-- Başlık eskiden sadece "Arda Güner"di. Arama sonucunda bir isim
+         tek başına hiçbir şey söylemiyor; ne yaptığı da yazmalı. -->
+    <title>Arda Güner — Yazılım Mühendisi & Oyun Geliştirici</title>
     <meta
       name="description"
-      content="Arda Güner — yazılım mühendisi. Oyunlar, web uygulamaları ve kurumsal projeler."
+      content="Arda Güner — İstanbul'da yaşayan yazılım mühendisi ve bağımsız oyun geliştirici. Ardeko Studios'un kurucusu. Mobil oyunlar, web uygulamaları ve kurumsal projeler."
     />
+    <meta name="author" content="Arda Güner" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph — WhatsApp, LinkedIn, Discord ve Slack'te bağlantı
+         önizlemesi. Bunlar olmadan paylaşılan link çıplak URL olarak
+         görünüyordu, bir portfolyo için en kötü ilk izlenim. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Arda Güner" />
+    <meta property="og:url" content="https://ardaguner.com/" />
+    <meta property="og:title" content="Arda Güner — Yazılım Mühendisi & Oyun Geliştirici" />
+    <meta
+      property="og:description"
+      content="Mobil oyunlar, web uygulamaları ve kurumsal projeler. Ardeko Studios'un kurucusu."
+    />
+    <!-- NOT: ideal ölçü 1200x630. Şu an portre fotoğraf kullanılıyor;
+         düzgün bir kapak görseli hazırlayınca /og.jpg olarak ekleyip
+         aşağıdaki iki satırı güncelle. -->
+    <meta property="og:image" content="https://ardaguner.com/arda.JPG" />
+    <meta property="og:image:alt" content="Arda Güner" />
+    <meta property="og:locale" content="tr_TR" />
+    <meta property="og:locale:alternate" content="en_US" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Arda Güner — Yazılım Mühendisi & Oyun Geliştirici" />
+    <meta
+      name="twitter:description"
+      content="Mobil oyunlar, web uygulamaları ve kurumsal projeler. Ardeko Studios'un kurucusu."
+    />
+    <meta name="twitter:image" content="https://ardaguner.com/arda.JPG" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&display=swap"
       rel="stylesheet"
     />
-    <title>Arda Güner</title>
+
+    <!-- Yapılandırılmış veri: Google'ın "Arda Güner kimdir" sorusuna
+         doğru cevabı vermesi için. sameAs alanı dağınık hesapları tek
+         kimlik altında birleştiriyor. -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Arda Güner",
+        "url": "https://ardaguner.com",
+        "image": "https://ardaguner.com/arda.JPG",
+        "jobTitle": "Yazılım Mühendisi",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "İstanbul",
+          "addressCountry": "TR"
+        },
+        "alumniOf": {
+          "@type": "CollegeOrUniversity",
+          "name": "Altınbaş Üniversitesi"
+        },
+        "worksFor": {
+          "@type": "Organization",
+          "name": "Ardeko Studios",
+          "url": "https://ardekostudios.com"
+        },
+        "knowsAbout": [
+          "Oyun Geliştirme",
+          "Web Geliştirme",
+          "C++",
+          "C#",
+          "Python",
+          "JavaScript",
+          "TypeScript",
+          "React",
+          "Delphi",
+          "Godot",
+          "Phaser"
+        ],
+        "sameAs": [
+          "https://github.com/Ardeko",
+          "https://www.linkedin.com/in/arda-g%C3%BCner/",
+          "https://ardekostudios.com"
+        ]
+      }
+    </script>
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Arda Güner",
+        "url": "https://ardaguner.com",
+        "inLanguage": ["tr", "en"]
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
