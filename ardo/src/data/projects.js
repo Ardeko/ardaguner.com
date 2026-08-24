@@ -1,53 +1,12 @@
-/* ------------------------------------------------------------------
-   Proje kataloğu — tek kaynak.
-
-   Buradaki hiçbir alan çevrilmez: yıl, ay, kategori, durum, platform,
-   teknoloji ve linkler iki dilde de aynıdır. Çevrilen metin (başlık +
-   açıklama) `locales/{tr,en}.json` içinde `projectItems[id]` altında
-   durur. Sitenin mevcut deseni bu: metin locale dosyasında, yapı kodda.
-
-   KAYNAKLAR — hepsi doğrulandı, uydurma tarih yok:
-   - ardekostudios.com/src/lib/journey.js
-     GitHub repo oluşturma tarihleriyle doğrulanmış 16 kilometre taşı.
-   - ardekostudios.com/src/components/Games.jsx
-     Oyun linkleri, platformlar, yayın durumu.
-   - Yerel repoların ilk commit tarihleri (~/Desktop/projects/*):
-     kk 2026-06-15 · skyline_swinger 2026-06-22 · torpidodan 2026-08-11
-   - Bu reponun git geçmişi:
-     apex-shift.html ve forza-orbit.html 2026-08-05'te public/ altına
-     eklendi · switch-master/ 2026-05-06.
-
-   İŞARETLİ ALANLAR
-   - `unverified: true` → tarih dolaylı kanıta dayanıyor (klasör mtime
-     ya da siteye eklenme tarihi). Arda onaylayınca bayrak silinir.
-   - `image: null` → henüz görsel yok. Vitrin ve galeri bölümleri
-     görselsiz projeyi atlar, kırık resim çıkmaz.
-   - `/games/*` → Ardeko sitesinden gelen oyun görselleri, hazır.
-   - `/shots/*` → HENÜZ YOK. Arda'nın alacağı ekran görüntüleri;
-     ölçü ve çerçeveleme talimatı `public/shots/README.md` içinde.
-------------------------------------------------------------------- */
-
 const GH = 'https://github.com/Ardeko';
 
-/** Rozet ve filtre çubuğunun kullandığı kategoriler. */
 export const CATEGORIES = ['game', 'app', 'web', 'corporate', 'rnd'];
 
-/**
- * Durumlar:
- *  live       — canlı ve erişilebilir (mağaza, tarayıcı ya da alan adı)
- *  source     — kaynak kodu açık, canlı bir sürümü yok
- *  wip        — geliştiriliyor, henüz yayında değil
- *  restricted — telif nedeniyle paylaşılmıyor
- */
 export const STATUSES = ['live', 'source', 'wip', 'restricted'];
 
 export const PROJECTS = [
   {
     id: 'unichain',
-    // Arda'nın notu: katalogdaki en eski proje. Ne repo oluşturma tarihi
-    // ne de kilometre taşı kaydı var, bu yüzden ay bilinmiyor — çizelgede
-    // 2023'ün başına, Protocol'ün önüne oturuyor. Kesin tarih gelirse
-    // ay güncellenip `unverified` silinecek.
     year: 2023,
     month: 1,
     category: 'app',
@@ -88,7 +47,6 @@ export const PROJECTS = [
     platforms: 'EMBEDDED',
     tech: ['Python', 'OpenCV'],
     image: null,
-    // Takım reposu — mevcut sitede de bu adres kullanılıyordu, korundu.
     links: { github: 'https://github.com/EVA-Submarine-Team' },
   },
   {
@@ -109,12 +67,7 @@ export const PROJECTS = [
     status: 'source',
     platforms: 'DESKTOP',
     tech: ['Python', 'Pygame'],
-    // Arda'nın gönderdiği anahtar görsel (LORE — Echoes). Kaynak 1536x1024
-    // PNG'ydi; 1080x720 JPEG'e indirildi (2 MB → 137 KB). Diğer oyun
-    // görselleri 720x480, bu vitrinde büyük bastığı için iki katı.
     image: '/games/legend-of-rey.jpg',
-    // Forza Orbit'ten devraldığı 4. sıra: katalogdaki tek gerçek "oyun
-    // yapımı" işi ve elde tek düzgün anahtar görsel bunda.
     featured: 4,
     links: { github: `${GH}/Legend-Of-Rey` },
   },
@@ -124,7 +77,6 @@ export const PROJECTS = [
     category: 'corporate',
     status: 'restricted',
     platforms: 'MOBILE',
-    // Stack bilinmiyor — uydurmak yerine boş bırakıldı.
     tech: [],
     image: null,
     links: {},
@@ -163,8 +115,6 @@ export const PROJECTS = [
     featured: 1,
     links: {
       live: 'https://ardekostudios.xyz',
-      // Kalıcı adres: her zaman en son sürümü indirir, yeni release
-      // çıkınca burayı güncellemek gerekmez.
       download: `${GH}/Revo/releases/latest/download/REVO-Setup.exe`,
       github: `${GH}/Revo`,
     },
@@ -191,7 +141,8 @@ export const PROJECTS = [
     image: '/games/switch.jpg',
     featured: 2,
     links: {
-      appStore: 'https://apps.apple.com/tr/app/switch-master-railway/id6770972534?l=tr',
+      appStore:
+        'https://apps.apple.com/tr/app/switch-master-railway/id6770972534?l=tr',
       googlePlay:
         'https://play.google.com/store/apps/details?id=com.ardeko.switchmaster&pcampaignid=web_share',
     },
@@ -205,11 +156,10 @@ export const PROJECTS = [
     platforms: 'WEB',
     tech: ['React 19', 'Vite 8', 'Tailwind v4'],
     image: '/shots/ardekostudios.jpg',
-    // Vitrinden çıkarıldı (featured kaldırıldı): stüdyonun kendi bölümü
-    // zaten sayfanın altında (StudioSpotlight) duruyor, üst kartlarda
-    // ikinci kez görünmesi tekrardı. Proje katalogda ve çizelgede
-    // duruyor, sadece öne çıkanlarda değil.
-    links: { github: `${GH}/ardekostudios.com`, live: 'https://ardekostudios.com' },
+    links: {
+      github: `${GH}/ardekostudios.com`,
+      live: 'https://ardekostudios.com',
+    },
   },
   {
     id: 'kafa',
@@ -231,7 +181,6 @@ export const PROJECTS = [
     platforms: 'IOS · ANDROID',
     tech: ['Godot'],
     image: '/games/rushville.jpg',
-    // Klasörde git yok; tarih dizin mtime'ından (2026-06-22).
     unverified: true,
     links: {},
   },
@@ -267,11 +216,6 @@ export const PROJECTS = [
     platforms: 'WEB · BROWSER',
     tech: ['JavaScript', 'Canvas'],
     image: '/games/forza.jpg',
-    // Vitrinden çıkarıldı (featured kaldırıldı): 4. sıra Legend of Rey'e
-    // geçti. Proje katalogda, arşivde ve çizelgede duruyor, oynanabilir
-    // linki de yerinde — sadece öne çıkanlarda değil.
-    // "forza shift" reposunun ilk commit'i 2026-06-15 ama çalışma ağacı
-    // boş; güvenilir tarih dosyanın public/ altına eklendiği gün.
     unverified: true,
     links: { play: '/forza-orbit.html' },
   },
@@ -292,11 +236,13 @@ export const PROJECTS = [
     year: 2026,
     month: 8,
     category: 'corporate',
-    status: 'source',
+    status: 'live',
     platforms: 'WEB',
     tech: ['HTML', 'CSS', 'SEO'],
     image: null,
-    links: { github: `${GH}/dny-bilisim` },
+    links: {
+      live: 'https://dny.com.tr/',
+    },
   },
   {
     id: 'torpidodan',
@@ -322,9 +268,6 @@ export const PROJECTS = [
   },
   {
     id: 'erafront',
-    // Delphi ile geliştirilen tek proje. Metinde "Python ve Delphi ile
-    // masaüstü oyunları" deniyor; katalogda karşılığı olmadan o cümle
-    // doğrulanamıyordu. Windows-only, mobil/web hedefi yok.
     year: 2026,
     month: 8,
     category: 'game',
@@ -347,49 +290,41 @@ export const PROJECTS = [
   },
 ];
 
-/* --- Seçiciler -----------------------------------------------------
-   Tasarım katmanı bu fonksiyonları çağırır, diziyi kendisi filtrelemez.
-   Böylece "hangi proje nerede görünür" kararı tek yerde kalıyor.
-------------------------------------------------------------------- */
+/* --- Seçiciler ----------------------------------------------------- */
 
-/** Öne çıkanlar — `featured` sırasına göre. Vitrin bölümü bunu kullanır. */
 export const featuredProjects = () =>
   PROJECTS.filter((p) => p.featured).sort((a, b) => a.featured - b.featured);
 
-/**
- * Hero'daki üç rakam. Elle yazılmıyor: yeni proje eklenince kendiliğinden
- * güncelleniyor, yoksa "23 proje" yazısı ilk eklemede yalan olurdu.
- */
 export const stats = () => ({
   projects: PROJECTS.length,
   live: PROJECTS.filter((p) => p.status === 'live').length,
   games: PROJECTS.filter((p) => p.category === 'game').length,
 });
 
-/** Görseli olan projeler — galeri bölümü bunu kullanır. */
 export const withImage = () => PROJECTS.filter((p) => p.image);
 
-/**
- * Ayı bilinmeyen kayıtlar için varsayılan. 0 yerine 6 kullanılıyor:
- * 0 olsaydı aysız her proje kendi yılının en eskisi gibi görünür, bu da
- * Teknofest'i Unichain'in altına atardı — oysa katalogdaki en eski proje
- * Unichain. 6 "yıl içinde bir yerde" demek ve kimseyi uca itmiyor.
- */
 const monthOf = (p) => p.month ?? 6;
 
-/** Yılı bilinen projeler, en yeniden en eskiye. */
 export const chronological = () =>
   PROJECTS.filter((p) => p.year).sort(
     (a, b) => b.year - a.year || monthOf(b) - monthOf(a)
   );
 
-/** Yıla göre gruplanmış çizelge: [{ year, items }, ...] */
 export function groupByYear(items = chronological()) {
   const years = [];
+
   for (const item of items) {
     const last = years[years.length - 1];
-    if (last && last.year === item.year) last.items.push(item);
-    else years.push({ year: item.year, items: [item] });
+
+    if (last && last.year === item.year) {
+      last.items.push(item);
+    } else {
+      years.push({
+        year: item.year,
+        items: [item],
+      });
+    }
   }
+
   return years;
 }

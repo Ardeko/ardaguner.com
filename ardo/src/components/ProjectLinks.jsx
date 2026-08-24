@@ -44,7 +44,9 @@ function ProjectLinks({ project, labels, restrictedText, compact = false }) {
           <a
             key={k}
             href={href}
-            className={`project-link ${i === 0 ? "is-primary" : ""}`}
+            className={`project-link ${
+             i === 0 || k === "googlePlay" ? "is-primary" : ""
+            }`}
             {...(dis ? { target: "_blank", rel: "noopener noreferrer" } : {})}
           >
             <Icon name={IKON[k]} size={15} />
