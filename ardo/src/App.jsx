@@ -21,7 +21,6 @@ import Gallery from "./components/Gallery";
 import Timeline from "./components/Timeline";
 import About from "./components/About";
 import Footer from "./components/Footer";
-import ScrollProgress from "./components/ScrollProgress";
 import BackToTop from "./components/BackToTop";
 import NotFound from "./components/NotFound";
 
@@ -93,8 +92,6 @@ function App() {
       <a href="#about" className="skip-link">
         {strings.nav.skip}
       </a>
-
-      <ScrollProgress />
 
       {/* Arka plan katmanı. Varyant: "aurora" | "beams" */}
       <Backdrop variant="aurora" />

@@ -36,7 +36,7 @@ function Hero({ language, strings, roles }) {
         </span>
 
         <h1 className="hero-name display grad-text hero-anim" style={{ animationDelay: "180ms" }}>
-           &nbsp;Arda Güner
+          Arda Güner
         </h1>
 
         <p className="hero-role hero-anim" style={{ animationDelay: "300ms" }}>

@@ -167,11 +167,14 @@ h3 {
    1) Yedek renk önce yazılıyor, gradyan @supports'un içinde duruyor.
       background-clip: text desteklenmiyorsa metin düz --text ile
       basılır; şeffaf dolgu kalıp başlık kaybolmaz.
-   2) Kutu 0.16em uzatılıp aynı miktar negatif marjla geri alınıyor.
-      Sebebi: gradyan yalnızca elemanın kutusunun içinde boyanıyor,
-      dışarı taşan piksel görünmez oluyor. line-height 1'in altına
-      indiğinde (hero) ve Türkçe inişlerde (ş, ç, ğ) harf kuyrukları
-      tam oraya düşüyordu. Düzen kaymıyor, sadece boyama alanı büyüyor.
+   2) Kutu dört yandan büyütülüp aynı miktar negatif marjla geri
+      alınıyor. Sebebi: gradyan yalnızca elemanın kutusunun içinde
+      boyanıyor, dışarı taşan piksel boyanmadığı için görünmez oluyor.
+      Altta, line-height 1'in altına indiğinde (hero) ve Türkçe
+      inişlerde (ş, ç, ğ) harf kuyrukları oraya düşüyordu. Yanlarda,
+      italik serifin ilk harfi kutunun soluna taşıyor: hero'daki "A"
+      ve Arşiv başlığındaki "A" tıraşlanmış görünüyordu. Düzen
+      kaymıyor, yalnızca boyama alanı büyüyor.
    3) forced-colors (Windows yüksek kontrast) modunda gradyan hiç
       çizilmez; şeffaf dolgu kalırsa bütün başlıklar yok olur. Orada
       sistem rengine geri dönülüyor.
@@ -192,7 +195,9 @@ h3 {
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
+    padding-inline: 0.14em;
     padding-bottom: 0.16em;
+    margin-inline: -0.14em;
     margin-bottom: -0.16em;
   }
 

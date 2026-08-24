@@ -35,27 +35,6 @@
   outline-offset: -4px;
 }
 
-/* --- Kaydırma ilerlemesi -------------------------------------------
-   Açılış ekranındaki .preloader-bar ile aynı ölçü ve renk: 2px yol,
-   beyaz dolgu. Kasıtlı tekrar — ziyaretçi bu çubuğu zaten gördü. */
-
-.scroll-progress {
-  position: fixed;
-  inset: 0 0 auto;
-  z-index: 1000;
-  height: 2px;
-  background: var(--stroke);
-  pointer-events: none;
-}
-
-.scroll-progress span {
-  display: block;
-  height: 100%;
-  background: var(--text);
-  transform-origin: left;
-  transform: scaleX(0);
-}
-
 /* --- Hero istatistikleri -------------------------------------------
    Üç rakam, aralarında ince ayraç. Rakamlar display serifiyle basılıyor
    (yıl başlıkları ve vitrin numaralarıyla aynı aile), etiketler mevcut

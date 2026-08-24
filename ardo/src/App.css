@@ -433,13 +433,15 @@
   margin: 1rem 0 0.5rem;
 }
 
-/* .grad-text boyama kutusunu 0.16em uzatıp aynı miktarı negatif marjla
-   geri alıyor. Bu dosya index.css'ten sonra yüklendiği için yukarıdaki
-   margin kısayolu o negatifi eziyor; farkı burada elle düşüyoruz.
+/* .grad-text boyama kutusunu dört yandan büyütüp aynı miktarı negatif
+   marjla geri alıyor. Bu dosya index.css'ten sonra yüklendiği için
+   yukarıdaki margin kısayolu o negatifleri eziyor; farkı burada elle
+   düşüyoruz — yatayda italik "A" kırpılmasın, dikeyde boşluk şişmesin.
    @supports'un dışında bırakılsaydı gradyan çizilmeyen tarayıcıda
    isimle rol satırı arasındaki boşluk sebepsiz daralırdı. */
 @supports ((-webkit-background-clip: text) or (background-clip: text)) {
   .hero-name.grad-text {
+    margin-inline: -0.14em;
     margin-bottom: calc(0.5rem - 0.16em);
   }
 }
@@ -1039,6 +1041,7 @@
 /* Aynı düzeltme, aynı sebep — bkz. .hero-name. */
 @supports ((-webkit-background-clip: text) or (background-clip: text)) {
   .footer-title.grad-text {
+    margin-inline: -0.14em;
     margin-bottom: calc(0.75rem - 0.16em);
   }
 }
