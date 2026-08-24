@@ -35,15 +35,17 @@
       "2026-Günümüz: Ardeko Studios, Kurucu & Oyun Geliştirici"
     ],
     "skills": "Yeteneklerim",
-    "languages": "Programlama Dilleri: C++, C#, Python, JavaScript",
-    "webTechnologies": "Web Teknolojileri: HTML, CSS, React.js, Node.js, TypeScript",
-    "databases": "Veritabanı Yönetimi: MySQL, SQL, MongoDB",
-    "os": "İşletim Sistemleri: Linux, MacOS, Windows",
-    "additionalSkills": [
-      "Git ve GitHub ile versiyon kontrol",
-      "Algoritma tasarımı ve problem çözme",
-      "Performans optimizasyonu ve kod temizliği"
-    ],
+"languages": "Programlama Dilleri: C++, C#, Python, JavaScript, TypeScript, Delphi (Object Pascal), Dart",
+"webTechnologies": "Web & Backend: React, Next.js, Node.js, Tailwind CSS, ASP.NET Core, FastAPI, SignalR",
+"gameTechnologies": "Oyun Geliştirme: Godot 4, Phaser 3 + Matter.js, Pygame, FireMonkey, Capacitor",
+"databases": "Veritabanı: MSSQL, MySQL, MongoDB",
+"tools": "Araçlar & Süreç: Git/GitHub, Vite, Docker, CI/CD, i18n & çoklu dil desteği",
+"additionalSkills": [
+  "Algoritma tasarımı ve problem çözme",
+  "Fizik tabanlı oyun mekanikleri ve performans optimizasyonu",
+  "Mobil yayınlama süreçleri (App Store, Google Play)",
+  "Çok dilli (i18n) ve RTL destekli arayüz geliştirme"
+],
     "hobbies": "Hobilerim",
     "hobbyList": [
       "Yaratıcı oyun fikirleri geliştirmek",
