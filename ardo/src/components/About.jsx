@@ -46,7 +46,7 @@ function About({ strings, language }) {
         <Reveal className="section-head">
           <div>
             <span className="eyebrow">{language === "tr" ? "Kimim" : "Who I am"}</span>
-            <h2>
+            <h2 className="grad-text">
               {language === "tr" ? "Hakkımda" : "About"}{" "}
               <em className="display">{language === "tr" ? "birkaç söz" : "in short"}</em>
             </h2>

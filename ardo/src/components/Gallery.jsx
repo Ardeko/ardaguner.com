@@ -74,7 +74,7 @@ function Gallery({ strings }) {
             {strings.gallery.eyebrow && (
               <span className="eyebrow">{strings.gallery.eyebrow}</span>
             )}
-            <h2>
+            <h2 className="grad-text">
               {strings.gallery.titleLead && `${strings.gallery.titleLead} `}
               <em className="display">{strings.gallery.titleAccent}</em>
             </h2>

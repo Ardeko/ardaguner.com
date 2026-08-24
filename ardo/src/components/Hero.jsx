@@ -35,7 +35,7 @@ function Hero({ language, strings, roles }) {
           {language === "tr" ? "Portfolyo · 2026" : "Portfolio · 2026"}
         </span>
 
-        <h1 className="hero-name display hero-anim" style={{ animationDelay: "180ms" }}>
+        <h1 className="hero-name display grad-text hero-anim" style={{ animationDelay: "180ms" }}>
           Arda Güner
         </h1>
 

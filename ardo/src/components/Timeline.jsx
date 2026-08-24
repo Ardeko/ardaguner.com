@@ -39,7 +39,7 @@ function Timeline({ strings, language }) {
         <Reveal className="section-head">
           <div>
             <span className="eyebrow">{strings.journey.eyebrow}</span>
-            <h2>
+            <h2 className="grad-text">
               {strings.journey.titleLead}{" "}
               <em className="display">{strings.journey.titleAccent}</em>
             </h2>
@@ -72,7 +72,7 @@ function Timeline({ strings, language }) {
         <div className="years">
           {yillar.map((grup) => (
             <div className="year" key={grup.year}>
-              <h3 className="year-label display">{grup.year}</h3>
+              <h3 className="year-label display grad-text-dim">{grup.year}</h3>
 
               <ul className="year-items">
                 {grup.items.map((p, i) => {

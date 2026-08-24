@@ -32,7 +32,7 @@ function Featured({ strings }) {
         <Reveal className="section-head">
           <div>
             <span className="eyebrow">{strings.work.eyebrow}</span>
-            <h2>
+            <h2 className="grad-text">
               {strings.work.titleLead}{" "}
               <em className="display">{strings.work.titleAccent}</em>
             </h2>

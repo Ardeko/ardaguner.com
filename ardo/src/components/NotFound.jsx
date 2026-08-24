@@ -17,10 +17,10 @@ function NotFound({ strings }) {
   return (
     <main className="page not-found">
       <div className="shell nf-inner">
-        <span className="nf-code display" aria-hidden="true">
+        <span className="nf-code display grad-text-dim" aria-hidden="true">
           404
         </span>
-        <h1 className="display nf-title">{strings.notFound.title}</h1>
+        <h1 className="display nf-title grad-text">{strings.notFound.title}</h1>
         <p className="lede">{strings.notFound.desc}</p>
         <Link to="/" className="btn btn-solid">
           {strings.notFound.cta}

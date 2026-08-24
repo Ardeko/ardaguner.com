@@ -43,7 +43,7 @@ function Footer({ strings, language, tip }) {
       <div className="shell footer-inner">
         <Reveal className="footer-lead">
           <span className="eyebrow">{strings.footer.title}</span>
-          <h2 className="display footer-title">
+          <h2 className="display footer-title grad-text">
             {language === "tr" ? "Birlikte çalışalım" : "Let's work together"}
           </h2>
           <p className="lede">

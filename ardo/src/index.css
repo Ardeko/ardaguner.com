@@ -27,6 +27,37 @@
      Metin ve butonlar hâlâ tek renkli; palet burada patlamasın. */
   --accent: #89aacc;
 
+  /* --- Metin gradyanı ---------------------------------------------
+     Tek renkli paletin içinde kalan tonal bir geçiş: tepede saf beyaz,
+     tabanda gövde metninin grisi. Renk katmıyor, ışık katıyor — bu
+     yüzden yukarıda kaldırılan cyan/mor ikilisinin hatasını
+     tekrarlamıyor.
+
+     Bitiş tonu bilerek 0.58: --muted (0.56) ile aynı yerde duruyor,
+     yani başlığın en sönük noktası bile yanındaki lede'den koyu
+     değil. Geçişi sertleştirmek için bu değeri düşür, yumuşatmak
+     için yükselt — ayar tek noktadan yapılıyor. */
+  --grad-text: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #f2f1ef 38%,
+    rgba(245, 245, 244, 0.58) 100%
+  );
+
+  /* Zaten --faint ile basılan büyük rakamlar için sönük eşi
+     (çizelgedeki yıllar, 404 kodu). Aynı eğri, bir oktav aşağıda.
+
+     Aralık --faint'in (0.32) iki yanına açılıyor: tepe 0.56, taban
+     0.30. Kasıtlı olarak dar — daha aşağı inen bir taban çizelgedeki
+     yılları şu ankinden okunaksız yapardı ve o yıllar süs değil,
+     bilgi. Ortalama parlaklık artıyor, en zayıf nokta yerinde
+     kalıyor. */
+  --grad-text-dim: linear-gradient(
+    180deg,
+    rgba(245, 245, 244, 0.56) 0%,
+    rgba(245, 245, 244, 0.3) 100%
+  );
+
   /* Durum renkleri — sadece rozetlerde, dekorasyonda değil. */
   --live: #4ade80;
   --wip: #fbbf24;
@@ -123,6 +154,69 @@ h3 {
   font-style: italic;
   font-weight: 400;
   letter-spacing: -0.01em;
+}
+
+/* --- Metin gradyanı -------------------------------------------------
+   Yalnızca büyük başlıklarda. Kural: bir bölümde gradyan alan tek bir
+   şey var, o da bölümün başlığı. Kart başlıkları, gövde metni ve
+   rozetler düz kalıyor — gradyan her yere yayılırsa vurgu olmaktan
+   çıkıp yeni bir "şablon" görüntüsüne dönüşür.
+
+   Üç şey burada bilerek yapılıyor:
+
+   1) Yedek renk önce yazılıyor, gradyan @supports'un içinde duruyor.
+      background-clip: text desteklenmiyorsa metin düz --text ile
+      basılır; şeffaf dolgu kalıp başlık kaybolmaz.
+   2) Kutu 0.16em uzatılıp aynı miktar negatif marjla geri alınıyor.
+      Sebebi: gradyan yalnızca elemanın kutusunun içinde boyanıyor,
+      dışarı taşan piksel görünmez oluyor. line-height 1'in altına
+      indiğinde (hero) ve Türkçe inişlerde (ş, ç, ğ) harf kuyrukları
+      tam oraya düşüyordu. Düzen kaymıyor, sadece boyama alanı büyüyor.
+   3) forced-colors (Windows yüksek kontrast) modunda gradyan hiç
+      çizilmez; şeffaf dolgu kalırsa bütün başlıklar yok olur. Orada
+      sistem rengine geri dönülüyor.
+------------------------------------------------------------------- */
+
+.grad-text {
+  color: var(--text);
+}
+
+.grad-text-dim {
+  color: var(--faint);
+}
+
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .grad-text,
+  .grad-text-dim {
+    background-image: var(--grad-text);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    padding-bottom: 0.16em;
+    margin-bottom: -0.16em;
+  }
+
+  .grad-text-dim {
+    background-image: var(--grad-text-dim);
+  }
+
+  /* Dolgu şeffaf olduğu için ::selection'ın `color`'ı iş görmüyor;
+     seçilen başlık aksi hâlde beyaz zeminde görünmez kalıyor.
+     İkinci çift seçici, h2'nin içindeki <em class="display"> için. */
+  .grad-text::selection,
+  .grad-text-dim::selection,
+  .grad-text ::selection,
+  .grad-text-dim ::selection {
+    -webkit-text-fill-color: var(--bg);
+  }
+}
+
+@media (forced-colors: active) {
+  .grad-text,
+  .grad-text-dim {
+    background-image: none;
+    -webkit-text-fill-color: currentColor;
+  }
 }
 
 .eyebrow {
