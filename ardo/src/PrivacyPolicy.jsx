@@ -1,397 +1,675 @@
 import { Link } from 'react-router-dom';
 
-const PrivacyPolicy = ({ language = "tr" }) => {
+/** Yakın zamanda mağazaya yüklenecek oyunlar. */
+const PLANNED_GAMES = [
+  {
+    name: 'Forza Orbit',
+    tag: { tr: 'Arcade', en: 'Arcade' },
+    note: { tr: 'Yerel skor; hesap gerekmez', en: 'Local scores; no account required' },
+    tone: 'orbit',
+  },
+  {
+    name: 'Torpidodan',
+    tag: { tr: 'Simülasyon', en: 'Simulation' },
+    note: { tr: 'Tamamen çevrimdışı', en: 'Fully offline' },
+    tone: 'torpidodan',
+  },
+  {
+    name: 'Kafa Kafaya',
+    tag: { tr: 'Spor', en: 'Sports' },
+    note: { tr: 'Mobil · iOS & Android', en: 'Mobile · iOS & Android' },
+    tone: 'kafa',
+  },
+  {
+    name: 'Rushville',
+    tag: { tr: 'Bulmaca', en: 'Puzzle' },
+    note: { tr: 'Mobil · iOS & Android', en: 'Mobile · iOS & Android' },
+    tone: 'rush',
+  },
+  {
+    name: 'Skyline Swinger',
+    tag: { tr: 'Koşu', en: 'Runner' },
+    note: { tr: 'Mobil · iOS & Android', en: 'Mobile · iOS & Android' },
+    tone: 'sky',
+  },
+];
+
+const SECTIONS = [
+  { id: 'intro', key: 'introTitle' },
+  { id: 'apps', key: 'appsTitle' },
+  { id: 'data', key: 'dataTitle' },
+  { id: 'offline', key: 'offlineTitle' },
+  { id: 'third-party', key: 'thirdPartyTitle' },
+  { id: 'usage', key: 'usageTitle' },
+  { id: 'share', key: 'shareTitle' },
+  { id: 'children', key: 'childrenTitle' },
+  { id: 'changes', key: 'changesTitle' },
+  { id: 'contact', key: 'contactTitle' },
+];
+
+const PrivacyPolicy = ({ language = 'tr' }) => {
   const content = {
     tr: {
-      badge: "🛡️ GÜVENLİ ALTYAPI",
-      title: "Gizlilik Politikası",
-      updated: "Son Güncelleme: Mayıs 2026",
-      subtitle: "Uygulama & Web Veri Bildirimi",
-      introTitle: "1. Giriş",
-      introText: "Arda Güner (Ardeko Studios) olarak, gizliliğinize saygı duyuyor ve kişisel verilerinizi korumayı taahhüt ediyorum. Bu Gizlilik Politikası, Google Play Mağazası'nda yer alan Switch Master: Railway mobil uygulamamızı/oyunumuzu ve ardaguner.com web sitemizi kullandığınızda bilgilerinizi nasıl topladığımızı, kullandığımızı ve paylaştığımızı açıklamaktadır.",
-      dataTitle: "2. Topladığımız Bilgiler",
-      dataText: "Switch Master: Railway oyunumuzu ve uygulamalarımızı kullandığınızda aşağıdaki türde bilgileri toplayabiliriz:",
+      studio: 'Ardeko Studios',
+      badge: 'Gizlilik & Veri Bildirimi',
+      title: 'Gizlilik Politikası',
+      updated: 'Son güncelleme: Ağustos 2026',
+      subtitle: 'Mobil oyunlar ve ardaguner.com',
+      toc: 'İçindekiler',
+      alsoCovers: 'Bu politika daha önce yayınlanan Switch Master: Railway dahil tüm Ardeko Studios mobil uygulamalarını kapsar.',
+      introTitle: 'Giriş',
+      introText:
+        'Arda Güner (Ardeko Studios) olarak gizliliğinize saygı duyuyor ve kişisel verilerinizi korumayı taahhüt ediyorum. Bu metin; Google Play ve App Store’da yayınladığımız veya yayınlamayı planladığımız oyunları, ardaguner.com web sitemizi ve bu kanallar üzerinden sunulan hizmetleri kullandığınızda bilgilerinizi nasıl topladığımızı, kullandığımızı ve paylaştığımızı açıklar.',
+      appsTitle: 'Kapsam — Planlanan oyunlar',
+      appsText:
+        'Aşağıdaki başlıklar yakın zamanda mağazaya yüklenmesi planlanan oyunlarımızdır. Her oyun aynı veri toplamaz; ilgili bölümlerde farklar belirtilmiştir.',
+      dataTitle: 'Topladığımız bilgiler',
+      dataText:
+        'Uygulamaya bağlı olarak aşağıdaki türde bilgiler toplanabilir. Çevrimdışı oyunlarımız (ör. Torpidodan) kişisel veri toplamaz; oyun ilerlemesi yalnızca cihazınızda saklanır.',
       dataItems: [
-        { label: "Cihaz Bilgileri", desc: "Cihaz modeli, işletim sistemi sürümü, benzersiz cihaz tanımlayıcıları (ör. reklam kimlikleri) ve mobil ağ bilgileri." },
-        { label: "Kullanım Verileri", desc: "Uygulama içindeki etkileşimleriniz, oynama süreleriniz, tıklanan bağlantılar ve hata/çökme raporları." },
-        { label: "Kullanıcı Tarafından Sağlanan Veriler", desc: "İsim, e-posta adresi, kullanıcı adı gibi sizin isteyerek verdiğiniz bilgiler (kayıt özellikleri kullanılıyorsa)." }
+        {
+          label: 'Cihaz bilgileri',
+          desc: 'Cihaz modeli, işletim sistemi, benzersiz tanımlayıcılar (ör. reklam kimlikleri) — yalnızca reklam veya analitik kullanan uygulamalarda.',
+        },
+        {
+          label: 'Kullanım verileri',
+          desc: 'Uygulama içi etkileşimler, oynama süreleri ve hata/çökme raporları — analitik entegre edilmiş uygulamalarda.',
+        },
+        {
+          label: 'Kullanıcı tarafından sağlanan veriler',
+          desc: 'Kayıt veya iletişim özelliği sunulan uygulamalarda isteyerek verdiğiniz ad, e-posta veya kullanıcı adı.',
+        },
+        {
+          label: 'Yerel oyun verisi',
+          desc: 'Bazı oyunlarda (ör. Torpidodan, Forza Orbit) kayıt yalnızca cihazınızda tutulur; sunucularımıza gönderilmez.',
+        },
       ],
-      thirdPartyTitle: "3. Üçüncü Taraf Hizmetleri",
-      thirdPartyText: "Uygulamamız, işlevselliği artırmak, analiz yapmak ve reklam göstermek amacıyla aşağıdaki üçüncü taraf hizmetlerini kullanabilir:",
-      usageTitle: "4. Bilgilerin Kullanımı",
-      usageText: "Topladığımız bilgileri temel olarak şu amaçlarla kullanırız:",
+      offlineTitle: 'Çevrimdışı oyunlar',
+      offlineText:
+        'Torpidodan gibi tamamen çevrimdışı çalışan oyunlarımız hesap, giriş veya kişisel veri toplama gerektirmez. İlerlemenizi silmek için uygulamayı kaldırmanız veya oyun içinden yeni oyun başlatmanız yeterlidir.',
+      thirdPartyTitle: 'Üçüncü taraf hizmetleri',
+      thirdPartyText:
+        'Reklam veya analitik kullanan uygulamalarımız aşağıdaki hizmetlerden yararlanabilir. Çevrimdışı oyunlarımız bu hizmetleri kullanmaz.',
+      thirdPartyNote: 'Yalnızca ilgili uygulamalarda geçerlidir.',
+      usageTitle: 'Bilgilerin kullanımı',
+      usageText: 'Topladığımız bilgileri temel olarak şu amaçlarla kullanırız:',
       usageItems: [
-        "Switch Master: Railway oyununun düzgün çalışmasını sağlamak ve iyileştirmek.",
-        "Karşılaşılan teknik sorunları tespit edip çözmek.",
-        "Kullanıcı deneyimini kişiselleştirmek ve geliştirmek.",
-        "Eğer kullanılıyorsa, size uygun reklamlar sunmak."
+        'Oyunların düzgün çalışmasını sağlamak ve iyileştirmek.',
+        'Teknik sorunları tespit edip çözmek.',
+        'Kullanıcı deneyimini geliştirmek.',
+        'Reklam gösterilen uygulamalarda uygun reklamlar sunmak.',
       ],
-      shareTitle: "5. Bilgilerin Paylaşımı",
-      shareText: "Kullanıcı verilerini kesinlikle satmıyoruz. Ancak, yukarıda belirtilen üçüncü taraf analiz ve reklam ortaklarımızla anonimleştirilmiş veriler paylaşebilir. Bunun dışında verileriniz yalnızca yasal bir zorunluluk olduğunda yetkili mercilerle paylaşılır.",
-      contactTitle: "6. İletişim",
-      contactText: "Bu Gizlilik Politikası veya veri işleme uygulamalarımız hakkında sorularınız varsa, bizimle iletişime geçebilirsiniz:",
-      backHome: "Anasayfaya Dön"
+      shareTitle: 'Bilgilerin paylaşımı',
+      shareText:
+        'Kullanıcı verilerini satmıyoruz. Reklam veya analitik kullanan uygulamalarda anonimleştirilmiş veriler ilgili üçüncü taraf ortaklarla paylaşılabilir. Bunun dışında verileriniz yalnızca yasal zorunluluk halinde yetkili mercilerle paylaşılır.',
+      childrenTitle: 'Çocuklar',
+      childrenText:
+        'Oyunlarımız genel kitleye uygundur. Bilerek 13 yaş altından kişisel veri toplamıyoruz. Ebeveyn veya veli olarak endişeniz varsa bizimle iletişime geçin.',
+      changesTitle: 'Değişiklikler',
+      changesText:
+        'Bu politika güncellenebilir. Güncel sürüm ardaguner.com/privacy-policy adresinde yayınlanır. Yeni oyun eklendiğinde sayfa güncellenir.',
+      contactTitle: 'İletişim',
+      contactText: 'Sorularınız için:',
+      backHome: 'Anasayfaya dön',
+      langSwitch: 'English',
     },
     en: {
-      badge: "🛡️ SECURE INFRASTRUCTURE",
-      title: "Privacy Policy",
-      updated: "Last Updated: May 2026",
-      subtitle: "App & Web Data Notice",
-      introTitle: "1. Introduction",
-      introText: "As Arda Güner (Ardeko Studios), I respect your privacy and am committed to protecting your personal data. This Privacy Policy explains how we collect, use, and share your information when you use our Switch Master: Railway mobile application/game on the Google Play Store and our website ardaguner.com.",
-      dataTitle: "2. Information We Collect",
-      dataText: "When you use our Switch Master: Railway game and applications, we may collect the following types of information:",
+      studio: 'Ardeko Studios',
+      badge: 'Privacy & Data Notice',
+      title: 'Privacy Policy',
+      updated: 'Last updated: August 2026',
+      subtitle: 'Mobile games and ardaguner.com',
+      toc: 'Contents',
+      alsoCovers: 'This policy also covers all Ardeko Studios mobile apps, including previously published Switch Master: Railway.',
+      introTitle: 'Introduction',
+      introText:
+        'As Arda Güner (Ardeko Studios), I respect your privacy and am committed to protecting your personal data. This notice explains how we collect, use, and share information when you use our games on Google Play and the App Store, our website ardaguner.com, and related services.',
+      appsTitle: 'Scope — Upcoming games',
+      appsText:
+        'The titles below are planned for release on app stores soon. Not every game collects the same data; differences are noted in the relevant sections.',
+      dataTitle: 'Information we collect',
+      dataText:
+        'Depending on the app, we may collect the following types of information. Our fully offline games (e.g. Torpidodan) do not collect personal data; progress is stored only on your device.',
       dataItems: [
-        { label: "Device Information", desc: "Device model, operating system version, unique device identifiers (e.g., ad IDs), and mobile network information." },
-        { label: "Usage Data", desc: "Your interactions within the application, gameplay durations, clicked links, and crash reports." },
-        { label: "User-Provided Data", desc: "Information you voluntarily provide such as name, email address, or username (if registration features are used)." }
+        {
+          label: 'Device information',
+          desc: 'Device model, OS version, unique identifiers (e.g. ad IDs) — only in apps that use ads or analytics.',
+        },
+        {
+          label: 'Usage data',
+          desc: 'In-app interactions, play time, and crash reports — in apps with analytics.',
+        },
+        {
+          label: 'User-provided data',
+          desc: 'Name, email, or username you voluntarily provide where registration or contact features exist.',
+        },
+        {
+          label: 'Local game data',
+          desc: 'In some games (e.g. Torpidodan, Forza Orbit), saves stay on your device and are not sent to our servers.',
+        },
       ],
-      thirdPartyTitle: "3. Third-Party Services",
-      thirdPartyText: "Our application may use the following third-party services to increase functionality, analyze performance, and display advertisements:",
-      usageTitle: "4. Use of Information",
-      usageText: "We primarily use the information we collect for the following purposes:",
+      offlineTitle: 'Offline games',
+      offlineText:
+        'Fully offline games such as Torpidodan do not require accounts, login, or personal data collection. Uninstall the app or start a new game to delete progress.',
+      thirdPartyTitle: 'Third-party services',
+      thirdPartyText:
+        'Apps that use ads or analytics may rely on the services below. Offline games do not use them.',
+      thirdPartyNote: 'Applies only to relevant apps.',
+      usageTitle: 'Use of information',
+      usageText: 'We primarily use collected information to:',
       usageItems: [
-        "To ensure the proper functioning and improvement of the Switch Master: Railway game.",
-        "To detect and resolve technical issues encountered.",
-        "To personalize and enhance the user experience.",
-        "To serve relevant advertisements, if applicable."
+        'Ensure proper functioning and improvement of our games.',
+        'Detect and resolve technical issues.',
+        'Enhance the user experience.',
+        'Serve relevant ads in apps that display advertising.',
       ],
-      shareTitle: "5. Sharing of Information",
-      shareText: "We absolutely do not sell user data. However, anonymized data may be shared with third-party analysis and advertising partners mentioned above. Other than that, your data is only shared with authorized authorities when legally required.",
-      contactTitle: "6. Contact",
-      contactText: "If you have any questions about this Privacy Policy or our data processing practices, you can contact us:",
-      backHome: "Back to Home"
-    }
+      shareTitle: 'Sharing of information',
+      shareText:
+        'We do not sell user data. In apps with ads or analytics, anonymized data may be shared with relevant third-party partners. Otherwise, data is shared with authorities only when legally required.',
+      childrenTitle: 'Children',
+      childrenText:
+        'Our games are suitable for general audiences. We do not knowingly collect personal data from children under 13. Parents may contact us with any concerns.',
+      changesTitle: 'Changes',
+      changesText:
+        'This policy may be updated. The current version is at ardaguner.com/privacy-policy. This page is updated when new games are added.',
+      contactTitle: 'Contact',
+      contactText: 'Questions:',
+      backHome: 'Back to home',
+      langSwitch: 'Türkçe',
+    },
   };
 
-  const t = content[language] || content["tr"];
+  const t = content[language] || content.tr;
+  const otherLang = language === 'tr' ? 'en' : 'tr';
 
   return (
-    <div className="privacy-page-container">
-      <div className="privacy-header animate-fade-in">
-        <div className="privacy-badge">{t.badge}</div>
-        <h1 className="privacy-title-text">{t.title}</h1>
-        <div className="privacy-date-badge">
-          <span>📅 {t.updated}</span>
-        </div>
-      </div>
+    <div className="pp">
+      <div className="pp__bg" aria-hidden="true" />
+      <div className="pp__glow pp__glow--a" aria-hidden="true" />
+      <div className="pp__glow pp__glow--b" aria-hidden="true" />
 
-      <main className="privacy-main-card animate-fade-in-up">
-        <div className="privacy-card-header">
-          <div className="privacy-icon-wrapper">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/></svg>
-          </div>
-          <h2>{t.subtitle}</h2>
-        </div>
+      <header className="pp__top">
+        <Link to="/" className="pp__brand">
+          <span className="pp__brand-mark">A</span>
+          <span className="pp__brand-text">{t.studio}</span>
+        </Link>
+        <Link to="/privacy-policy" className="pp__lang" onClick={(e) => {
+          e.preventDefault();
+          window.localStorage.setItem('ardaguner-dil', otherLang);
+          window.location.reload();
+        }}>
+          {t.langSwitch}
+        </Link>
+      </header>
 
-        <div className="privacy-content-space">
-          <section className="privacy-section">
-            <h3>{t.introTitle}</h3>
+      <div className="pp__wrap">
+        <aside className="pp__aside">
+          <p className="pp__badge">{t.badge}</p>
+          <h1 className="pp__title">{t.title}</h1>
+          <p className="pp__date">{t.updated}</p>
+          <p className="pp__sub">{t.subtitle}</p>
+
+          <nav className="pp__toc" aria-label={t.toc}>
+            <p className="pp__toc-label">{t.toc}</p>
+            <ol>
+              {SECTIONS.map((s) => (
+                <li key={s.id}>
+                  <a href={`#${s.id}`}>{t[s.key]}</a>
+                </li>
+              ))}
+            </ol>
+          </nav>
+        </aside>
+
+        <main className="pp__main">
+          <section className="pp__section" id="intro">
+            <h2>{t.introTitle}</h2>
             <p>{t.introText}</p>
+            <p className="pp__note">{t.alsoCovers}</p>
           </section>
 
-          <section className="privacy-section">
-            <h3>{t.dataTitle}</h3>
-            <p className="highlight-text">{t.dataText}</p>
-            <div className="info-grid">
-              {t.dataItems.map((item, idx) => (
-                <div key={idx} className="info-item-box">
-                  <span className="info-box-label">{item.label}</span>
+          <section className="pp__section" id="apps">
+            <h2>{t.appsTitle}</h2>
+            <p>{t.appsText}</p>
+            <div className="pp__games">
+              {PLANNED_GAMES.map((game) => (
+                <article key={game.name} className={`pp__game pp__game--${game.tone}`}>
+                  <div className="pp__game-head">
+                    <span className="pp__game-initial" aria-hidden="true">
+                      {game.name.charAt(0)}
+                    </span>
+                    <div>
+                      <h3>{game.name}</h3>
+                      <span className="pp__game-tag">{game.tag[language] || game.tag.tr}</span>
+                    </div>
+                  </div>
+                  <p>{game.note[language] || game.note.tr}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="pp__section" id="data">
+            <h2>{t.dataTitle}</h2>
+            <p className="pp__lead">{t.dataText}</p>
+            <div className="pp__grid">
+              {t.dataItems.map((item) => (
+                <div key={item.label} className="pp__card">
+                  <h3>{item.label}</h3>
                   <p>{item.desc}</p>
                 </div>
               ))}
             </div>
           </section>
 
-          <section className="privacy-section">
-            <h3>{t.thirdPartyTitle}</h3>
+          <section className="pp__section" id="offline">
+            <h2>{t.offlineTitle}</h2>
+            <p>{t.offlineText}</p>
+          </section>
+
+          <section className="pp__section" id="third-party">
+            <h2>{t.thirdPartyTitle}</h2>
             <p>{t.thirdPartyText}</p>
-            <div className="services-row">
-              {['Google Play Services', 'Google Analytics for Firebase', 'Google AdMob'].map((service) => (
-                <div key={service} className="service-tag">{service}</div>
+            <p className="pp__note">{t.thirdPartyNote}</p>
+            <div className="pp__pills">
+              {['Google Play Services', 'Firebase Analytics', 'Google AdMob'].map((s) => (
+                <span key={s} className="pp__pill">{s}</span>
               ))}
             </div>
           </section>
 
-          <section className="privacy-section">
-            <h3>{t.usageTitle}</h3>
+          <section className="pp__section" id="usage">
+            <h2>{t.usageTitle}</h2>
             <p>{t.usageText}</p>
-            <ul className="usage-grid">
-              {t.usageItems.map((text, idx) => (
-                <li key={idx} className="usage-item">
-                  <span className="bullet-dot" />
-                  <span>{text}</span>
-                </li>
+            <ul className="pp__list">
+              {t.usageItems.map((item) => (
+                <li key={item}>{item}</li>
               ))}
             </ul>
           </section>
 
-          <section className="privacy-section">
-            <h3>{t.shareTitle}</h3>
+          <section className="pp__section" id="share">
+            <h2>{t.shareTitle}</h2>
             <p>{t.shareText}</p>
           </section>
 
-          <section className="privacy-section contact-border-top">
-            <h3>{t.contactTitle}</h3>
-            <p className="sub-p">{t.contactText}</p>
-            
-            <div className="contact-cards-wrapper">
-              <a href="mailto:ardaguner2000@gmail.com" className="privacy-contact-card">
-                <div className="contact-card-icon">📬</div>
-                <div className="contact-card-details">
-                  <span className="card-tag">Email</span>
-                  <span className="card-val">ardaguner2000@gmail.com</span>
-                </div>
-              </a>
+          <section className="pp__section" id="children">
+            <h2>{t.childrenTitle}</h2>
+            <p>{t.childrenText}</p>
+          </section>
 
-              <Link to="/" className="privacy-contact-card">
-                <div className="contact-card-icon">🏠</div>
-                <div className="contact-card-details">
-                  <span className="card-tag">Website</span>
-                  <span className="card-val">{t.backHome}</span>
-                </div>
+          <section className="pp__section" id="changes">
+            <h2>{t.changesTitle}</h2>
+            <p>{t.changesText}</p>
+          </section>
+
+          <section className="pp__section pp__section--contact" id="contact">
+            <h2>{t.contactTitle}</h2>
+            <p>{t.contactText}</p>
+            <div className="pp__contacts">
+              <a href="mailto:ardaguner2000@gmail.com" className="pp__contact">
+                <span className="pp__contact-label">E-posta</span>
+                <span className="pp__contact-val">ardaguner2000@gmail.com</span>
+              </a>
+              <Link to="/" className="pp__contact">
+                <span className="pp__contact-label">Web</span>
+                <span className="pp__contact-val">{t.backHome}</span>
               </Link>
             </div>
           </section>
-        </div>
-      </main>
+        </main>
+      </div>
 
       <style>{`
-        .privacy-page-container {
-          background-color: #030d14;
+        .pp {
+          --pp-bg: #070b10;
+          --pp-surface: rgba(14, 20, 28, 0.82);
+          --pp-border: rgba(255, 255, 255, 0.07);
+          --pp-text: #e8edf4;
+          --pp-muted: #8b9bb0;
+          --pp-accent: #5eb8ff;
+          --pp-accent-soft: rgba(94, 184, 255, 0.12);
+          position: relative;
           min-height: 100vh;
-          padding: 4rem 1rem;
-          color: #b4c6ef;
-          font-family: system-ui, -apple-system, sans-serif;
+          color: var(--pp-text);
+          font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+          overflow-x: hidden;
         }
-        .privacy-header {
-          max-width: 800px;
-          margin: 0 auto 2rem auto;
-          text-align: center;
+        .pp__bg {
+          position: fixed;
+          inset: 0;
+          background:
+            radial-gradient(circle at 1px 1px, rgba(255,255,255,0.04) 1px, transparent 0);
+          background-size: 28px 28px;
+          pointer-events: none;
         }
-        .privacy-badge {
-          display: inline-block;
-          padding: 0.5rem 1.2rem;
-          background: linear-gradient(135deg, #3f51b5, #00bcd4);
-          border-radius: 50px;
-          font-size: 0.75rem;
-          font-weight: bold;
-          color: #fff;
-          letter-spacing: 1px;
-          margin-bottom: 1.5rem;
-          box-shadow: 0 4px 15px rgba(63, 81, 181, 0.2);
+        .pp__glow {
+          position: fixed;
+          width: 520px;
+          height: 520px;
+          border-radius: 50%;
+          filter: blur(100px);
+          opacity: 0.35;
+          pointer-events: none;
         }
-        .privacy-title-text {
-          font-size: 2.5rem;
-          color: #ffffff;
-          margin: 0 0 1rem 0;
-          font-weight: 800;
-        }
-        .privacy-date-badge {
-          display: inline-block;
-          padding: 0.4rem 1rem;
-          background: rgba(255, 138, 101, 0.1);
-          border: 1px solid rgba(255, 138, 101, 0.2);
-          border-radius: 12px;
-          font-size: 0.8rem;
-          color: #ff8a65;
-          font-weight: 600;
-        }
-        .privacy-main-card {
-          max-width: 800px;
+        .pp__glow--a { top: -120px; right: -80px; background: #1a4a7a; }
+        .pp__glow--b { bottom: -160px; left: -100px; background: #0d3d35; }
+
+        .pp__top {
+          position: relative;
+          z-index: 2;
+          max-width: 1120px;
           margin: 0 auto;
-          background: #0d1926;
-          border: 1px solid rgba(255, 255, 255, 0.04);
-          border-radius: 24px;
-          padding: 3rem;
-          box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-        }
-        .privacy-card-header {
-          text-align: center;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-          padding-bottom: 1.5rem;
-          margin-bottom: 2rem;
-        }
-        .privacy-icon-wrapper {
-          width: 60px;
-          height: 60px;
-          background: rgba(0, 188, 212, 0.1);
-          border: 1px solid rgba(0, 188, 212, 0.3);
-          border-radius: 50%;
+          padding: 1.25rem 1.5rem 0;
           display: flex;
           align-items: center;
-          justify-content: center;
-          color: #00bcd4;
-          margin: 0 auto 1rem auto;
-          box-shadow: 0 0 20px rgba(0, 188, 212, 0.15);
+          justify-content: space-between;
         }
-        .privacy-card-header h2 {
-          color: #ffffff;
-          font-size: 1.3rem;
-          margin: 0;
-          letter-spacing: 0.5px;
-        }
-        .privacy-content-space {
+        .pp__brand {
           display: flex;
-          flex-direction: column;
-          gap: 2.5rem;
+          align-items: center;
+          gap: 0.65rem;
+          text-decoration: none;
+          color: inherit;
         }
-        .privacy-section h3 {
-          color: #ffffff;
-          font-size: 1.15rem;
-          margin: 0 0 0.8rem 0;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-          padding-bottom: 0.4rem;
+        .pp__brand-mark {
+          width: 2rem;
+          height: 2rem;
+          border-radius: 8px;
+          display: grid;
+          place-items: center;
+          font-weight: 800;
+          font-size: 0.9rem;
+          background: linear-gradient(135deg, #3d7ab8, #5eb8ff);
+          color: #041018;
         }
-        .privacy-section p {
-          line-height: 1.6;
-          font-size: 0.95rem;
-          margin: 0;
-          color: #cbd5e1;
-        }
-        .highlight-text {
+        .pp__brand-text {
           font-weight: 600;
-          color: #e2e8f0;
-          margin-bottom: 1rem;
+          letter-spacing: 0.02em;
+          font-size: 0.95rem;
         }
-        .info-grid {
+        .pp__lang {
+          font-size: 0.8rem;
+          color: var(--pp-muted);
+          text-decoration: none;
+          border: 1px solid var(--pp-border);
+          padding: 0.4rem 0.75rem;
+          border-radius: 999px;
+          transition: border-color 0.2s, color 0.2s;
+        }
+        .pp__lang:hover { color: var(--pp-text); border-color: rgba(94, 184, 255, 0.4); }
+
+        .pp__wrap {
+          position: relative;
+          z-index: 1;
+          max-width: 1120px;
+          margin: 0 auto;
+          padding: 2rem 1.5rem 4rem;
+          display: grid;
+          grid-template-columns: 280px 1fr;
+          gap: 2.5rem;
+          align-items: start;
+        }
+
+        .pp__aside {
+          position: sticky;
+          top: 1.5rem;
+        }
+        .pp__badge {
+          display: inline-block;
+          margin: 0 0 1rem;
+          padding: 0.35rem 0.75rem;
+          border-radius: 999px;
+          font-size: 0.7rem;
+          font-weight: 700;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: var(--pp-accent);
+          background: var(--pp-accent-soft);
+          border: 1px solid rgba(94, 184, 255, 0.2);
+        }
+        .pp__title {
+          margin: 0 0 0.5rem;
+          font-size: clamp(1.75rem, 4vw, 2.25rem);
+          line-height: 1.15;
+          font-weight: 800;
+          letter-spacing: -0.02em;
+        }
+        .pp__date {
+          margin: 0 0 0.35rem;
+          font-size: 0.8rem;
+          color: var(--pp-muted);
+        }
+        .pp__sub {
+          margin: 0 0 1.75rem;
+          font-size: 0.9rem;
+          color: var(--pp-muted);
+        }
+        .pp__toc-label {
+          margin: 0 0 0.65rem;
+          font-size: 0.7rem;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          color: var(--pp-muted);
+          font-weight: 700;
+        }
+        .pp__toc ol {
+          margin: 0;
+          padding: 0;
+          list-style: none;
           display: flex;
           flex-direction: column;
-          gap: 1rem;
-          margin-top: 1rem;
+          gap: 0.35rem;
         }
-        .info-item-box {
-          background: rgba(0, 0, 0, 0.2);
-          border: 1px solid rgba(255,255,255,0.02);
-          padding: 1rem;
-          border-radius: 12px;
-        }
-        .info-box-label {
+        .pp__toc a {
           display: block;
-          color: #00bcd4;
+          padding: 0.4rem 0.65rem;
+          border-radius: 8px;
+          font-size: 0.82rem;
+          color: var(--pp-muted);
+          text-decoration: none;
+          border-left: 2px solid transparent;
+          transition: color 0.2s, background 0.2s, border-color 0.2s;
+        }
+        .pp__toc a:hover {
+          color: var(--pp-text);
+          background: rgba(255,255,255,0.03);
+          border-left-color: var(--pp-accent);
+        }
+
+        .pp__main {
+          background: var(--pp-surface);
+          border: 1px solid var(--pp-border);
+          border-radius: 20px;
+          padding: 2rem 2rem 2.5rem;
+          backdrop-filter: blur(12px);
+          box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+        }
+        .pp__section {
+          padding-bottom: 2rem;
+          margin-bottom: 2rem;
+          border-bottom: 1px solid var(--pp-border);
+          scroll-margin-top: 1.5rem;
+        }
+        .pp__section:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+        .pp__section h2 {
+          margin: 0 0 0.85rem;
+          font-size: 1.1rem;
           font-weight: 700;
-          font-size: 0.75rem;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-          margin-bottom: 0.3rem;
+          letter-spacing: -0.01em;
         }
-        .info-item-box p {
-          font-size: 0.9rem;
-          color: #94a3b8;
+        .pp__section p {
+          margin: 0;
+          line-height: 1.7;
+          color: #b8c5d6;
+          font-size: 0.95rem;
         }
-        .services-row {
+        .pp__lead { font-weight: 500; color: var(--pp-text); margin-bottom: 1rem !important; }
+        .pp__note {
+          margin-top: 0.85rem !important;
+          font-size: 0.85rem !important;
+          color: var(--pp-muted) !important;
+          font-style: italic;
+        }
+
+        .pp__games {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-          gap: 1rem;
-          margin-top: 1rem;
+          grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+          gap: 0.85rem;
+          margin-top: 1.25rem;
         }
-        .service-tag {
-          background: #08111a;
-          border: 1px solid rgba(255,255,255,0.03);
-          padding: 0.8rem;
-          border-radius: 12px;
-          text-align: center;
-          font-size: 0.8rem;
-          font-weight: bold;
-          color: #cbd5e1;
+        .pp__game {
+          padding: 1rem 1.05rem;
+          border-radius: 14px;
+          border: 1px solid var(--pp-border);
+          background: rgba(0, 0, 0, 0.22);
+          transition: transform 0.2s, border-color 0.2s;
         }
-        .usage-grid {
-          list-style: none;
-          padding: 0;
-          margin: 1rem 0 0 0;
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-          gap: 1rem;
+        .pp__game:hover {
+          transform: translateY(-2px);
+          border-color: rgba(94, 184, 255, 0.25);
         }
-        .usage-item {
+        .pp__game-head {
           display: flex;
           align-items: center;
-          gap: 0.8rem;
-          background: rgba(0,0,0,0.15);
-          padding: 0.8rem;
-          border-radius: 10px;
-          font-size: 0.9rem;
+          gap: 0.75rem;
+          margin-bottom: 0.55rem;
         }
-        .bullet-dot {
-          width: 6px;
-          height: 6px;
-          background-color: #00bcd4;
-          border-radius: 50%;
+        .pp__game-initial {
+          width: 2.25rem;
+          height: 2.25rem;
+          border-radius: 10px;
+          display: grid;
+          place-items: center;
+          font-weight: 800;
+          font-size: 0.95rem;
           flex-shrink: 0;
         }
-        .contact-border-top {
-          border-top: 1px solid rgba(255,255,255,0.05);
-          padding-top: 2rem;
+        .pp__game--orbit .pp__game-initial { background: linear-gradient(135deg, #ff6b4a, #ff9f43); color: #1a0800; }
+        .pp__game--torpidodan .pp__game-initial { background: linear-gradient(135deg, #f7bd3f, #1450a8); color: #0f1419; }
+        .pp__game--kafa .pp__game-initial { background: linear-gradient(135deg, #a78bfa, #6366f1); color: #0f0a1a; }
+        .pp__game--rush .pp__game-initial { background: linear-gradient(135deg, #34d399, #059669); color: #021a12; }
+        .pp__game--sky .pp__game-initial { background: linear-gradient(135deg, #60a5fa, #818cf8); color: #0a1020; }
+        .pp__game h3 {
+          margin: 0;
+          font-size: 0.95rem;
+          font-weight: 700;
         }
-        .sub-p {
-          color: #64748b;
-          font-size: 0.9rem;
-          margin-bottom: 1rem;
+        .pp__game-tag {
+          font-size: 0.68rem;
+          text-transform: uppercase;
+          letter-spacing: 0.06em;
+          color: var(--pp-muted);
         }
-        .contact-cards-wrapper {
+        .pp__game p {
+          font-size: 0.82rem !important;
+          color: var(--pp-muted) !important;
+        }
+
+        .pp__grid {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-          gap: 1rem;
-          margin-top: 1rem;
+          gap: 0.85rem;
         }
-        .privacy-contact-card {
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-          background: #08111a;
-          border: 1px solid rgba(255,255,255,0.04);
+        .pp__card {
           padding: 1rem;
           border-radius: 12px;
-          text-decoration: none;
-          transition: all 0.25s ease;
+          border: 1px solid var(--pp-border);
+          background: rgba(0, 0, 0, 0.18);
         }
-        .privacy-contact-card:hover {
-          border-color: rgba(0, 188, 212, 0.4);
-          background: #0c1a29;
-          transform: translateY(-2px);
-        }
-        .contact-card-icon {
-          font-size: 1.3rem;
-          background: rgba(0, 188, 212, 0.1);
-          padding: 0.5rem;
-          border-radius: 8px;
-        }
-        .card-tag {
-          display: block;
-          font-size: 0.65rem;
+        .pp__card h3 {
+          margin: 0 0 0.4rem;
+          font-size: 0.78rem;
           text-transform: uppercase;
-          color: #64748b;
-          font-weight: bold;
-          letter-spacing: 0.5px;
+          letter-spacing: 0.06em;
+          color: var(--pp-accent);
         }
-        .card-val {
-          font-size: 0.85rem;
-          color: #e2e8f0;
+        .pp__card p { font-size: 0.88rem !important; }
+
+        .pp__pills {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.5rem;
+          margin-top: 1rem;
+        }
+        .pp__pill {
+          padding: 0.45rem 0.8rem;
+          border-radius: 999px;
+          font-size: 0.78rem;
+          font-weight: 600;
+          border: 1px solid var(--pp-border);
+          background: rgba(0, 0, 0, 0.25);
+          color: #c5d0de;
+        }
+
+        .pp__list {
+          margin: 1rem 0 0;
+          padding: 0;
+          list-style: none;
+          display: flex;
+          flex-direction: column;
+          gap: 0.55rem;
+        }
+        .pp__list li {
+          position: relative;
+          padding-left: 1.1rem;
+          font-size: 0.92rem;
+          color: #b8c5d6;
+          line-height: 1.55;
+        }
+        .pp__list li::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 0.55em;
+          width: 5px;
+          height: 5px;
+          border-radius: 50%;
+          background: var(--pp-accent);
+        }
+
+        .pp__contacts {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+          gap: 0.75rem;
+          margin-top: 1rem;
+        }
+        .pp__contact {
+          display: flex;
+          flex-direction: column;
+          gap: 0.25rem;
+          padding: 1rem;
+          border-radius: 12px;
+          border: 1px solid var(--pp-border);
+          background: rgba(0, 0, 0, 0.2);
+          text-decoration: none;
+          transition: border-color 0.2s, background 0.2s;
+        }
+        .pp__contact:hover {
+          border-color: rgba(94, 184, 255, 0.35);
+          background: rgba(94, 184, 255, 0.06);
+        }
+        .pp__contact-label {
+          font-size: 0.68rem;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          color: var(--pp-muted);
+          font-weight: 700;
+        }
+        .pp__contact-val {
+          font-size: 0.9rem;
+          color: var(--pp-text);
           font-weight: 500;
         }
-        .privacy-contact-card:hover .card-val {
-          color: #00bcd4;
-        }
-        
-        .animate-fade-in {
-          animation: privacyFadeIn 0.6s ease-out forwards;
-        }
-        .animate-fade-in-up {
-          animation: privacyFadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        @keyframes privacyFadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        @keyframes privacyFadeInUp {
-          from { opacity: 0; transform: translateY(30px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        
-        @media (max-width: 600px) {
-          .privacy-main-card { padding: 1.5rem; }
-          .privacy-title-text { font-size: 2rem; }
-          .usage-grid { grid-template-columns: 1fr; }
+
+        @media (max-width: 900px) {
+          .pp__wrap {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+          }
+          .pp__aside { position: static; }
+          .pp__toc { display: none; }
+          .pp__main { padding: 1.35rem 1.25rem 1.75rem; }
         }
       `}</style>
     </div>
