@@ -1,36 +1,62 @@
 import { Link } from 'react-router-dom';
 
-/** Yakın zamanda mağazaya yüklenecek oyunlar. */
-const PLANNED_GAMES = [
+/* Politikanın kapsadığı oyunlar.
+
+   Eskiden bu dizinin adı PLANNED_GAMES'ti ve bölüm başlığı "yakında
+   mağazaya yüklenecek" diyordu. Skyline Swinger, Rushville ve
+   Torpidodan çıkınca o cümle yanlış bir beyana dönüştü — yayında olan
+   bir uygulamayı "planlanan" diye listeleyen bir politika, mağazanın
+   veri güvenliği formuyla çelişir.
+
+   Yayında ve yakında ayrımı `released` alanıyla yapılıyor, iki ayrı
+   dizi tutulmuyor: ayrı tutulsaydı bir oyun çıktığında biri
+   güncellenip diğeri unutulurdu. Yeni oyun eklerken tek yapılacak
+   şey buraya bir satır yazmak. */
+const GAMES = [
   {
-    name: 'Forza Orbit',
-    tag: { tr: 'Arcade', en: 'Arcade' },
-    note: { tr: 'Yerel skor; hesap gerekmez', en: 'Local scores; no account required' },
-    tone: 'orbit',
-  },
-  {
-    name: 'Torpidodan',
-    tag: { tr: 'Simülasyon', en: 'Simulation' },
-    note: { tr: 'Tamamen çevrimdışı', en: 'Fully offline' },
-    tone: 'torpidodan',
-  },
-  {
-    name: 'Kafa Kafaya',
-    tag: { tr: 'Spor', en: 'Sports' },
+    name: 'Switch Master: Railway',
+    released: true,
+    tag: { tr: 'Bulmaca', en: 'Puzzle' },
     note: { tr: 'Mobil · iOS & Android', en: 'Mobile · iOS & Android' },
-    tone: 'kafa',
+    tone: 'switch',
+  },
+  {
+    name: 'Skyline Swinger',
+    released: true,
+    tag: { tr: 'Koşu', en: 'Runner' },
+    note: { tr: 'Mobil · iOS & Android', en: 'Mobile · iOS & Android' },
+    tone: 'sky',
   },
   {
     name: 'Rushville',
+    released: true,
     tag: { tr: 'Bulmaca', en: 'Puzzle' },
     note: { tr: 'Mobil · iOS & Android', en: 'Mobile · iOS & Android' },
     tone: 'rush',
   },
   {
-    name: 'Skyline Swinger',
-    tag: { tr: 'Koşu', en: 'Runner' },
+    name: 'Torpidodan',
+    released: true,
+    tag: { tr: 'Simülasyon', en: 'Simulation' },
+    note: { tr: 'Mobil · tamamen çevrimdışı', en: 'Mobile · fully offline' },
+    tone: 'torpidodan',
+  },
+  {
+    name: 'Forza Orbit',
+    released: true,
+    tag: { tr: 'Arcade', en: 'Arcade' },
+    note: {
+      tr: 'Tarayıcı · yerel skor, hesap gerekmez',
+      en: 'Browser · local scores, no account',
+    },
+    tone: 'orbit',
+  },
+  {
+    name: 'Kafa Kafaya',
+    released: false,
+    tag: { tr: 'Spor', en: 'Sports' },
     note: { tr: 'Mobil · iOS & Android', en: 'Mobile · iOS & Android' },
-    tone: 'sky',
+    tone: 'kafa',
   },
 ];
 
@@ -53,16 +79,19 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
       studio: 'Ardeko Studios',
       badge: 'Gizlilik & Veri Bildirimi',
       title: 'Gizlilik Politikası',
-      updated: 'Son güncelleme: Ağustos 2026',
+      updated: 'Son güncelleme: Eylül 2026',
       subtitle: 'Mobil oyunlar ve ardaguner.com',
       toc: 'İçindekiler',
-      alsoCovers: 'Bu politika daha önce yayınlanan Switch Master: Railway dahil tüm Ardeko Studios mobil uygulamalarını kapsar.',
+      alsoCovers:
+        'Politika, Ardeko Studios adıyla yayınlanan tüm mobil uygulamaları ve ardaguner.com üzerinden oynanan tarayıcı oyunlarını kapsar.',
       introTitle: 'Giriş',
       introText:
         'Arda Güner (Ardeko Studios) olarak gizliliğinize saygı duyuyor ve kişisel verilerinizi korumayı taahhüt ediyorum. Bu metin; Google Play ve App Store’da yayınladığımız veya yayınlamayı planladığımız oyunları, ardaguner.com web sitemizi ve bu kanallar üzerinden sunulan hizmetleri kullandığınızda bilgilerinizi nasıl topladığımızı, kullandığımızı ve paylaştığımızı açıklar.',
-      appsTitle: 'Kapsam — Planlanan oyunlar',
+      appsTitle: 'Kapsam — Oyunlarımız',
       appsText:
-        'Aşağıdaki başlıklar yakın zamanda mağazaya yüklenmesi planlanan oyunlarımızdır. Her oyun aynı veri toplamaz; ilgili bölümlerde farklar belirtilmiştir.',
+        'Bu politika aşağıdaki oyunları kapsar. Her oyun aynı veriyi toplamaz; ilgili bölümlerde farklar belirtilmiştir.',
+      appsLive: 'Yayında',
+      appsPlanned: 'Yakında',
       dataTitle: 'Topladığımız bilgiler',
       dataText:
         'Uygulamaya bağlı olarak aşağıdaki türde bilgiler toplanabilir. Çevrimdışı oyunlarımız (ör. Torpidodan) kişisel veri toplamaz; oyun ilerlemesi yalnızca cihazınızda saklanır.',
@@ -117,16 +146,19 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
       studio: 'Ardeko Studios',
       badge: 'Privacy & Data Notice',
       title: 'Privacy Policy',
-      updated: 'Last updated: August 2026',
+      updated: 'Last updated: September 2026',
       subtitle: 'Mobile games and ardaguner.com',
       toc: 'Contents',
-      alsoCovers: 'This policy also covers all Ardeko Studios mobile apps, including previously published Switch Master: Railway.',
+      alsoCovers:
+        'The policy covers all mobile apps published under the Ardeko Studios name and the browser games playable on ardaguner.com.',
       introTitle: 'Introduction',
       introText:
         'As Arda Güner (Ardeko Studios), I respect your privacy and am committed to protecting your personal data. This notice explains how we collect, use, and share information when you use our games on Google Play and the App Store, our website ardaguner.com, and related services.',
-      appsTitle: 'Scope — Upcoming games',
+      appsTitle: 'Scope — Our games',
       appsText:
-        'The titles below are planned for release on app stores soon. Not every game collects the same data; differences are noted in the relevant sections.',
+        'This policy covers the games below. Not every game collects the same data; differences are noted in the relevant sections.',
+      appsLive: 'Available now',
+      appsPlanned: 'Coming soon',
       dataTitle: 'Information we collect',
       dataText:
         'Depending on the app, we may collect the following types of information. Our fully offline games (e.g. Torpidodan) do not collect personal data; progress is stored only on your device.',
@@ -231,22 +263,37 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
           <section className="pp__section" id="apps">
             <h2>{t.appsTitle}</h2>
             <p>{t.appsText}</p>
-            <div className="pp__games">
-              {PLANNED_GAMES.map((game) => (
-                <article key={game.name} className={`pp__game pp__game--${game.tone}`}>
-                  <div className="pp__game-head">
-                    <span className="pp__game-initial" aria-hidden="true">
-                      {game.name.charAt(0)}
-                    </span>
-                    <div>
-                      <h3>{game.name}</h3>
-                      <span className="pp__game-tag">{game.tag[language] || game.tag.tr}</span>
-                    </div>
+
+            {/* Boş grup hiç basılmıyor: son planlanan oyun da çıktığında
+                başlıksız bir "Yakında" bloğu kalmasın. */}
+            {[
+              [t.appsLive, GAMES.filter((g) => g.released)],
+              [t.appsPlanned, GAMES.filter((g) => !g.released)],
+            ]
+              .filter(([, list]) => list.length > 0)
+              .map(([label, list]) => (
+                <div className="pp__games-group" key={label}>
+                  <p className="pp__group-label">{label}</p>
+                  <div className="pp__games">
+                    {list.map((game) => (
+                      <article key={game.name} className={`pp__game pp__game--${game.tone}`}>
+                        <div className="pp__game-head">
+                          <span className="pp__game-initial" aria-hidden="true">
+                            {game.name.charAt(0)}
+                          </span>
+                          <div>
+                            <h3>{game.name}</h3>
+                            <span className="pp__game-tag">
+                              {game.tag[language] || game.tag.tr}
+                            </span>
+                          </div>
+                        </div>
+                        <p>{game.note[language] || game.note.tr}</p>
+                      </article>
+                    ))}
                   </div>
-                  <p>{game.note[language] || game.note.tr}</p>
-                </article>
+                </div>
               ))}
-            </div>
           </section>
 
           <section className="pp__section" id="data">
@@ -512,6 +559,15 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
           font-style: italic;
         }
 
+        .pp__games-group + .pp__games-group { margin-top: 1.5rem; }
+        .pp__group-label {
+          margin: 1.25rem 0 0 !important;
+          font-size: 0.7rem !important;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          color: var(--pp-muted) !important;
+        }
         .pp__games {
           display: grid;
           grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -545,6 +601,7 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
           font-size: 0.95rem;
           flex-shrink: 0;
         }
+        .pp__game--switch .pp__game-initial { background: linear-gradient(135deg, #fb7185, #e11d48); color: #1c0409; }
         .pp__game--orbit .pp__game-initial { background: linear-gradient(135deg, #ff6b4a, #ff9f43); color: #1a0800; }
         .pp__game--torpidodan .pp__game-initial { background: linear-gradient(135deg, #f7bd3f, #1450a8); color: #0f1419; }
         .pp__game--kafa .pp__game-initial { background: linear-gradient(135deg, #a78bfa, #6366f1); color: #0f0a1a; }
