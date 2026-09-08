@@ -253,7 +253,9 @@ export const PROJECTS = [
     platforms: 'IOS · ANDROID',
     tech: ['React', 'TypeScript', 'Capacitor'],
     image: '/games/torpidodan.svg',
-    links: {},
+    links: {
+      appStore: 'https://apps.apple.com/app/torpidodan/id6807162427',
+    },
   },
   {
     id: 'decoy',
