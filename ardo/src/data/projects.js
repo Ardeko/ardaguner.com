@@ -229,7 +229,7 @@ export const PROJECTS = [
     tech: ['JavaScript', 'Canvas'],
     image: '/games/apex.jpg',
     unverified: true,
-    links: { play: '/apex-shift.html' },
+    links: { play: '/apex-shift/index.html' },
   },
   {
     id: 'dny',

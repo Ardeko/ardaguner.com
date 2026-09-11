@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<title>Apex Shift — Araba Yarışı</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/apex-shift/css/style.css">
+<script type="module" src="/apex-shift/js/main.js"></script>
+</head>
+<body>
+<div id="app">
+
+<div id="menu">
+  <div class="card">
+    <div class="hero">
+      <svg viewBox="0 0 300 118" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect width="300" height="118" fill="#1e3a1a"/>
+        <ellipse cx="150" cy="59" rx="120" ry="43" fill="#2e2d28"/>
+        <ellipse cx="150" cy="59" rx="60" ry="20" fill="#1e3a1a"/>
+        <ellipse cx="150" cy="59" rx="120" ry="43" fill="none" stroke="#c9402c" stroke-width="3.5" stroke-dasharray="8 8"/>
+        <ellipse cx="150" cy="59" rx="60" ry="20" fill="none" stroke="#e9e6db" stroke-width="2" stroke-dasharray="5 5"/>
+        <g>
+          <rect x="-9" y="-5" width="18" height="10" rx="2.5" fill="#d93c2a"/>
+          <rect x="2" y="-4" width="5" height="8" rx="1.5" fill="rgba(200,225,240,.65)"/>
+          <rect x="8.3" y="-3.5" width="1.6" height="2.4" rx=".5" fill="#ffe58a"/>
+          <rect x="8.3" y="1.1" width="1.6" height="2.4" rx=".5" fill="#ffe58a"/>
+          <animateMotion dur="3.4s" repeatCount="indefinite" rotate="auto" path="M 240,59 A 90,32 0 1,1 60,59 A 90,32 0 1,1 240,59"/>
+        </g>
+        <g>
+          <rect x="-9" y="-5" width="18" height="10" rx="2.5" fill="#3aa0ff"/>
+          <rect x="2" y="-4" width="5" height="8" rx="1.5" fill="rgba(200,225,240,.65)"/>
+          <rect x="8.3" y="-3.5" width="1.6" height="2.4" rx=".5" fill="#ffe58a"/>
+          <rect x="8.3" y="1.1" width="1.6" height="2.4" rx=".5" fill="#ffe58a"/>
+          <animateMotion dur="3.4s" begin="-1.7s" repeatCount="indefinite" rotate="auto" path="M 240,59 A 90,32 0 1,1 60,59 A 90,32 0 1,1 240,59"/>
+        </g>
+      </svg>
+    </div>
+    <div class="stripe"></div>
+    <div class="inner">
+      <h1 class="title">🏁 APEX <span>SHIFT</span></h1>
+      <div class="modes" role="tablist" aria-label="Oyun modu">
+        <button class="mode-tab on" type="button" role="tab" aria-selected="true" data-mode="online">🌐 Online Yarış</button>
+        <button class="mode-tab" type="button" role="tab" aria-selected="false" data-mode="manager">🏆 Takım Menajeri</button>
+      </div>
+      <p class="sub" id="modeSub">İsmini ve oda kodunu gir, lobiye düş. Odadaki herkes hazır olunca yarış aynı anda başlar.</p>
+      <div class="field">
+        <input type="text" id="nameInput" maxlength="12" placeholder=" "/>
+        <label for="nameInput">Sürücü Adı</label>
+      </div>
+      <div id="onlinePane">
+        <div class="row">
+          <div class="field">
+            <input type="text" id="roomInput" maxlength="8" placeholder=" "/>
+            <label for="roomInput">Oda Kodu</label>
+          </div>
+          <button class="btn btn-sm" id="randBtn" title="Rastgele oda kodu" aria-label="Rastgele oda kodu">🎲</button>
+        </div>
+        <button class="btn btn-go" id="joinBtn">Odaya Katıl</button>
+        <p class="hint" id="joinHint">💡 Arkadaşınla <b>aynı linki</b> açıp <b>aynı oda kodunu</b> girin.</p>
+        <p class="hint">🎮 <b>↑W</b> gaz · <b>↓S</b> fren · <b>←→ AD</b> dönüş · <b>Shift</b> NOS</p>
+      </div>
+      <div id="managerPane" hidden>
+        <div class="mg-sum" id="mgSummary" hidden></div>
+        <button class="btn btn-go" id="mgStartBtn">Kariyere Başla</button>
+        <p class="hint">🏎️ Kontrol yok: pilotun kendi sürer, sen <b>yeteneklerini geliştirir</b> ve <b>sınıf atlarsın</b>.</p>
+        <p class="hint">💤 Oyun kapalıyken de sponsor geliri birikir (en fazla 4 saat).</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════ ONLINE MOD ═════════ -->
+<div id="game">
+  <div id="cwrap">
+    <canvas id="canvas" width="1000" height="600"></canvas>
+
+    <div id="hudPanel">
+      <div class="hud-top">
+        <div><span id="dot" class="dot"></span><span id="connText">Bağlanıyor…</span></div>
+        <button class="mute-btn" id="muteBtn">🔊</button>
+      </div>
+      <div class="big"><span id="posText">P1</span> · <span id="lapText">Tur 0/3</span></div>
+      <div id="timeText">00:00.0</div>
+      <div id="speedText">0 km/h</div>
+      <div id="bestLapText">En iyi tur: –</div>
+      <div id="nosRow">NOS <span class="nos-pip on"></span><span class="nos-pip on"></span><span class="nos-pip on"></span></div>
+    </div>
+
+    <div id="lbPanel">
+      <h3 id="lbTitle">Yarışçılar</h3>
+      <div id="lbRows"></div>
+    </div>
+
+    <button id="leaveBtn">⟵ Ayrıl</button>
+
+    <div id="lobbyPanel">
+      <div class="lp-top">
+        <div class="lp-room">Oda: <b id="lpRoomCode"></b></div>
+        <div class="lp-conn"><span id="lpDot" class="dot"></span><span id="lpConnText">Bağlanıyor…</span></div>
+      </div>
+
+      <div id="lpWaiting" style="display:none">
+        <p>🏁 Bu odada yarış sürüyor. Mevcut tur bitince otomatik olarak lobiye düşeceksin ve yeni tur başlatılabilecek.</p>
+        <label>Seninle Bekleyenler</label>
+        <div id="lpWaitList"></div>
+      </div>
+
+      <div id="lpLobby">
+        <label>Araba Rengi</label>
+        <div id="colorPicker"></div>
+        <label id="lpCountLabel">Odadakiler</label>
+        <div id="lpPlayerList"></div>
+        <button class="btn btn-go" id="startRaceBtn">🏁 Yarışı Başlat</button>
+        <p class="hint" id="startHint">Bastığında odadaki herkes aynı anda, 3-2-1 ile başlar.</p>
+      </div>
+    </div>
+
+    <div id="tc">
+      <div class="pad">
+        <button class="tbtn" id="leftBtn">◀</button>
+        <button class="tbtn" id="rightBtn">▶</button>
+      </div>
+      <div class="pad">
+        <button class="tbtn" id="nosBtn">NOS</button>
+      </div>
+      <div class="pad">
+        <button class="tbtn" id="brakeBtn">FREN</button>
+        <button class="tbtn" id="gasBtn">GAZ</button>
+      </div>
+    </div>
+
+    <div id="countdown"><span id="cdNum"></span></div>
+
+    <div id="finish">
+      <h2>🏁 Bitirdin!</h2>
+      <div class="ftime" id="finTime">00:00.0</div>
+      <div id="finBestLap"></div>
+      <div id="finStatus">Diğer yarışçılar bekleniyor…</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════ TAKIM MENAJERİ ═════════ -->
+<div id="manager">
+  <div class="mg-top">
+    <div class="mg-pill"><span aria-hidden="true">💵</span><b id="mgCash">$0</b></div>
+    <div class="mg-income"><small>Gelir /sn</small><b id="mgIncome">$1</b></div>
+    <div class="mg-pill mg-gems"><span aria-hidden="true">💎</span><b id="mgGems">0</b></div>
+
+    <div class="mg-left">
+      <button class="mg-icon" id="mgBack" type="button" aria-label="Menüye dön">⟵</button>
+      <button class="mg-avatar" id="mgAvatar" type="button" aria-label="Takım ayarları" title="Takım ayarları">
+        <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M5 24C5 13 13.5 6 23 6c8 0 12.5 6 12.5 13.5V28c0 2-1.5 3.5-3.5 3.5H12C8 31.5 5 28.5 5 24Z" fill="currentColor" stroke="#0d0f0a" stroke-width="2.2"/><path d="M17 17.5c0-2 1.6-3.7 3.6-3.7h14.9v9.4H20.6c-2 0-3.6-1.6-3.6-3.6Z" fill="#2a2d33" stroke="#0d0f0a" stroke-width="2.2"/><path d="M22 15.6h8" stroke="rgba(255,255,255,.35)" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+      <button class="mg-icon" id="mgMute" type="button" aria-label="Sesi aç/kapat">🔊</button>
+    </div>
+    <button class="mg-boost" id="mgBoost" type="button">2x Kazanç</button>
+    <button class="mg-classes" id="mgClassesBtn" type="button"><span aria-hidden="true">🏎️</span> <span id="mgClassShort">KART</span> · SINIFLAR<i class="mg-badge" id="mgClassBadge" hidden></i></button>
+  </div>
+
+  <div class="mg-body">
+    <section class="mg-race" aria-label="Canlı yarış">
+      <div class="mg-head">
+        <div class="mg-team"><b id="mgTeam">Takım</b><span><span aria-hidden="true">👥</span> <span id="mgFans">0</span> taraftar</span></div>
+        <div class="mg-posbox"><b id="mgPos">P1/10</b><span id="mgTimer">00:00</span></div>
+        <div class="mg-meta"><span id="mgClass">Karting</span><span id="mgTrack">Yeşil Vadi</span><span id="mgLap">Tur 1/3</span></div>
+      </div>
+      <canvas id="mgStrip" aria-hidden="true"></canvas>
+      <div class="mg-stage">
+        <canvas id="mgCanvas" aria-label="Yarış pisti"></canvas>
+        <div class="mg-cd" id="mgCountdown" hidden><span id="mgCdNum">3</span></div>
+        <div class="mg-result" id="mgResult" hidden></div>
+      </div>
+    </section>
+    <section class="mg-side" aria-label="Pilot gelişimi">
+      <h2 class="mg-h">Pilot Gelişimi</h2>
+      <div class="mg-skills" id="mgSkills"></div>
+    </section>
+  </div>
+
+  <div class="mg-toast" id="mgToast" role="status" aria-live="polite"></div>
+
+  <div class="mg-modal" id="mgClassModal" hidden>
+    <div class="mg-sheet" role="dialog" aria-modal="true" aria-labelledby="mgClassTitle">
+      <div class="mg-sheet-top"><h3 id="mgClassTitle">Sınıflar</h3><button class="mg-x" type="button" data-close aria-label="Kapat">✕</button></div>
+      <p class="mg-note">Üst sınıflarda rakipler daha güçlü ama ödüller ve gelir katlanarak artar. Kilitleri podyumlardan gelen 💎 ile açılır (1. = 3, 2. = 2, 3. = 1).</p>
+      <div id="mgClassList"></div>
+    </div>
+  </div>
+
+  <div class="mg-modal" id="mgTeamModal" hidden>
+    <div class="mg-sheet" role="dialog" aria-modal="true" aria-labelledby="mgTeamTitle">
+      <div class="mg-sheet-top"><h3 id="mgTeamTitle">Takımın</h3><button class="mg-x" type="button" data-close aria-label="Kapat">✕</button></div>
+      <div class="field">
+        <input type="text" id="mgTeamInput" maxlength="20" placeholder=" "/>
+        <label for="mgTeamInput">Takım Adı</label>
+      </div>
+      <label>Takım Rengi</label>
+      <div id="mgColorPick" class="mg-colors"></div>
+      <p class="mg-note" id="mgStats"></p>
+      <button class="btn mg-reset" id="mgReset" type="button">İlerlemeyi sıfırla</button>
+    </div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>
