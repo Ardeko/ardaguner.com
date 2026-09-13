@@ -186,12 +186,12 @@
 }
 
 .pp-game-mark {
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 10px;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 12px;
   overflow: hidden;
   flex-shrink: 0;
-  background: var(--surface);
+  background: #f4f4f2;
   border: 1px solid var(--stroke);
   display: grid;
   place-items: center;

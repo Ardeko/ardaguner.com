@@ -74,8 +74,8 @@ function AppMark({ slug, name }) {
     <img
       src={`/apps/${slug}.png`}
       alt=""
-      width={40}
-      height={40}
+      width={52}
+      height={52}
       onError={() => setBroken(true)}
     />
   );
