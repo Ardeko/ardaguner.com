@@ -1,0 +1,364 @@
+/* ------------------------------------------------------------------
+   Gizlilik politikası.
+
+   Palet, yazıtipi ve yarıçap index.css jetonlarından geliyor. Eski
+   sayfa kendi cyan/mavi evreninde duruyordu; mağaza incelemesi burayı
+   açınca siteyle aynı dil görünmeli.
+------------------------------------------------------------------- */
+
+.pp {
+  padding-top: 7rem;
+  padding-bottom: 4rem;
+}
+
+.pp-hero {
+  max-width: 40rem;
+  margin-bottom: clamp(2.5rem, 6vw, 4rem);
+}
+
+.pp-hero h1 {
+  font-size: clamp(2.25rem, 6vw, 4rem);
+  margin: 0.55rem 0 0.75rem;
+}
+
+.pp-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.pp-meta strong {
+  display: block;
+  color: var(--faint);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 0.2rem;
+}
+
+.pp-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: clamp(2rem, 5vw, 4.5rem);
+  align-items: start;
+}
+
+.pp-toc {
+  position: sticky;
+  top: 6rem;
+}
+
+.pp-toc-label {
+  margin: 0 0 0.85rem;
+}
+
+.pp-toc ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.pp-toc a {
+  display: block;
+  padding: 0.4rem 0;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.84rem;
+  border-bottom: 1px solid transparent;
+  transition: color var(--fast) ease;
+}
+
+.pp-toc a:hover {
+  color: var(--text);
+}
+
+.pp-main {
+  min-width: 0;
+}
+
+.pp-section {
+  padding: 2rem 0;
+  border-top: 1px solid var(--stroke);
+  scroll-margin-top: 6rem;
+}
+
+.pp-section:first-child {
+  padding-top: 0;
+  border-top: none;
+}
+
+.pp-section h2 {
+  font-size: clamp(1.35rem, 2.4vw, 1.75rem);
+  margin: 0 0 0.85rem;
+}
+
+.pp-section p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.98rem;
+  line-height: 1.7;
+  max-width: 68ch;
+}
+
+.pp-section p + p {
+  margin-top: 0.85rem;
+}
+
+.pp-note {
+  font-size: 0.88rem !important;
+  color: var(--faint) !important;
+}
+
+.pp-callout {
+  margin-top: 1.5rem;
+  padding: clamp(1.25rem, 3vw, 1.75rem);
+  border: 1px solid var(--stroke-strong);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.pp-callout > h2 {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+}
+
+.pp-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.75rem;
+  margin-top: 1.35rem;
+}
+
+.pp-fact {
+  padding: 1rem 1.05rem;
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius);
+  background: var(--bg-elevated);
+}
+
+.pp-fact h3 {
+  margin: 0 0 0.4rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--faint);
+  font-weight: 500;
+}
+
+.pp-fact p {
+  font-size: 0.88rem !important;
+  max-width: none;
+}
+
+.pp-games {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.75rem;
+  margin-top: 1.35rem;
+}
+
+.pp-game {
+  padding: 1rem 1.05rem;
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius);
+  background: var(--bg-elevated);
+  transition: border-color var(--fast) ease, background var(--fast) ease;
+}
+
+.pp-game:hover {
+  border-color: var(--stroke-strong);
+  background: var(--surface-hover);
+}
+
+.pp-game-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.55rem;
+}
+
+.pp-game-mark {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--surface);
+  border: 1px solid var(--stroke);
+  display: grid;
+  place-items: center;
+}
+
+.pp-game-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pp-game-initial {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.15rem;
+  color: var(--text);
+  line-height: 1;
+}
+
+.pp-game h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.pp-game-tag {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.pp-game p {
+  font-size: 0.82rem !important;
+  max-width: none;
+}
+
+.pp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.75rem;
+  margin-top: 1.15rem;
+}
+
+.pp-card {
+  padding: 1rem 1.05rem;
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius);
+  background: var(--bg-elevated);
+}
+
+.pp-card h3 {
+  margin: 0 0 0.4rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--faint);
+  font-weight: 500;
+}
+
+.pp-card p {
+  font-size: 0.88rem !important;
+  max-width: none;
+}
+
+.pp-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 1rem;
+}
+
+.pp-pill {
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: 1px solid var(--stroke);
+  color: var(--muted);
+}
+
+.pp-list {
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 68ch;
+}
+
+.pp-list li {
+  position: relative;
+  padding-left: 1.1rem;
+  font-size: 0.94rem;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.pp-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.6em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--text);
+}
+
+.pp-contacts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.75rem;
+  margin-top: 1.15rem;
+}
+
+.pp-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1rem 1.05rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--stroke);
+  background: var(--bg-elevated);
+  text-decoration: none;
+  transition: border-color var(--fast) ease, background var(--fast) ease;
+}
+
+.pp-contact:hover {
+  border-color: var(--stroke-strong);
+  background: var(--surface-hover);
+}
+
+.pp-contact-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--faint);
+  font-weight: 500;
+}
+
+.pp-contact-val {
+  font-size: 0.92rem;
+  color: var(--text);
+}
+
+@media (max-width: 900px) {
+  .pp {
+    padding-top: 6rem;
+  }
+  .pp-layout {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .pp-toc {
+    position: static;
+  }
+  .pp-toc ol {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.35rem 1rem;
+  }
+  .pp-toc a {
+    padding: 0.2rem 0;
+    font-size: 0.78rem;
+  }
+}

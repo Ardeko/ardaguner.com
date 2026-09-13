@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, useLocation } from "react-router-dom";
 import "./App.css";
 import "./components/Enhancements.css";
 
@@ -35,6 +35,16 @@ const CodeLab = lazy(() => import("./CodeLab"));
    ROTALAR DEĞİŞMEDİ. `/privacy-policy` Google Play kaydında geçtiği
    için kırılamaz; `/codelab` de aynı adreste ve hâlâ tembel yükleniyor.
 ------------------------------------------------------------------- */
+
+function SkipLink({ label }) {
+  const { pathname } = useLocation();
+  const hedef = pathname === "/privacy-policy" ? "#privacy" : "#about";
+  return (
+    <a href={hedef} className="skip-link">
+      {label}
+    </a>
+  );
+}
 
 const DILLER = { tr, en };
 const DEPO = "ardaguner-dil";
@@ -89,9 +99,7 @@ function App() {
 
       {/* Klavyeyle gezen ziyaretçi altı menü linkini tek tek geçmeden
           içeriğe atlayabiliyor. Odaklanmadıkça görünmüyor. */}
-      <a href="#about" className="skip-link">
-        {strings.nav.skip}
-      </a>
+      <SkipLink label={strings.nav.skip} />
 
       {/* Arka plan katmanı. Varyant: "aurora" | "beams" */}
       <Backdrop variant="aurora" />

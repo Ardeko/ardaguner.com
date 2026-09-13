@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 /* ------------------------------------------------------------------
    Üst çubuk: marka, bölüm linkleri ve dil anahtarı.
@@ -12,6 +12,8 @@ import { Link } from "react-router-dom";
 ------------------------------------------------------------------- */
 
 function Nav({ language, setLanguage, strings }) {
+  const { pathname } = useLocation();
+  const ana = pathname === "/";
   const [kaydi, setKaydi] = useState(false);
   const [acik, setAcik] = useState(false);
   const kapat = useCallback(() => setAcik(false), []);
@@ -72,7 +74,7 @@ function Nav({ language, setLanguage, strings }) {
     { href: "#gallery", label: language === "tr" ? "Arşiv" : "Archive" },
     { href: "#studio", label: language === "tr" ? "Stüdyo" : "Studio" },
     { href: "#contact", label: strings.nav.contact },
-  ];
+  ].map((l) => ({ ...l, href: ana ? l.href : `/${l.href}` }));
 
   return (
     <header className={`nav ${kaydi ? "is-scrolled" : ""}`}>
