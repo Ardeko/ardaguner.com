@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import './PrivacyPolicy.css';
 
 const CONTACT_EMAIL = 'ardaguner2000@gmail.com';
-const CONTROLLER = 'Arda Güner (Ardeko Studios)';
+const CONTROLLER = 'Arda Güner / Ardeko Studios';
 
 /** Mağaza ikonları: `public/apps/{slug}.png` */
 const APPS = [
