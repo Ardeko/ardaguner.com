@@ -37,7 +37,7 @@ const GAMES = [
     name: 'Torpidodan',
     released: true,
     tag: { tr: 'Simülasyon', en: 'Simulation' },
-    note: { tr: 'Mobil · tamamen çevrimdışı', en: 'Mobile · fully offline' },
+    note: { tr: 'Mobil · Google Play & App Store', en: 'Mobile · Google Play & App Store' },
   },
   {
     slug: 'forza-orbit',
