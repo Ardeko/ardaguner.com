@@ -1,10 +1,10 @@
 /* Apex Shift — Takım Menajeri. Yarışlar kendiliğinden döner: sen ödül, taraftar ve
    sponsor geliri toplar, pilotunun yeteneklerini geliştirir, sınıf atlarsın.
    İlerleme localStorage'da tutulur; oyun kapalıyken de gelir birikir. */
-import {$,clamp,fmtTime,crossFade,audio,sfx,drawCar,mulberry32,shuffle} from '../common.js';
+import {$,clamp,fmtTime,crossFade,audio,sfx,drawCar,paintCarThumb,liveryOf,liveryFill,LIVERIES,mulberry32,shuffle} from '../common.js';
 import {TRACKS,MW,MH,buildTrack,paintTrack} from './track.js';
 import {createRace,stepRace,standings,carPose,playerStats,aiStats} from './sim.js';
-import {SKILLS,CLASSES,AI_TEAMS,AI_COLORS,TEAM_COLORS,BOOST_MS,BOOST_CD_MS,OFFLINE_CAP_S,OFFLINE_RATE,
+import {SKILLS,CLASSES,AI_TEAMS,AI_COLORS,BOOST_MS,BOOST_CD_MS,OFFLINE_CAP_S,OFFLINE_RATE,
   skillCost,skillBonus,skillMaxed,defaultSave,loadSave,persist,wipeSave,incomePerSec,prizeFor,fansFor,gemsFor,fmtMoney,fmtNum} from './data.js';
 
 const RESULT_MS=4500, CAR_SCALE=1.15, SAVE_EVERY=5000, SW=1000, SH=40;
@@ -87,10 +87,12 @@ function buySkill(sk){
 /* ── yarış döngüsü ─────────────────────── */
 function newRace(){
   const ti=save.trackIdx%TRACKS.length, trk=getTrack(ti), cls=CLASSES[save.classIdx];
+  const mine=liveryOf(save.color).hex;
+  if(save.color!==mine) save.color=mine;
   const rng=mulberry32((Date.now()^Math.imul(save.races+1,2654435761))>>>0);
   const names=shuffle(AI_TEAMS.filter(n=>n!==save.team),rng);
-  const cols=shuffle(AI_COLORS.filter(c=>c.toLowerCase()!==save.color.toLowerCase()),rng);
-  const entrants=[{id:'me',name:save.team,color:save.color,isPlayer:true,stats:playerStats(bonuses())}];
+  const cols=shuffle(AI_COLORS.filter(c=>c.toLowerCase()!==mine),rng);
+  const entrants=[{id:'me',name:save.team,color:mine,isPlayer:true,stats:playerStats(bonuses())}];
   for(let i=0;i<9;i++) entrants.push({id:'ai'+i,name:names[i],color:cols[i%cols.length],stats:aiStats(cls.mult,rng)});
   race=createRace({track:trk,laps:cls.laps,entrants,rng});
   race.trackIdx=ti; race.classIdx=save.classIdx;
@@ -124,7 +126,7 @@ function showResult(order,pos,g){
   const row=(c,i)=>{
     const li=el('li',c.isPlayer?'me':'');
     li.appendChild(el('span','rs-n',String(i+1)));
-    const sw=el('span','rs-sw'); sw.style.background=c.color; li.appendChild(sw);
+    const sw=el('span','rs-sw'); liveryFill(sw,c.color); li.appendChild(sw);
     li.appendChild(el('span','rs-name',c.name));
     li.appendChild(el('span','rs-t',!c.finished?'—':i===0?fmtTime(c.finishT*1000):'+'+(c.finishT-lead.finishT).toFixed(1)+'s'));
     list.appendChild(li);
@@ -160,7 +162,8 @@ function drawRaceCar(trk,c){
   if(past>260) return null;
   const p=carPose(trk,c);
   if(past>100){ ctx.save(); ctx.globalAlpha=clamp(1-(past-100)/160,0,1); }
-  drawCar(ctx,p.x,p.y,p.a,c.color,{scale:CAR_SCALE,isSelf:c.isPlayer,headlights:false,braking:c.braking});
+  const kind=CLASSES[race.classIdx].id;
+  drawCar(ctx,p.x,p.y,p.a,c.color,{kind,scale:CAR_SCALE,isSelf:c.isPlayer,headlights:false,braking:c.braking});
   if(past>100) ctx.restore();
   return p;
 }
@@ -177,11 +180,11 @@ function renderStrip(){
   order.forEach((car,i)=>{
     if(car.isPlayer){ me=car; mi=i; return; }
     const x=x0+(x1-x0)*clamp(car.s/race.total,0,1);
-    c.fillStyle=car.color; c.beginPath(); c.arc(x,ym+(i%2?6:-6),8,0,Math.PI*2); c.fill();
+    c.fillStyle=liveryOf(car.color).base; c.beginPath(); c.arc(x,ym+(i%2?6:-6),8,0,Math.PI*2); c.fill();
   });
   if(me){
     const x=x0+(x1-x0)*clamp(me.s/race.total,0,1), y=ym+(mi%2?6:-6);
-    c.fillStyle=me.color; c.beginPath(); c.arc(x,y,11,0,Math.PI*2); c.fill();
+    c.fillStyle=liveryOf(me.color).base; c.beginPath(); c.arc(x,y,11,0,Math.PI*2); c.fill();
     c.strokeStyle='#f2b300'; c.lineWidth=3.5; c.stroke();
   }
 }
@@ -212,14 +215,24 @@ function updateEconomy(){
   setText(E.gems,fmtNum(save.gems));
   setText(E.fans,fmtNum(save.fans));
   setText(E.team,save.team);
-  E.avatar.style.color=save.color;
+  E.avatar.style.color=liveryOf(save.color).base;
   if(now<save.boostUntil){ E.boost.className='mg-boost on'; E.boost.disabled=true; setText(E.boost,'⚡ 2x · '+mmss(save.boostUntil-now)); }
   else if(now<save.boostReadyAt){ E.boost.className='mg-boost cd'; E.boost.disabled=true; setText(E.boost,'⏳ '+mmss(save.boostReadyAt-now)); }
   else { E.boost.className='mg-boost'; E.boost.disabled=false; setText(E.boost,'2x Kazanç'); }
   setText(E.classShort,CLASSES[save.classIdx].short);
   const next=CLASSES[save.unlocked];
   E.classBadge.hidden=!(next&&save.gems>=next.gems);
+  paintAvatar();
   updateSkills();
+}
+let avatarKey='';
+function paintAvatar(){
+  const key=save.classIdx+'|'+save.color;
+  let cv=E.avatar.querySelector('canvas');
+  if(cv&&key===avatarKey) return;
+  avatarKey=key;
+  if(!cv){ E.avatar.innerHTML=''; cv=el('canvas'); cv.setAttribute('aria-hidden','true'); E.avatar.appendChild(cv); }
+  paintCarThumb(cv,CLASSES[save.classIdx].id,save.color,44,40,.95);
 }
 function activateBoost(){
   const now=Date.now();
@@ -235,7 +248,9 @@ function renderClasses(){
   CLASSES.forEach((cls,i)=>{
     const unlocked=i<save.unlocked, cur=i===save.classIdx, isNext=i===save.unlocked;
     const row=el('div','cl'+(cur?' cur':'')+(unlocked?'':' locked'));
-    row.appendChild(el('div','cl-ic',cls.icon));
+    const thumb=el('canvas','cl-car');
+    paintCarThumb(thumb,cls.id,unlocked?save.color:'#6a6e62',84,50);
+    row.appendChild(thumb);
     const t=el('div','cl-t');
     t.appendChild(el('div','cl-name',cls.name));
     t.appendChild(el('div','cl-meta','Rakip gücü ×'+cls.mult.toFixed(2)+' · Ödül ×'+cls.prize+' · Gelir ×'+cls.income));
@@ -261,12 +276,16 @@ function renderClasses(){
 function renderTeam(){
   $('mgTeamInput').value=save.team;
   const pick=$('mgColorPick'); pick.innerHTML='';
-  TEAM_COLORS.forEach(col=>{
-    const b=el('button','swatch'+(col===save.color?' picked':'')); b.type='button';
-    b.style.background=col; b.setAttribute('aria-label','Takım rengi '+col);
+  LIVERIES.filter(l=>l.pick).forEach(liv=>{
+    const on=liv.hex===save.color;
+    const b=el('button','liv'+(on?' picked':'')); b.type='button';
+    b.setAttribute('aria-label',liv.name+' vinili');
+    const cv=el('canvas'); paintCarThumb(cv,CLASSES[save.classIdx].id,liv.hex,72,36);
+    b.appendChild(cv);
+    b.appendChild(el('span','liv-n',liv.name));
     b.addEventListener('click',()=>{
-      save.color=col;
-      const me=race&&race.cars.find(c=>c.isPlayer); if(me) me.color=col;
+      save.color=liv.hex;
+      const me=race&&race.cars.find(c=>c.isPlayer); if(me) me.color=liv.hex;
       store(); renderTeam(); updateEconomy();
     });
     pick.appendChild(b);

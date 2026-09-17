@@ -1,4 +1,5 @@
 /* Menajer modu: yetenekler, sınıflar, ekonomi formülleri ve kayıt (localStorage). */
+import {ALL_LIVERY_HEXES,COLORS,liveryOf} from '../common.js';
 
 export const SKILLS=[
   {id:'engine',  name:'Motor Gücü',        icon:'⚙️', per:1,   base:25, desc:'Düzlüklerde ulaşılan azami hızı artırır.'},
@@ -25,8 +26,8 @@ export const CLASSES=[
 export const AI_TEAMS=['Asfalt Kurtları','Turbo Tilkiler','Viraj Ustaları','Kara Şimşek','Pist Canavarları','Nitro Kings',
   'Smashers','Blue Comets','Demir Atlar','Apex Avcıları','Gece Kuşları','Kum Fırtınası','Pole Pozisyon','Zirve Racing',
   'Kıvılcım GP','Rüzgar Takımı','Red Rockets','Hız Sultanları'];
-export const AI_COLORS=['#3aa0ff','#38d39f','#c792ea','#ff6fb0','#f4b400','#f2f2f2','#8d6bff','#7fd93a','#ff8c28','#1ec8d6','#9aa0a6','#5b6cff'];
-export const TEAM_COLORS=['#d93c2a','#3aa0ff','#38d39f','#f4b400','#c792ea','#ff6fb0','#ff8c28','#f2f2f2'];
+export const TEAM_COLORS=COLORS;
+export const AI_COLORS=ALL_LIVERY_HEXES;
 
 const PRIZE=[1,.72,.54,.42,.33,.26,.2,.15,.11,.08];
 const PRIZE_BASE=150;
@@ -63,7 +64,7 @@ export function loadSave(){
     if(!s.skills||typeof s.skills!=='object') s.skills={};
     SKILLS.forEach(sk=>{ s.skills[sk.id]=Math.min(MAX_LEVEL,Math.max(0,s.skills[sk.id]|0)); });
     s.team=String(s.team||'').slice(0,20)||defaultSave(s.driver).team;
-    if(!/^#[0-9a-f]{6}$/i.test(s.color)) s.color=TEAM_COLORS[0];
+    s.color=liveryOf(s.color).hex;
     return s;
   }catch(e){ return null; }
 }

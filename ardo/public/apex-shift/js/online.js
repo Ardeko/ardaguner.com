@@ -1,5 +1,5 @@
 /* Apex Shift — Online mod: aynı oda kodunu giren herkes aynı oval pistte yarışır. */
-import {$,clamp,lerp,lerpAngle,fmtTime,sanitName,drawTree,drawCar,flashHint,crossFade,isTouch,reduceMotion,COLORS,audio,initAudio,sfx} from './common.js';
+import {$,clamp,lerp,lerpAngle,fmtTime,sanitName,drawTree,drawCar,flashHint,crossFade,isTouch,reduceMotion,COLORS,LIVERIES,liveryOf,liveryFill,paintCarThumb,audio,initAudio,sfx} from './common.js';
 
 /* ── constants ─────────────────────────── */
 const SYNC_MS=450, STALE_MS=6000, PRUNE_MS=14000, LEAD_MS=3000, TOTAL_LAPS=3;
@@ -236,20 +236,25 @@ function renderLobbyList(playersObj,now){
   target.innerHTML='';
   rows.forEach(r=>{
     const row=document.createElement('div'); row.className='lp-player'+(r.me?' me':'');
-    const sw=document.createElement('span'); sw.className='lp-swatch'; sw.style.background=r.color;
+    const sw=document.createElement('span'); sw.className='lp-swatch'; liveryFill(sw,r.color);
     const nm=document.createElement('span'); nm.textContent=r.name;
     row.appendChild(sw); row.appendChild(nm); target.appendChild(row);
   });
   if(localPhase==='lobby'){ lpCountLabel.textContent='Odadakiler ('+rows.length+')'; renderColorPicker(rows); }
 }
 function renderColorPicker(rows){
-  const taken=new Set(rows.filter(r=>!r.me).map(r=>r.color));
+  const taken=new Set(rows.filter(r=>!r.me).map(r=>liveryOf(r.color).hex));
+  const mine=liveryOf(car.color).hex;
   colorPicker.innerHTML='';
-  COLORS.forEach(col=>{
+  LIVERIES.filter(l=>l.pick).forEach(liv=>{
     const b=document.createElement('button'); b.type='button';
-    b.className='swatch'+(col===car.color?' picked':'')+((taken.has(col)&&col!==car.color)?' taken':'');
-    b.style.background=col; b.setAttribute('aria-label',col);
-    b.addEventListener('click',()=>{ car.color=col; renderColorPicker(rows); });
+    const used=taken.has(liv.hex)&&liv.hex!==mine;
+    b.className='liv'+(liv.hex===mine?' picked':'')+(used?' taken':'');
+    b.setAttribute('aria-label',liv.name+' vinili');
+    const cv=document.createElement('canvas'); paintCarThumb(cv,'f1',liv.hex,72,36);
+    const cap=document.createElement('span'); cap.className='liv-n'; cap.textContent=liv.name;
+    b.appendChild(cv); b.appendChild(cap);
+    b.addEventListener('click',()=>{ if(used) return; car.color=liv.hex; renderColorPicker(rows); });
     colorPicker.appendChild(b);
   });
 }
@@ -499,10 +504,10 @@ function renderFrame(){
   for(const pid in remoteCars){
     const rc=remoteCars[pid];
     if(now-rc.ts>STALE_MS) continue;
-    drawCar(ctx,rc.renderX,rc.renderY,rc.renderAngle,rc.color,{label:rc.name});
+    drawCar(ctx,rc.renderX,rc.renderY,rc.renderAngle,rc.color,{kind:'f1',headlights:false,label:rc.name,scale:.9});
   }
   const braking=!!(keys['arrowdown']||keys['s']||touch.b);
-  drawCar(ctx,car.x,car.y,car.angle,car.color,{label:pName,isSelf:true,boosting:performance.now()<nitroActiveUntil,braking});
+  drawCar(ctx,car.x,car.y,car.angle,car.color,{kind:'f1',headlights:false,label:pName,isSelf:true,boosting:performance.now()<nitroActiveUntil,braking,scale:.9});
 }
 function updateHUD(){
   lapText.textContent='Tur '+Math.min(car.laps,TOTAL_LAPS)+'/'+TOTAL_LAPS;
@@ -651,7 +656,7 @@ $('joinBtn').addEventListener('click', async ()=>{
     if(state.phase==='racing') await netSetMeta('lobby',null); // terk edilmiş yarış kalıntısı
   }
 
-  const taken=new Set(Object.keys(players).filter(pid=>pid!==uid).map(pid=>String(players[pid].color||'')));
+  const taken=new Set(Object.keys(players).filter(pid=>pid!==uid).map(pid=>liveryOf(players[pid].color).hex));
   const free=COLORS.find(c=>!taken.has(c));
   car.color=free||COLORS[Math.floor(Math.random()*COLORS.length)];
 
