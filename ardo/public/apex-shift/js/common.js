@@ -37,7 +37,39 @@ export const LIVERIES=[
    swatch:'linear-gradient(90deg,#e8e4dc 0 40%,#e10600 40% 70%,#111111 70%)'},
   {id:'sauber',name:'Sauber',pick:0,hex:'#1a2a1a',base:'#141a14',pod:'#0c100c',wing:'#9dff00',wing2:'#141a14',badge:'#9dff00',halo:'#9dff00',nose:'#141a14',
    swatch:'linear-gradient(90deg,#141a14 0 68%,#9dff00 68%)'},
+
+  /* ── stock car (NASCAR modu) ────────────────────────────────────────────
+     F1 vinilleriyle aynı mantık: logo ve pilot ismi yok, tanınabilir renk
+     düzeni + kaput numarası. `vin` bandları gövdeye normalize koordinatla
+     (0 = burun, 1 = arka / 0 = sol, 1 = sağ) boyanır.                      */
+  {id:'sc-siyah',name:'Siyah Efsane',pick:0,cls:'stock',num:'3',hex:'#141414',base:'#141414',pod:'#0b0b0b',wing:'#c9c5bb',wing2:'#141414',badge:'#c9c5bb',halo:'#c9c5bb',nose:'#141414',numCol:'#e8e4d8',
+   vin:[{c:'#c9c5bb',x:[.70,.80]},{c:'#8f8b82',x:[.82,.87]}],
+   swatch:'linear-gradient(90deg,#141414 0 62%,#c9c5bb 62% 74%,#141414 74%)'},
+  {id:'sc-gokkusagi',name:'Gökkuşağı 24',pick:0,cls:'stock',num:'24',hex:'#2b3fb8',base:'#2b3fb8',pod:'#1d2c8a',wing:'#ff6a00',wing2:'#f2b300',badge:'#ffffff',halo:'#ffffff',nose:'#2b3fb8',numCol:'#ffffff',
+   vin:[{c:'#ff3b2f',x:[.30,.40]},{c:'#ff8c28',x:[.40,.50]},{c:'#f2b300',x:[.50,.60]},{c:'#3ecf8e',x:[.60,.70]}],
+   swatch:'linear-gradient(90deg,#2b3fb8 0 30%,#ff3b2f 30% 45%,#f2b300 45% 60%,#3ecf8e 60% 70%,#2b3fb8 70%)'},
+  {id:'sc-lowes',name:'Mavi Şimşek',pick:0,cls:'stock',num:'48',hex:'#0b6fc4',base:'#0b6fc4',pod:'#085395',wing:'#f2b300',wing2:'#ffffff',badge:'#f2b300',halo:'#ffffff',nose:'#0b6fc4',numCol:'#f2b300',
+   vin:[{c:'#f2b300',x:[.06,.18]},{c:'#ffffff',x:[.18,.23]}],
+   swatch:'linear-gradient(90deg,#0b6fc4 0 24%,#f2b300 24% 36%,#0b6fc4 36%)'},
+  {id:'sc-yesil',name:'Yeşil 88',pick:0,cls:'stock',num:'88',hex:'#1faa4b',base:'#1faa4b',pod:'#15803a',wing:'#111111',wing2:'#1faa4b',badge:'#111111',halo:'#e8e4d8',nose:'#1faa4b',numCol:'#111111',
+   vin:[{c:'#111111',y:[0,.22]},{c:'#111111',y:[.78,1]}],
+   swatch:'linear-gradient(0deg,#111 0 20%,#1faa4b 20% 80%,#111 80%)'},
+  {id:'sc-turuncu',name:'Turuncu Ok',pick:0,cls:'stock',num:'11',hex:'#ff6a00',base:'#ff6a00',pod:'#d65500',wing:'#f4f2ec',wing2:'#ff6a00',badge:'#2b2b2b',halo:'#f4f2ec',nose:'#ff6a00',numCol:'#f4f2ec',
+   vin:[{c:'#f4f2ec',x:[.40,.54]},{c:'#2b2b2b',x:[.54,.59]}],
+   swatch:'linear-gradient(90deg,#ff6a00 0 44%,#f4f2ec 44% 58%,#ff6a00 58%)'},
+  {id:'sc-petty',name:'Petty Mavisi',pick:0,cls:'stock',num:'43',hex:'#1e5fd0',base:'#1e5fd0',pod:'#1749a3',wing:'#e01b1b',wing2:'#f4f2ec',badge:'#f4f2ec',halo:'#f4f2ec',nose:'#e01b1b',numCol:'#f4f2ec',
+   vin:[{c:'#e01b1b',x:[0,.36]},{c:'#f4f2ec',x:[.36,.42]}],
+   swatch:'linear-gradient(90deg,#e01b1b 0 34%,#f4f2ec 34% 40%,#1e5fd0 40%)'},
+  {id:'sc-kirmizi',name:'Kırmızı 22',pick:0,cls:'stock',num:'22',hex:'#c81d1d',base:'#c81d1d',pod:'#9c1414',wing:'#f2b300',wing2:'#141414',badge:'#f2b300',halo:'#141414',nose:'#f2b300',numCol:'#f2b300',
+   vin:[{c:'#141414',x:[.58,.76]},{c:'#f2b300',x:[.76,.82]}],
+   swatch:'linear-gradient(90deg,#c81d1d 0 52%,#141414 52% 70%,#f2b300 70%)'},
+  {id:'sc-beyaz',name:'Beyaz 2',pick:0,cls:'stock',num:'2',hex:'#eceade',base:'#eceade',pod:'#cfccc0',wing:'#1a3a7a',wing2:'#eceade',badge:'#1a3a7a',halo:'#1a3a7a',nose:'#eceade',numCol:'#1a3a7a',
+   vin:[{c:'#1a3a7a',y:[0,.26]},{c:'#1a3a7a',y:[.74,1]},{c:'#c81d1d',x:[.46,.54]}],
+   swatch:'linear-gradient(0deg,#1a3a7a 0 24%,#eceade 24% 76%,#1a3a7a 76%)'},
 ];
+/* NASCAR lobisi bu listeden seçtirir; F1 vinilleri `pick` ile ayrılıyor. */
+export const STOCK_LIVERIES=LIVERIES.filter(l=>l.cls==='stock');
+export const STOCK_COLORS=STOCK_LIVERIES.map(l=>l.hex);
 const LIVERY_ALIAS={
   '#d93c2a':'ferrari','#cc1e1e':'ferrari',
   '#3aa0ff':'redbull','#1e41c8':'redbull','#1636a8':'redbull','#5b6cff':'redbull',
@@ -137,6 +169,16 @@ function paintBody(c,color,span){
 }
 function paintVinyl(c,liv,x0,x1,hw){
   const w=x1-x0, id=liv.id;
+  if(liv.vin){
+    // x/y normalize: x 0=arka 1=burun yönünde soldan sağa, y 0=üst 1=alt
+    for(const b of liv.vin){
+      c.fillStyle=b.c;
+      const bx0=x1-w*(b.x?b.x[1]:1), bx1=x1-w*(b.x?b.x[0]:0);
+      const by0=-hw+2*hw*(b.y?b.y[0]:0), by1=-hw+2*hw*(b.y?b.y[1]:1);
+      c.fillRect(bx0,by0,bx1-bx0,by1-by0);
+    }
+    return;
+  }
   if(id==='ferrari'){
     c.fillStyle='#1a1210'; c.fillRect(x0,-hw,w*.62,hw*.4); c.fillRect(x0,hw*.6,w*.62,hw*.4);
     c.fillStyle='#ffd100'; c.fillRect(x0+w*.2,-.5,w*.55,1);
@@ -196,6 +238,86 @@ function carBodyPath(c){
   c.bezierCurveTo(-4,7.6,4,7.5,8,7);
   c.bezierCurveTo(11.5,6.5,14,4.5,14,2);
   c.closePath();
+}
+/* ── stock car (NASCAR) ─────────────────────────────────────────────────
+   Geniş, ağır gövde: burun x=+17, arka x=-17, yarı genişlik 8.8.
+   Çatıda numara, arkada spoiler, önde splitter.                          */
+function stockBodyPath(c){
+  c.beginPath();
+  c.moveTo(16.8,-3.4);
+  c.bezierCurveTo(16.8,-6.6,14.4,-8.5,10.6,-8.8);
+  c.lineTo(-10.4,-8.8);
+  c.bezierCurveTo(-14.4,-8.5,-16.4,-6.6,-16.6,-3.4);
+  c.bezierCurveTo(-16.8,-1.2,-16.8,1.2,-16.6,3.4);
+  c.bezierCurveTo(-16.4,6.6,-14.4,8.5,-10.4,8.8);
+  c.lineTo(10.6,8.8);
+  c.bezierCurveTo(14.4,8.5,16.8,6.6,16.8,3.4);
+  c.closePath();
+}
+function stockTire(c,x,y){
+  c.fillStyle='#0c0b09'; rrp(c,x-3.6,y-2.1,7.2,4.2,1.2); c.fill();
+  c.fillStyle='rgba(255,255,255,.07)'; c.fillRect(x-3.2,y-1.9,6.4,.7);
+}
+function drawStock(c,color,o,liv){
+  const dmg=clamp(o.damage||0,0,1);
+  // lastikler gövdenin altında: sadece dış omuzları görünür
+  [[10.4,-8.2],[10.4,8.2],[-10.2,-8.2],[-10.2,8.2]].forEach(p=>stockTire(c,p[0],p[1]));
+  // splitter + arka difüzör
+  c.fillStyle='#17160f'; rrp(c,15.2,-9.2,3.2,18.4,1); c.fill();
+  c.fillStyle='#1b1a14'; rrp(c,-18.2,-7.6,2.6,15.2,1); c.fill();
+
+  c.shadowColor='rgba(0,0,0,.5)'; c.shadowBlur=4; c.shadowOffsetY=1.6;
+  stockBodyPath(c); paintBody(c,liv.base,8.8);
+  c.shadowBlur=0; c.shadowOffsetY=0;
+  clipVinyl(c,stockBodyPath,liv,-16.8,16.8,8.8);
+
+  // gövde kenar çizgisi + kapı ayrımı
+  c.strokeStyle='rgba(0,0,0,.22)'; c.lineWidth=.7; stockBodyPath(c); c.stroke();
+
+  // greenhouse: tek kabin gövdesi, camlar içine gömülü
+  c.fillStyle=shadeHex(liv.base,-16); rrp(c,-7.4,-5.6,15,11.2,2.4); c.fill();
+  c.fillStyle='rgba(16,22,32,.8)';   // ön cam
+  c.beginPath(); c.moveTo(7.3,-4.6); c.lineTo(4.4,-5.2); c.lineTo(4.4,5.2); c.lineTo(7.3,4.6); c.closePath(); c.fill();
+  c.fillStyle='rgba(16,22,32,.66)';  // arka cam
+  c.beginPath(); c.moveTo(-7,-4.4); c.lineTo(-4.6,-5); c.lineTo(-4.6,5); c.lineTo(-7,4.4); c.closePath(); c.fill();
+  c.fillStyle='rgba(200,225,240,.17)'; rrp(c,5.4,-4,1.5,3.2,.6); c.fill();
+
+  // çatı numarası
+  if(liv.num){
+    c.save(); c.rotate(-Math.PI/2);
+    c.font='700 8px "Oswald","Arial Narrow",sans-serif'; c.textAlign='center'; c.textBaseline='middle';
+    c.fillStyle='rgba(0,0,0,.45)'; c.fillText(liv.num,0.6,-0.2);
+    c.fillStyle=liv.numCol||'#f4f2ec'; c.fillText(liv.num,0,-0.8);
+    c.restore();
+  }
+  // çatı bayrağı (aero fin) + spoiler
+  c.fillStyle=shadeHex(liv.base,-34); c.fillRect(-6.4,-5.9,13,1); c.fillRect(-6.4,4.9,13,1);
+  c.fillStyle=liv.wing||shadeHex(liv.base,-24); rrp(c,-17.4,-8.2,2.6,16.4,.8); c.fill();
+  c.fillStyle='rgba(255,255,255,.12)'; c.fillRect(-17.4,-8.2,2.6,1.2);
+
+  // far/stop decal'leri
+  c.fillStyle='rgba(245,238,200,.85)'; rrp(c,13.4,-7.4,2.6,3.4,.7); c.fill(); rrp(c,13.4,4,2.6,3.4,.7); c.fill();
+  brakeGlow(c,o,()=>{ rrp(c,-16.4,-7,2,3.2,.6); c.fill(); rrp(c,-16.4,3.8,2,3.2,.6); c.fill(); });
+
+  // hasar: ezik paneller + is izi
+  if(dmg>0.02){
+    c.save(); stockBodyPath(c); c.clip();
+    c.fillStyle='rgba(16,14,11,'+(0.72*dmg).toFixed(3)+')';
+    c.beginPath(); c.ellipse(12.5,-6.2,7*dmg+2.4,4*dmg+1.6,0.4,0,Math.PI*2); c.fill();
+    c.beginPath(); c.ellipse(-9,7,8*dmg+2.4,3.6*dmg+1.4,-0.3,0,Math.PI*2); c.fill();
+    if(dmg>0.35){
+      c.strokeStyle='rgba(10,9,7,.72)'; c.lineWidth=1.3;
+      c.beginPath(); c.moveTo(16.4,-4.4); c.lineTo(9,-7.8); c.lineTo(2.5,-5.6); c.stroke();
+      c.beginPath(); c.moveTo(-15,5.2); c.lineTo(-7,8.2); c.stroke();
+    }
+    if(dmg>0.62){   // kaput/çamurluk açılmış
+      c.fillStyle='rgba(120,112,96,.5)';
+      c.beginPath(); c.moveTo(14.5,-8.6); c.lineTo(8,-8.8); c.lineTo(10,-4.6); c.closePath(); c.fill();
+      c.strokeStyle='rgba(8,7,5,.6)'; c.lineWidth=.9; c.stroke();
+    }
+    c.restore();
+  }
+  if(o.isSelf){ c.strokeStyle='rgba(240,236,220,.85)'; c.lineWidth=1.2; stockBodyPath(c); c.stroke(); }
 }
 function drawGt(c,color,o,liv){
   drawWheel(c,9,-8); drawWheel(c,9,8); drawWheel(c,-9,-8); drawWheel(c,-9,8);
@@ -315,9 +437,9 @@ function drawFormula(c,color,o,s,liv){
   brakeGlow(c,o,()=>{ rrp(c,s.rwX-1.5,-s.rwS/2+.4,3,1.5,.3); c.fill(); rrp(c,s.rwX-1.5,s.rwS/2-1.9,3,1.5,.3); c.fill(); });
   if(o.isSelf){ c.strokeStyle='rgba(240,236,220,.85)'; c.lineWidth=1.15; chassisPath(c,s); c.stroke(); }
 }
-const KIND_SC={gt:1,kart:.9,f4:.96,f3:1.06,f2:1.16,f1:1.28};
-const KIND_SHADOW={gt:[15,8],kart:[12,9],f4:[14,7],f3:[15,7],f2:[17,7],f1:[19,7]};
-const KIND_TAIL={gt:-17,kart:-12,f4:-14,f3:-16,f2:-18,f1:-20};
+const KIND_SC={gt:1,kart:.9,f4:.96,f3:1.06,f2:1.16,f1:1.28,stock:1.04};
+const KIND_SHADOW={gt:[15,8],kart:[12,9],f4:[14,7],f3:[15,7],f2:[17,7],f1:[19,7],stock:[18,10]};
+const KIND_TAIL={gt:-17,kart:-12,f4:-14,f3:-16,f2:-18,f1:-20,stock:-20};
 /* o: {kind, label, labelSize, isSelf, boosting, braking, scale, headlights}
    kind: 'gt' | 'kart' | 'f4' | 'f3' | 'f2' | 'f1' */
 export function drawCar(c,x,y,angle,color,o){
@@ -332,7 +454,7 @@ export function drawCar(c,x,y,angle,color,o){
     c.fillStyle=gl; c.beginPath(); c.arc(tail,0,15,0,Math.PI*2); c.fill();
     c.restore();
   }
-  if(o.headlights!==false&&kind==='gt'){
+  if(o.headlights!==false&&(kind==='gt'||kind==='stock')){
     c.save(); c.rotate(angle);
     const hl=c.createRadialGradient(18,0,2,18,0,27);
     hl.addColorStop(0,'rgba(255,246,196,.20)'); hl.addColorStop(1,'rgba(255,246,196,0)');
@@ -345,6 +467,7 @@ export function drawCar(c,x,y,angle,color,o){
   c.save(); c.rotate(angle);
   const liv=liveryOf(color);
   if(kind==='kart') drawKart(c,color,o,liv);
+  else if(kind==='stock') drawStock(c,color,o,liv);
   else if(FSPEC[kind]) drawFormula(c,color,o,FSPEC[kind],liv);
   else drawGt(c,color,o,liv);
   c.restore();
@@ -356,7 +479,7 @@ export function drawCar(c,x,y,angle,color,o){
     c.fillStyle=o.isSelf?'#f2f0e0':'rgba(238,234,220,.88)'; c.fillText(o.label,x,ly);
   }
 }
-const THUMB_SC={gt:1.35,kart:1.42,f4:1.22,f3:1.08,f2:.92,f1:.78};
+const THUMB_SC={gt:1.35,kart:1.42,f4:1.22,f3:1.08,f2:.92,f1:.78,stock:1.08};
 export function paintCarThumb(canvas,kind,color,w,h,scale){
   w=w||72; h=h||44;
   const d=typeof window!=='undefined'?Math.min(window.devicePixelRatio||1,2):1;

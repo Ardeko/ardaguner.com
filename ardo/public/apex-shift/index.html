@@ -74,7 +74,7 @@
 <!-- ═════════ ONLINE MOD ═════════ -->
 <div id="game">
   <div id="cwrap">
-    <canvas id="canvas" width="1000" height="600"></canvas>
+    <canvas id="canvas" width="1000" height="640"></canvas>
 
     <div id="hudPanel">
       <div class="hud-top">
@@ -86,14 +86,25 @@
       <div id="speedText">0 km/h</div>
       <div id="bestLapText">En iyi tur: –</div>
       <div id="nosRow">NOS <span class="nos-pip on"></span><span class="nos-pip on"></span><span class="nos-pip on"></span></div>
+      <div id="dmgRow"><span class="dmg-l">HASAR</span><span class="dmg-bar"><i id="dmgFill"></i></span></div>
     </div>
 
     <div id="lbPanel">
-      <h3 id="lbTitle">Yarışçılar</h3>
+      <h3 id="lbTitle">Sıralama</h3>
       <div id="lbRows"></div>
     </div>
 
+    <div id="miniWrap"><canvas id="minimap"></canvas></div>
+
+    <div id="flagBanner">⚠️ KAZA — DİKKAT</div>
+    <div id="pitTag"></div>
+
     <button id="leaveBtn">⟵ Ayrıl</button>
+
+    <div id="spectate">
+      <span class="spec-dot"></span>
+      <span id="spectateText">Yarış sürüyor — izliyorsun.</span>
+    </div>
 
     <div id="lobbyPanel">
       <div class="lp-top">
@@ -101,19 +112,50 @@
         <div class="lp-conn"><span id="lpDot" class="dot"></span><span id="lpConnText">Bağlanıyor…</span></div>
       </div>
 
-      <div id="lpWaiting" style="display:none">
-        <p>🏁 Bu odada yarış sürüyor. Mevcut tur bitince otomatik olarak lobiye düşeceksin ve yeni tur başlatılabilecek.</p>
-        <label>Seninle Bekleyenler</label>
-        <div id="lpWaitList"></div>
-      </div>
-
       <div id="lpLobby">
+        <p class="host-note" id="hostNote">Ayarları odanın ilk oyuncusu (host) seçer. Seçimleri burada canlı görürsün.</p>
+
+        <label>Pist</label>
+        <div id="trackPicker"></div>
+
+        <label>Araç</label>
+        <div id="vehPicker"></div>
+
         <label>Takım Vinili</label>
         <div id="colorPicker"></div>
+
+        <label>Yarış Ayarı</label>
+        <div class="opt-row">
+          <div class="opt">
+            <span class="opt-l">Bot</span>
+            <select id="botCount">
+              <option value="0">Yok</option>
+              <option value="3">3 bot</option>
+              <option value="5">5 bot</option>
+              <option value="7">7 bot</option>
+              <option value="11">11 bot</option>
+              <option value="15">Grid dolu</option>
+            </select>
+          </div>
+          <div class="opt">
+            <span class="opt-l">Zorluk</span>
+            <select id="botLevel">
+              <option value="0">Çaylak</option>
+              <option value="1">Kolay</option>
+              <option value="2">Normal</option>
+              <option value="3">Zor</option>
+            </select>
+          </div>
+          <label class="opt opt-chk" for="nightToggle">
+            <input type="checkbox" id="nightToggle"/>
+            <span class="opt-l">🌙 Gece</span>
+          </label>
+        </div>
+
         <label id="lpCountLabel">Odadakiler</label>
         <div id="lpPlayerList"></div>
         <button class="btn btn-go" id="startRaceBtn">🏁 Yarışı Başlat</button>
-        <p class="hint" id="startHint">Bastığında odadaki herkes aynı anda, 3-2-1 ile başlar.</p>
+        <p class="hint" id="startHint">Bastığında odadaki herkes aynı anda, geri sayımla başlar.</p>
       </div>
     </div>
 
@@ -133,11 +175,13 @@
 
     <div id="countdown"><span id="cdNum"></span></div>
 
-    <div id="finish">
-      <h2>🏁 Bitirdin!</h2>
-      <div class="ftime" id="finTime">00:00.0</div>
-      <div id="finBestLap"></div>
-      <div id="finStatus">Diğer yarışçılar bekleniyor…</div>
+    <div id="results">
+      <div class="res-card">
+        <h2 id="resTitle">🏁 Yarış Bitti</h2>
+        <div class="res-sub" id="resSub"></div>
+        <div class="res-rows" id="resRows"></div>
+        <div id="resStatus">Diğer yarışçılar bekleniyor…</div>
+      </div>
     </div>
   </div>
 </div>

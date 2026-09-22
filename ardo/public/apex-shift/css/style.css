@@ -131,11 +131,83 @@ canvas{display:block;width:100%;height:auto;touch-action:none}
 #brakeBtn{width:56px;height:56px}
 #nosBtn{width:50px;height:50px;background:rgba(255,140,40,.35);border-color:var(--orange);color:var(--orange);align-self:center}
 
-#finish{z-index:10;display:none;position:absolute;inset:0;background:rgba(8,9,6,.9);align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:20px}
-#finish h2{font-family:var(--font-display);color:var(--yellow);font-size:26px;margin:0 0 6px;letter-spacing:1px}
-#finish .ftime{font-family:var(--font-mono);font-size:34px;font-weight:700;margin:4px 0 6px;color:var(--chalk)}
-#finBestLap{font-size:13px;color:var(--chalk-dim);margin-bottom:8px}
-#finStatus{font-size:13px;color:var(--chalk-dim)}
+/* ── podyum / sonuçlar ─────────────────── */
+#results{z-index:10;display:none;position:absolute;inset:0;background:rgba(8,9,6,.88);backdrop-filter:blur(5px);align-items:center;justify-content:center;padding:18px}
+.res-card{width:100%;max-width:440px;max-height:100%;overflow-y:auto;background:rgba(19,22,16,.96);border:1px solid var(--panel-edge);border-radius:14px;padding:16px 16px 14px;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.6);animation:resIn .34s cubic-bezier(.16,1,.3,1) both}
+@keyframes resIn{from{opacity:0;transform:translateY(18px) scale(.97)}to{opacity:1;transform:none}}
+#results h2{font-family:var(--font-display);color:var(--yellow);font-size:24px;margin:0 0 3px;letter-spacing:1px}
+.res-sub{font-size:12px;color:var(--chalk-dim);margin-bottom:12px}
+.res-rows{text-align:left;margin-bottom:10px}
+.res-row{display:flex;align-items:center;gap:9px;padding:6px 8px;border-radius:8px;font-size:13px}
+.res-row:nth-child(odd){background:rgba(255,255,255,.035)}
+.res-row.me{background:rgba(242,179,0,.14);color:var(--yellow);font-weight:700}
+.res-pos{width:22px;text-align:center;font-family:var(--font-display);font-size:14px;flex-shrink:0}
+.res-sw{width:18px;height:11px;border-radius:3px;flex-shrink:0}
+.res-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.res-time{font-family:var(--font-mono);font-size:12px;color:var(--chalk-dim)}
+.res-row.me .res-time{color:var(--yellow)}
+.res-time.dnf{color:#8a8c7a;font-style:italic}
+#resStatus{font-size:12px;color:var(--chalk-dim)}
+
+/* ── minimap ───────────────────────────── */
+#miniWrap{z-index:6;display:none;position:absolute;bottom:10px;right:10px;padding:5px;background:rgba(15,17,12,.78);backdrop-filter:blur(4px);border:1px solid var(--panel-edge);border-radius:9px;line-height:0}
+#minimap{display:block;border-radius:5px;width:176px;height:auto}
+
+/* ── hasar çubuğu + caution ────────────── */
+#dmgRow{display:none;align-items:center;gap:6px;margin-top:4px}
+.dmg-l{font-size:10px;letter-spacing:.8px;color:var(--chalk-dim);font-weight:700}
+.dmg-bar{flex:1;height:6px;background:#2a2d24;border-radius:3px;overflow:hidden}
+.dmg-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--yellow),var(--red));transition:width .25s}
+#flagBanner{z-index:9;display:none;position:absolute;top:12px;left:50%;transform:translateX(-50%);background:rgba(242,179,0,.94);color:#1a1a12;font-family:var(--font-display);font-size:14px;font-weight:700;letter-spacing:1.4px;padding:7px 18px;border-radius:7px;box-shadow:0 6px 20px rgba(0,0,0,.45);animation:flagPulse 1s ease-in-out infinite}
+#pitTag{z-index:9;display:none;position:absolute;top:46px;left:50%;transform:translateX(-50%);font-family:var(--font-display);font-size:13px;font-weight:700;letter-spacing:1.2px;padding:6px 15px;border-radius:7px;box-shadow:0 5px 16px rgba(0,0,0,.45)}
+#pitTag.pit-warn{background:rgba(217,60,42,.94);color:#fff;animation:flagPulse 1.1s ease-in-out infinite}
+#pitTag.pit-fix{background:rgba(58,160,255,.94);color:#08121c}
+#pitTag.pit-ok{background:rgba(62,207,142,.94);color:#07160f}
+@keyframes flagPulse{0%,100%{opacity:1}50%{opacity:.62}}
+
+/* ── izleyici modu ─────────────────────── */
+#spectate{z-index:7;display:none;position:absolute;bottom:14px;left:50%;transform:translateX(-50%);align-items:center;gap:8px;background:rgba(13,15,10,.9);border:1px solid var(--panel-edge);border-radius:20px;padding:8px 16px;font-size:12.5px;color:var(--chalk-dim)}
+.spec-dot{width:8px;height:8px;border-radius:50%;background:var(--red);animation:flagPulse 1.4s ease-in-out infinite}
+
+/* ── lobi: pist / araç / ayar seçicileri ── */
+.host-note{display:none;font-size:12px;color:var(--chalk-dim);background:rgba(255,255,255,.04);border-left:2px solid var(--yellow);border-radius:0 6px 6px 0;padding:7px 10px;margin:0 0 12px;line-height:1.5}
+#trackPicker{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:14px}
+.trk{display:grid;grid-template-areas:'i n' 'i s' 'i l';grid-template-columns:auto 1fr;gap:0 9px;align-items:center;text-align:left;background:#0d0f0a;border:2px solid var(--panel-edge);border-radius:10px;padding:9px 11px;color:var(--chalk)}
+.trk.picked{border-color:var(--yellow);box-shadow:inset 0 0 0 1px rgba(242,179,0,.3)}
+.trk.nascar{background:linear-gradient(135deg,#140f0f,#0d0f0a 60%)}
+.trk.nascar.picked{border-color:var(--red)}
+.trk:disabled{opacity:.72;cursor:default}
+.trk-i{grid-area:i;font-size:21px}
+.trk-n{grid-area:n;font-family:var(--font-display);font-size:14px;font-weight:600;letter-spacing:.4px}
+.trk-s{grid-area:s;font-size:10.5px;color:var(--chalk-dim);line-height:1.35}
+.trk-l{grid-area:l;font-size:10px;color:var(--yellow);font-weight:700;letter-spacing:.5px}
+.trk.picked .trk-n{color:var(--yellow)}
+.trk.nascar.picked .trk-n{color:var(--red)}
+
+#vehPicker{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:8px;margin-bottom:14px}
+.veh{display:flex;flex-direction:column;align-items:center;gap:3px;background:#0d0f0a;border:2px solid var(--panel-edge);border-radius:10px;padding:6px 6px 7px;color:var(--chalk)}
+.veh.picked{border-color:var(--yellow);box-shadow:inset 0 0 0 1px rgba(242,179,0,.3)}
+.veh:disabled{opacity:.72;cursor:default}
+.veh canvas{display:block;width:100%;height:38px}
+.veh-n{font-family:var(--font-display);font-size:12.5px;font-weight:600;letter-spacing:.3px}
+.veh.picked .veh-n{color:var(--yellow)}
+.veh-s{font-size:9.5px;color:var(--chalk-dim);line-height:1.3;text-align:center}
+.veh-bars{display:flex;gap:3px;width:100%;margin:1px 0 2px}
+.vb{flex:1;height:4px;background:#2a2d24;border-radius:2px;overflow:hidden}
+.vb i{display:block;height:100%;background:var(--green)}
+
+.opt-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.opt{display:flex;align-items:center;gap:6px;background:#0d0f0a;border:1px solid var(--panel-edge);border-radius:9px;padding:7px 10px}
+.opt-l{font-size:11px;color:var(--chalk-dim);font-weight:700;letter-spacing:.4px}
+.opt select{background:#171a12;color:var(--chalk);border:1px solid var(--panel-edge);border-radius:6px;padding:4px 6px;font-family:inherit;font-size:12px}
+.opt select:disabled{opacity:.6}
+.opt-chk{cursor:pointer}
+.opt-chk input{accent-color:var(--yellow);width:15px;height:15px}
+
+.lbp{width:14px;text-align:right;color:var(--chalk-dim);font-family:var(--font-display);flex-shrink:0}
+.lbr.me .lbp{color:var(--yellow)}
+
+body.night #cwrap{border-color:#23262c;box-shadow:0 0 44px rgba(20,40,90,.28)}
 
 #countdown{z-index:8;display:none;position:absolute;inset:0;align-items:center;justify-content:center;pointer-events:none}
 #countdown span,.mg-cd span{font-family:var(--font-display);font-size:92px;font-weight:700;color:var(--yellow);text-shadow:0 0 30px rgba(242,179,0,.6)}
