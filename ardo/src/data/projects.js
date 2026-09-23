@@ -68,7 +68,6 @@ export const PROJECTS = [
     platforms: 'DESKTOP',
     tech: ['Python', 'Pygame'],
     image: '/games/legend-of-rey.jpg',
-    featured: 4,
     links: { github: `${GH}/Legend-Of-Rey` },
   },
   {
@@ -89,7 +88,7 @@ export const PROJECTS = [
     status: 'live',
     platforms: 'WEB',
     tech: ['React', 'Vite'],
-    image: '/shots/ardaguner.jpg',
+    image: '/shots/ardaguner.webp',
     links: { github: `${GH}/ardaguner.com`, live: 'https://ardaguner.com' },
   },
   {
@@ -105,6 +104,7 @@ export const PROJECTS = [
   },
   {
     id: 'revo',
+    featured: 2,
     year: 2025,
     month: 7,
     category: 'app',
@@ -112,7 +112,6 @@ export const PROJECTS = [
     platforms: 'WEB · WINDOWS',
     tech: ['SignalR', 'WebRTC', 'React'],
     image: '/games/revo.jpg',
-    featured: 1,
     links: {
       live: 'https://ardekostudios.xyz',
       download: `${GH}/Revo/releases/latest/download/REVO-Setup.exe`,
@@ -132,6 +131,7 @@ export const PROJECTS = [
   },
   {
     id: 'switchMaster',
+    featured: 3,
     year: 2026,
     month: 5,
     category: 'game',
@@ -139,7 +139,6 @@ export const PROJECTS = [
     platforms: 'IOS · ANDROID',
     tech: ['Unity', 'iOS', 'Android'],
     image: '/games/switch.jpg',
-    featured: 2,
     links: {
       appStore:
         'https://apps.apple.com/tr/app/switch-master-railway/id6770972534?l=tr',
@@ -155,7 +154,7 @@ export const PROJECTS = [
     status: 'live',
     platforms: 'WEB',
     tech: ['React 19', 'Vite 8', 'Tailwind v4'],
-    image: '/shots/ardekostudios.jpg',
+    image: '/shots/ardekostudios.webp',
     links: {
       github: `${GH}/ardekostudios.com`,
       live: 'https://ardekostudios.com',
@@ -197,14 +196,14 @@ export const PROJECTS = [
   },
   {
     id: 'sarteks',
+    featured: 4,
     year: 2026,
     month: 6,
     category: 'corporate',
     status: 'live',
     platforms: 'WEB',
     tech: ['Next.js 16', 'TypeScript', 'Tailwind v4', 'Matter.js'],
-    image: '/shots/sarteks.png',
-    featured: 3,
+    image: '/shots/sarteks.webp',
     links: { live: 'https://sarteks.com.tr' },
   },
   {
@@ -221,14 +220,14 @@ export const PROJECTS = [
   },
   {
     id: 'apex',
+    featured: 1,
     year: 2026,
     month: 8,
     category: 'game',
     status: 'live',
     platforms: 'WEB · BROWSER',
-    tech: ['JavaScript', 'Canvas'],
-    image: '/games/apex.jpg',
-    unverified: true,
+    tech: ['JavaScript', 'Canvas', 'Firebase RTDB', 'Netcode'],
+    image: '/games/apex.webp',
     links: { play: '/apex-shift/index.html' },
   },
   {

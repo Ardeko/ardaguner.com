@@ -9,7 +9,9 @@ const CONTROLLER = 'Arda Güner / Ardeko Studios';
 
    Yayında / yakında ayrımı `released` ile yapılıyor. Skyline, Rushville
    ve Torpidodan çıktıktan sonra hepsini "planlanan" diye yazmak mağaza
-   formuyla çelişirdi. Logolar: public/apps/{slug}.png */
+   formuyla çelişirdi. Logolar: public/apps/{slug}.webp — 128×128,
+   52px kutuda 2x retina için yeterli. Önceden 1024×1024 PNG'lerdi
+   (toplam 5.8 MB) ve hiç küçültülmeden deploy'a giriyorlardı. */
 const GAMES = [
   {
     slug: 'switch-master',
@@ -85,7 +87,7 @@ function AppMark({ slug, name }) {
 
   return (
     <img
-      src={`/apps/${slug}.png`}
+      src={`/apps/${slug}.webp`}
       alt=""
       width={52}
       height={52}

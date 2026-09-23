@@ -444,6 +444,46 @@
     margin-inline: -0.14em;
     margin-bottom: calc(0.5rem - 0.16em);
   }
+
+  /* --- Başlığa düşen ışık -------------------------------------------
+     Arka plandaki leke zemini aydınlatıyordu ama sitenin kimliği olan
+     şeye, yani ismin kendisine dokunmuyordu. Burada imleç harflerin
+     üstünden geçerken onları aydınlatıyor.
+
+     JS YOK. Numara `background-attachment: fixed`: o katmanın konum
+     alanı artık eleman kutusu değil VIEWPORT. Yani Backdrop'un zaten
+     yazdığı --mx/--my yüzdeleri doğrudan ekran koordinatı olarak
+     çalışıyor ve ışık tam imlecin altındaki harfe düşüyor. Elemana
+     göre konum hesaplayan ikinci bir dinleyiciye gerek kalmıyor.
+
+     Sıra önemli: ışık katmanı ÖNCE (üstte), tonal gradyan SONRA.
+     İkisi de background-clip: text ile harflere kırpılıyor, yani
+     kutuya değil yalnızca yazıya biniyor.
+
+     Renk beyaz — palete yeni bir renk girmiyor, sadece mevcut
+     beyaz→gri geçişin tepesini imlecin olduğu yerde yukarı itiyor. */
+  .hero-name.grad-text {
+    background-image:
+      radial-gradient(
+        16rem 16rem at var(--mx, 50%) var(--my, 34%),
+        rgba(255, 255, 255, 0.92),
+        rgba(255, 255, 255, 0) 58%
+      ),
+      var(--grad-text);
+    background-attachment: fixed, scroll;
+  }
+
+  /* Dokunmatikte imleç yok; --mx/--my yedek değerlerinde donup
+     harflerin ortasında sabit bir parlaklık lekesi bırakıyordu.
+     Aynısı reduced-motion için de geçerli: orada Backdrop hiç
+     dinleyici kurmuyor. Işık tamamen kapanıyor, başlık ilk hâline
+     (tonal gradyan) dönüyor. */
+  @media (pointer: coarse), (prefers-reduced-motion: reduce) {
+    .hero-name.grad-text {
+      background-image: var(--grad-text);
+      background-attachment: scroll;
+    }
+  }
 }
 
 .hero-role {
@@ -507,6 +547,20 @@
   height: 40%;
   background: var(--text);
   animation: scroll-hint 1.8s ease-in-out infinite;
+}
+
+/* Kaydırma ipucu ortada (left: 50%), istatistikler ise sola yaslı ve en
+   fazla 26rem (416px) genişlikte. İpucunun onları geçmesi için viewport'un
+   yarısı 416px + ipucunun yarısını aşmalı, yani ~892px. Altında ipucu
+   doğrudan rakamların üstüne biniyordu.
+
+   Dar ekranda gizleniyor: telefonda kaydırılacağı zaten belli, ipucu orada
+   bilgi değil kirlilik. Aynısı alçak ekranlar için de geçerli (yatay
+   çevrilmiş telefon) — orada hero içeriği zaten sıkışık. */
+@media (max-width: 900px), (max-height: 640px) {
+  .hero-scroll {
+    display: none;
+  }
 }
 
 @keyframes scroll-hint {
@@ -855,13 +909,34 @@
   margin-bottom: clamp(2.5rem, 6vw, 4rem);
 }
 
+/* height: auto ZORUNLU. <img> üzerindeki width/height öznitelikleri
+   sunum ipucu olarak gelir; CSS'te height tanımlı değilse öznitelikteki
+   750px kesin yükseklik sayılır ve aspect-ratio hiç uygulanmaz. Sonuç
+   300×750'lik (2:5) upuzun bir portre oluyordu. */
 .about-portrait img {
   width: 100%;
+  height: auto;
   max-width: 300px;
   border-radius: var(--radius-lg);
   border: 1px solid var(--stroke);
   aspect-ratio: 4 / 5;
   object-fit: cover;
+}
+
+/* Dar ekranda tek sütuna düşünce portre metnin üstünde duruyor ve 300px
+   orada ekranın yarısını yiyip okumayı geciktiriyor. Oranı DEĞİŞTİRMİYORUZ:
+   kaynak dosya zaten 4:5 kırpılmış, başka bir orana zorlamak object-fit ile
+   ikinci kez kırpıp yüzü kadrajdan taşırıyor. Sadece küçültüyoruz. */
+@media (max-width: 859px) {
+  .about-portrait img {
+    max-width: 240px;
+  }
+}
+
+@media (max-width: 420px) {
+  .about-portrait img {
+    max-width: 200px;
+  }
 }
 
 .about-copy {
@@ -1158,4 +1233,131 @@
     min-width: 0;
     width: 100%;
   }
+}
+
+/* --- CV butonu -----------------------------------------------------
+   Eski hâli imleci takip ediyordu (Magnetic). Kaldırıldı: buton fareden
+   kaçıyormuş gibi duruyordu ve tıklama hedefi kaydığı için isabet
+   ettirmesi zordu. Yerine yerinden kıpırdamayan, amaca bağlı bir
+   hareket geldi.
+
+   İki katman: ince bir ışık soldan sağa süpürüyor (hero başlığındaki
+   ışıkla aynı dil) ve ikondaki ok bir tık aşağı iniyor — indirme jesti.
+   Renk eklenmiyor, sadece beyazın şeffaflığı.
+------------------------------------------------------------------- */
+
+.btn-cv {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.btn-cv::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    105deg,
+    transparent 36%,
+    rgba(255, 255, 255, 0.14) 50%,
+    transparent 64%
+  );
+  transform: translateX(-130%);
+  transition: transform 0.75s var(--ease);
+  pointer-events: none;
+}
+
+.btn-cv:hover::after,
+.btn-cv:focus-visible::after {
+  transform: translateX(130%);
+}
+
+.btn-cv .icon {
+  transition: transform 0.28s var(--ease);
+}
+.btn-cv:hover .icon,
+.btn-cv:focus-visible .icon {
+  transform: translateY(2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-cv::after {
+    display: none;
+  }
+  .btn-cv .icon {
+    transition: none;
+  }
+}
+
+/* --- Vaka çalışması tanıtımı ---------------------------------------
+   Tek yazı olduğu için liste değil tek blok. Vitrinden görsel olarak
+   ayrılması gerekiyor (orada dört kart var, burada bir şey söyleniyor)
+   ama yeni bir renk getirmeden: yüzey + kenarlık + bolca boşluk.
+------------------------------------------------------------------- */
+
+.ct-card {
+  background: var(--surface);
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-lg);
+  padding: clamp(1.75rem, 4.5vw, 3rem);
+  max-width: 52rem;
+}
+
+.ct-title {
+  font-size: clamp(1.5rem, 3.8vw, 2.4rem);
+  line-height: 1.12;
+  margin: 0.55rem 0 0;
+}
+
+/* Yazının tek cümlesi. Serif italik — sitedeki diğer alıntılarla
+   (hero rol kelimesi, hayat felsefesi satırı) aynı ses. */
+.ct-quote {
+  font-style: italic;
+  font-size: clamp(1.05rem, 2.4vw, 1.3rem);
+  line-height: 1.5;
+  color: var(--muted);
+  margin: 1.25rem 0 0;
+  padding-left: 1rem;
+  border-left: 2px solid var(--stroke-strong);
+  max-width: 44rem;
+}
+
+/* Izgara, flex değil: uzun etiketler ("clock spread between clients")
+   flex'te satır kaydırıp üç sayıyı alt alta diziyordu. Üç eşit sütunda
+   etiket kendi sütunu içinde sarıyor, sayılar yan yana kalıyor. */
+.ct-metrics {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  margin: clamp(1.5rem, 4vw, 2.25rem) 0 0;
+  padding: 1.5rem 0 0;
+  border-top: 1px solid var(--stroke);
+}
+.ct-metrics b {
+  display: block;
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1.4rem, 3.4vw, 1.9rem);
+  line-height: 1;
+  color: var(--text);
+  margin-bottom: 0.4rem;
+}
+
+.ct-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: clamp(1.5rem, 3.5vw, 2rem);
+  font-size: 0.92rem;
+  color: var(--text);
+  text-decoration: none;
+  border-bottom: 1px solid var(--stroke-strong);
+  padding-bottom: 0.3rem;
+  transition: border-color var(--fast) ease, gap var(--fast) ease;
+}
+.ct-link:hover {
+  border-color: var(--text);
+  gap: 0.75rem;
 }

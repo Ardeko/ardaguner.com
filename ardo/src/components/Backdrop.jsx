@@ -1,12 +1,16 @@
 import { useEffect, useRef } from "react";
+import DriftField from "./DriftField";
 import "./Backdrop.css";
 
 /* ------------------------------------------------------------------
    Arka plan katmanı — imlece tepki veren ışık.
 
-   İki varyant var:
+   Üç varyant var:
      "aurora" — üç yumuşak leke + imleci takip eden ışık   (varsayılan)
      "beams"  — eğik huzmeler, sadece imlecin çevresinde görünüyor
+     "drift"  — domain-warp alanı (DriftField), organik ve tekrarsız
+
+   Üçünün de üstünde aynı imleç ışığı var; değişen yalnızca zemin.
 
    Izgara ve nokta varyantları kaldırıldı: sabit bir desen, hareket
    eden bir zemine göre hem daha sönük hem de metnin arkasında daha
@@ -51,14 +55,21 @@ function Backdrop({ variant = "aurora", grain = true }) {
     let x = hedefX;
     let y = hedefY;
 
+    // Değişkenler artık <html> üzerine yazılıyor, Backdrop'un kendi
+    // div'ine değil. Miras yoluyla bu katman aynen çalışmaya devam
+    // ediyor ama sayfadaki BAŞKA bileşenler de (hero başlığı gibi)
+    // aynı imleç konumunu okuyabiliyor — ikinci bir dinleyici kurmaya,
+    // ikinci bir rAF döngüsü çevirmeye gerek kalmıyor.
+    const kok = document.documentElement;
+
     const cizim = () => {
       x += (hedefX - x) * 0.08;
       y += (hedefY - y) * 0.08;
 
-      el.style.setProperty("--mx", `${x.toFixed(2)}%`);
-      el.style.setProperty("--my", `${y.toFixed(2)}%`);
-      el.style.setProperty("--px", ((x - 50) / 50).toFixed(4));
-      el.style.setProperty("--py", ((y - 50) / 50).toFixed(4));
+      kok.style.setProperty("--mx", `${x.toFixed(2)}%`);
+      kok.style.setProperty("--my", `${y.toFixed(2)}%`);
+      kok.style.setProperty("--px", ((x - 50) / 50).toFixed(4));
+      kok.style.setProperty("--py", ((y - 50) / 50).toFixed(4));
 
       // Hedefe yeterince yaklaşınca döngü duruyor. Sürekli dönen bir
       // rAF, fare dururken de pil yakardı.
@@ -82,6 +93,7 @@ function Backdrop({ variant = "aurora", grain = true }) {
       window.removeEventListener("pointermove", hareket);
       if (raf) cancelAnimationFrame(raf);
       delete el.dataset.live;
+      ["--mx", "--my", "--px", "--py"].forEach((k) => kok.style.removeProperty(k));
     };
   }, []);
 
@@ -100,6 +112,14 @@ function Backdrop({ variant = "aurora", grain = true }) {
         <>
           <div className="bd-beams-glow" />
           <div className="bd-beams-field" />
+          <div className="bd-spot" />
+        </>
+      )}
+
+      {variant === "drift" && (
+        <>
+          <DriftField />
+          <div className="bd-drift-glow" />
           <div className="bd-spot" />
         </>
       )}

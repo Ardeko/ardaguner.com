@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  /* OG kartı — 1200x630. Sitenin paletini ve tipografisini birebir kullanır:
+     #0a0a0a zemin, Instrument Serif italik isim, --accent çelik mavisi ışık. */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1200px; height: 630px; overflow: hidden; }
+  body {
+    background: #0a0a0a;
+    color: #f5f5f4;
+    font-family: Inter, -apple-system, sans-serif;
+    position: relative;
+  }
+  .glow-a, .glow-b {
+    position: absolute; border-radius: 50%; filter: blur(90px);
+  }
+  .glow-a {
+    width: 760px; height: 760px; left: -160px; top: -300px;
+    background: radial-gradient(circle, rgba(137,170,204,.30), transparent 68%);
+  }
+  .glow-b {
+    width: 620px; height: 620px; right: -140px; bottom: -280px;
+    background: radial-gradient(circle, rgba(137,170,204,.18), transparent 66%);
+  }
+  .grain {
+    position: absolute; inset: 0; opacity: .05; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .wrap {
+    position: relative; z-index: 2;
+    height: 100%; padding: 72px 80px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .eyebrow {
+    font-size: 15px; letter-spacing: 3.4px; text-transform: uppercase;
+    color: rgba(245,245,244,.44); font-weight: 500;
+  }
+  .name {
+    font-family: 'Instrument Serif', serif; font-style: italic;
+    font-size: 132px; line-height: .96; letter-spacing: -1px;
+    background: linear-gradient(180deg, #fff 0%, #f2f1ef 40%, rgba(245,245,244,.62) 100%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+    padding-bottom: .1em;
+  }
+  .role {
+    font-size: 30px; color: rgba(245,245,244,.72); margin-top: 14px; font-weight: 400;
+  }
+  .role em { font-family: 'Instrument Serif', serif; font-style: italic; color: #f5f5f4; }
+  .foot {
+    display: flex; align-items: flex-end; justify-content: space-between;
+  }
+  .stats { display: flex; gap: 46px; }
+  .stat b {
+    display: block; font-family: 'Instrument Serif', serif; font-style: italic;
+    font-size: 40px; font-weight: 400; color: #f5f5f4;
+  }
+  .stat span {
+    font-size: 12px; letter-spacing: 2.4px; text-transform: uppercase;
+    color: rgba(245,245,244,.40);
+  }
+  .site {
+    font-size: 19px; color: rgba(245,245,244,.56); letter-spacing: .4px;
+  }
+  .rule { height: 1px; background: rgba(255,255,255,.10); margin-bottom: 26px; }
+</style>
+</head>
+<body>
+  <div class="glow-a"></div>
+  <div class="glow-b"></div>
+  <div class="grain"></div>
+  <div class="wrap">
+    <div>
+      <div class="eyebrow">Portfolyo · İstanbul</div>
+    </div>
+    <div>
+      <div class="name">Arda Güner</div>
+      <div class="role">Yazılım mühendisi &amp; <em>bağımsız oyun geliştirici</em></div>
+    </div>
+    <div>
+      <div class="rule"></div>
+      <div class="foot">
+        <div class="stats">
+          <div class="stat"><b>24</b><span>Proje</span></div>
+          <div class="stat"><b>14</b><span>Oyun</span></div>
+          <div class="stat"><b>12</b><span>Yayında</span></div>
+        </div>
+        <div class="site">ardaguner.com</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

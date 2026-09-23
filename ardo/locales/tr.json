@@ -174,7 +174,7 @@
     },
     "apex": {
       "title": "Apex Shift",
-      "desc": "İki mod: arkadaşlarınla aynı odada online yarış ya da kendi takımını yönettiğin idle menajer modu — pilotunu geliştir, Karting’den Formula 1’e yüksel."
+      "desc": "Tarayıcıda iki mod: aynı oda kodunu giren herkesle online yarış, ya da takımını yönettiğin idle menajer. NASCAR ovalinde 12 araçlık grid, botlar, slipstream, kaza ve pit stop, gece yarışı."
     },
     "dny": {
       "title": "DNY Bilişim",
@@ -205,7 +205,7 @@
     "eyebrow": "Seçilmiş işler",
     "titleLead": "Öne çıkan",
     "titleAccent": "projeler",
-    "lede": "Dört seçilmiş iş: bir iletişim uygulaması, bir mobil oyun, bir kurumsal site ve bir masaüstü oyunu."
+    "lede": "Dört seçilmiş iş: bir tarayıcı yarış oyunu, bir iletişim uygulaması, bir mobil oyun ve bir kurumsal site."
   },
   "gallery": {
     "eyebrow": "",
@@ -225,5 +225,107 @@
     "title": "Burada bir şey yok",
     "desc": "Aradığın sayfa taşınmış ya da hiç var olmamış olabilir.",
     "cta": "Anasayfaya dön"
+  },
+  "caseStudies": {
+    "apex": {
+      "back": "Projelere dön",
+      "eyebrow": "Vaka çalışması · Apex Shift",
+      "title": "Görünmeyen bir HTTP başlığı",
+      "titleAccent": "multiplayer'ı nasıl bozdu",
+      "lede": "Online mod çalışıyor görünüyordu. İki kişi girene kadar. Hata, kodun yanlış çalışmasından değil, sessizce hiç çalışmamasından geliyordu.",
+      "meta": [
+        {
+          "k": "Rol",
+          "v": "Tek geliştirici — tasarım, kod, netcode"
+        },
+        {
+          "k": "Yığın",
+          "v": "Vanilla JS · Canvas · Firebase RTDB"
+        },
+        {
+          "k": "Sunucu",
+          "v": "Yok — her istemci yalnız kendi arabasının otoritesi"
+        }
+      ],
+      "sections": [
+        {
+          "h": "Belirti",
+          "p": [
+            "Aynı odaya iki kişi girdiğinde yarış düzgün başlamıyordu. Host'un ekranında geri sayım 3'ten, ikinci oyuncuda 10'dan, bazen 11'den başlıyordu. Dahası oyuncular birbirini göremiyordu — ve bu tek taraflıydı: biri diğerini görüyor, diğeri görmüyordu.",
+            "Bu asimetri işe yarar ipucuydu. Sıradan bir bağlantı sorunu olsaydı iki taraf da aynı şeyi yaşardı."
+          ]
+        },
+        {
+          "h": "Teşhis",
+          "p": [
+            "Geri sayım ve tur süreleri ortak olsun diye istemciler sunucu saatine kilitleniyordu. Kilitlenme şöyle yapılıyordu:"
+          ],
+          "code": "const h = res.headers.get('date');\nif (!h) return;              // her zaman buradan donuyordu\nconst srv = Date.parse(h);\nclockOffset = srv + rtt/2 - Date.now();",
+          "after": [
+            "`Date`, CORS'un safelisted response header listesinde değil. Firebase RTDB de `Access-Control-Expose-Headers` göndermiyor. Yani tarayıcıda `res.headers.get('date')` daima null dönüyor; fonksiyon ilk satırda sessizce çıkıyor ve `clockOffset` sonsuza kadar 0 kalıyordu.",
+            "Bunu curl ile doğruladım: yanıtta `Date` başlığı var ama `Access-Control-Expose-Headers` yok. Sunucu gönderiyor, tarayıcı saklıyor."
+          ]
+        },
+        {
+          "h": "İki belirti, tek kök",
+          "p": [
+            "Herkes kendi ham duvar saatini kullanınca iki şey birden bozuluyordu.",
+            "**Geri sayım:** host `raceStartAt = kendiSaati + 4000` yazıyor. Saati 8 saniye geride olan istemci `raceStartAt − kendiSaati = 12000` buluyor ve 12'den saymaya başlıyor.",
+            "**Görünürlük:** bayat oyuncu kontrolü `now − p.ts > 6000`. Zaman damgası da yerel saatle yazıldığı için hata yönlüydü: saati geride olanın damgası karşı tarafa 8 saniye eski görünüp çizimden düşüyor, ters yönde ise fark negatife düşüp eşiği geçiyordu. Asimetrinin sebebi buydu."
+          ]
+        },
+        {
+          "h": "Çözüm",
+          "p": [
+            "Okunamayan bir başlık yerine veritabanının kendi sunucu damgası kullanıldı. RTDB'ye `{\".sv\":\"timestamp\"}` yazınca yanıtta çözülmüş sunucu zamanı geri geliyor."
+          ],
+          "code": "const body  = { ...entry, ts: { '.sv': 'timestamp' } };\nconst res   = await fetch(playerPath, { method: 'PUT', body: JSON.stringify(body) });\nconst saved = await res.json();\napplySample(saved.ts, sentAt, Date.now());   // offset = srv + rtt/2 - recvAt",
+          "after": [
+            "İşin güzel tarafı: oyun zaten her 220 ms'de kendi `players/<uid>` düğümünü yazıyordu. Damgayı o yazıma iliştirince her senkron bedava bir saat örneği veriyor — ek istek yok.",
+            "Yan etki olarak veritabanındaki tüm `ts` değerleri artık tek bir saatten geliyor, yani bayatlık hesabı da kendiliğinden simetrik hâle geldi."
+          ]
+        },
+        {
+          "h": "Doğrulama",
+          "p": [
+            "Üç istemci simüle edildi: biri doğru saatli, biri 8 saniye geri, biri 5 saniye ileri — uçtan uca 13 saniyelik fark."
+          ],
+          "code": "offsets: hostA=78ms   joinB=8065ms   joinC=-4939ms\nhostA: geri sayim 3 (2865ms)\njoinB: geri sayim 3 (2877ms)\njoinC: geri sayim 3 (2882ms)",
+          "after": [
+            "Üçü de 3'ten sayıyor, aralarındaki fark 17 milisaniye. Bayatlık tarafında da üçü birbirini yaklaşık 250 ms yaşında görüyor — eşik 6000 ms."
+          ]
+        },
+        {
+          "h": "Çıkarım",
+          "p": [
+            "Bu hata gürültü çıkarmıyordu. `if (!h) return;` ne istisna atıyor ne de konsola bir şey yazıyor; kod çalışıyordu, sadece hiçbir şey yapmıyordu.",
+            "Tek istemciyle test edince de görünmüyordu: tek makinede saat farkı sıfırdır, yani bozuk bir senkron ile çalışan bir senkron aynı davranır. Hatanın ortaya çıkması için ikinci bir makine, üstelik saati kaymış bir makine gerekiyordu.",
+            "Ders şu: dışarıdan gelen bir değeri okurken \"okunamadı\" dalı sessiz bir erken çıkış olmamalı. En azından bir kez uyarmalı — çünkü çalışmayan bir senkronla hiç olmayan bir senkron arasındaki farkı ölçmeden anlayamıyorsun."
+          ]
+        }
+      ],
+      "metrics": [
+        {
+          "n": "13 sn",
+          "l": "İstemciler arası saat farkı"
+        },
+        {
+          "n": "17 ms",
+          "l": "Geri sayımlar arası fark"
+        },
+        {
+          "n": "0",
+          "l": "Eklenen ağ isteği"
+        }
+      ],
+      "ctaTitle": "Kendin dene",
+      "ctaText": "Aynı oda kodunu iki sekmede aç; ikisi de aynı anda 3'ten sayacak.",
+      "ctaPlay": "Apex Shift'i oyna",
+      "teaser": {
+        "eyebrow": "Yazı",
+        "quote": "Hata, kodun yanlış çalışmasından değil, sessizce hiç çalışmamasından geliyordu.",
+        "cta": "Vaka çalışmasını oku"
+      }
+    }
   }
 }

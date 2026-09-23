@@ -306,7 +306,7 @@ function othersNow(){
 /* Yumuşak çarpışma: herkes yalnız kendi arabasını ayırıyor. Karşı taraf da
    aynısını yaptığı için araçlar birbirinden itiliyor ama kimse kimsenin
    konumunu yazmıyor — otorite çakışması yok.                              */
-function resolveCollisions(others){
+function resolveCollisions(others,dt){
   if(localPhase!=='racing'||!car||car.locked||car.finished) return;
   const nascar=T&&T.mode==='nascar';
   for(const o of others){
@@ -324,7 +324,13 @@ function resolveCollisions(others){
     if(nascar){
       const rel=Math.abs(car.speed-(o.speed||0));
       const side=Math.abs(nx*-Math.sin(car.angle)+ny*Math.cos(car.angle));  // yandan mı
-      car.damage=Math.min(1,car.damage+0.004+rel*0.00012);
+      // Kare BASINA degil saniye basina. Onceden her temas karesinde
+      // 0.004 ekleniyordu: 60 fps'te saniyede 0.24, yani iki saniye yan
+      // yana yaris etmek hasari %48'e cikariyordu. NASCAR modunun tum
+      // amaci yan yana yarismak oldugu icin bu, oyunu kendi kendine
+      // cezalandiran bir dongu yapiyordu. Surtunme artik yavas birikiyor;
+      // asil hasar hala sert carpma ve spin'den geliyor.
+      car.damage=Math.min(1,car.damage+(0.035+rel*0.0016)*dt);
       if(Math.abs(car.speed)>HIT_CRASH_SPD&&side>0.72&&Math.random()<0.10) spinOut(0.5);
     }
   }
@@ -444,7 +450,7 @@ function updateCar(dt,others){
   car.y+=Math.sin(car.angle)*car.speed*dt;
   car.x=clamp(car.x,5,T.W-5); car.y=clamp(car.y,5,T.H-5);
 
-  resolveCollisions(others);
+  resolveCollisions(others,dt);
   wallCheck(dt);
   if(!car.finished) trackProgress();
 

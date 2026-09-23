@@ -55,7 +55,21 @@ function About({ strings, language }) {
 
         <div className="about-grid">
           <Reveal className="about-portrait">
-            <img src="/arda.JPG" alt="Arda Güner" loading="lazy" decoding="async" />
+            {/* Kaynak 6240×4160 / 16.5 MB ham fotoğraftı ve burada 300px
+                kutuda gösteriliyordu. Şimdi 600×750 (kutunun 2x retina
+                karşılığı). Orijinal, deploy'a girmesin diye public dışında:
+                assets-src/arda-original.JPG */}
+            <picture>
+              <source srcSet="/portrait.webp" type="image/webp" />
+              <img
+                src="/portrait.jpg"
+                alt="Arda Güner"
+                width="600"
+                height="750"
+                loading="lazy"
+                decoding="async"
+              />
+            </picture>
           </Reveal>
 
           <div className="about-copy">

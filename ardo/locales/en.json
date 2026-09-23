@@ -174,7 +174,7 @@
     },
     "apex": {
       "title": "Apex Shift",
-      "desc": "Two modes: race friends online in a shared room, or run your own team in an idle manager mode — upgrade your driver and climb from Karting to Formula 1."
+      "desc": "Two modes in the browser: race anyone who enters the same room code, or run your own team in idle manager mode. A NASCAR oval with a 12-car grid, bots, drafting, crashes, pit stops and night racing."
     },
     "dny": {
       "title": "DNY Bilişim",
@@ -205,7 +205,7 @@
     "eyebrow": "Selected work",
     "titleLead": "Featured",
     "titleAccent": "projects",
-    "lede": "Four selected projects: a communication app, a mobile game, a corporate site and a desktop game."
+    "lede": "Four selected projects: a browser racing game, a communication app, a mobile game and a corporate site."
   },
   "gallery": {
     "eyebrow": "",
@@ -225,5 +225,107 @@
     "title": "Nothing here",
     "desc": "The page you’re looking for may have moved, or never existed.",
     "cta": "Back to home"
+  },
+  "caseStudies": {
+    "apex": {
+      "back": "Back to projects",
+      "eyebrow": "Case study · Apex Shift",
+      "title": "How one invisible HTTP header",
+      "titleAccent": "broke multiplayer",
+      "lede": "Online mode looked fine. Until two people joined. The bug was not that the code ran wrong — it was that it silently never ran at all.",
+      "meta": [
+        {
+          "k": "Role",
+          "v": "Solo developer — design, code, netcode"
+        },
+        {
+          "k": "Stack",
+          "v": "Vanilla JS · Canvas · Firebase RTDB"
+        },
+        {
+          "k": "Server",
+          "v": "None — each client owns only its own car"
+        }
+      ],
+      "sections": [
+        {
+          "h": "Symptom",
+          "p": [
+            "With two people in the same room the race never started properly. The host counted down from 3; the second player counted down from 10, sometimes 11. Worse, players could not see each other — and it was one-sided: one saw the other, the other did not.",
+            "That asymmetry was the useful clue. A plain connectivity problem would have hurt both sides equally."
+          ]
+        },
+        {
+          "h": "Diagnosis",
+          "p": [
+            "To keep countdowns and lap times consistent, clients locked onto server time. The lock was done like this:"
+          ],
+          "code": "const h = res.headers.get('date');\nif (!h) return;              // it always returned here\nconst srv = Date.parse(h);\nclockOffset = srv + rtt/2 - Date.now();",
+          "after": [
+            "`Date` is not on the CORS safelisted response header list, and Firebase RTDB does not send `Access-Control-Expose-Headers`. So in the browser `res.headers.get('date')` always returns null; the function exited on its first line and `clockOffset` stayed 0 forever.",
+            "I confirmed it with curl: the response does carry a `Date` header, but no `Access-Control-Expose-Headers`. The server sends it, the browser hides it."
+          ]
+        },
+        {
+          "h": "Two symptoms, one root",
+          "p": [
+            "Once every client was using its own raw wall clock, two things broke at once.",
+            "**Countdown:** the host writes `raceStartAt = ownClock + 4000`. A client whose clock is 8 seconds behind computes `raceStartAt − ownClock = 12000` and starts counting from 12.",
+            "**Visibility:** the stale-player check is `now − p.ts > 6000`. Timestamps were written with local clocks too, so the error had a direction: a behind-clock player's timestamp looked 8 seconds old to everyone else and got dropped from rendering, while in the other direction the difference went negative and passed. That is where the asymmetry came from."
+          ]
+        },
+        {
+          "h": "Fix",
+          "p": [
+            "Instead of an unreadable header, use the database's own server timestamp. Writing `{\".sv\":\"timestamp\"}` to RTDB returns the resolved server time in the response."
+          ],
+          "code": "const body  = { ...entry, ts: { '.sv': 'timestamp' } };\nconst res   = await fetch(playerPath, { method: 'PUT', body: JSON.stringify(body) });\nconst saved = await res.json();\napplySample(saved.ts, sentAt, Date.now());   // offset = srv + rtt/2 - recvAt",
+          "after": [
+            "The pleasant part: the game already wrote its own `players/<uid>` node every 220 ms. Attaching the sentinel to that write means every sync yields a free clock sample — no extra request.",
+            "As a side effect every `ts` in the database now comes from one clock, so the staleness check became symmetric on its own."
+          ]
+        },
+        {
+          "h": "Verification",
+          "p": [
+            "Three clients were simulated: one with a correct clock, one 8 seconds behind, one 5 seconds ahead — 13 seconds apart end to end."
+          ],
+          "code": "offsets: hostA=78ms   joinB=8065ms   joinC=-4939ms\nhostA: countdown 3 (2865ms)\njoinB: countdown 3 (2877ms)\njoinC: countdown 3 (2882ms)",
+          "after": [
+            "All three count from 3, within 17 milliseconds of each other. On the staleness side each sees the others as roughly 250 ms old, against a 6000 ms threshold."
+          ]
+        },
+        {
+          "h": "Takeaway",
+          "p": [
+            "This bug made no noise. `if (!h) return;` throws nothing and logs nothing; the code worked, it just did nothing.",
+            "It was also invisible in single-client testing: on one machine the clock offset is zero, so a broken sync behaves exactly like a working one. The failure needs a second machine — and a second machine whose clock has drifted.",
+            "The lesson: when you read a value that comes from outside, the \"could not read it\" branch should not be a silent early return. It should complain at least once, because you cannot tell a broken sync from an absent one without measuring."
+          ]
+        }
+      ],
+      "metrics": [
+        {
+          "n": "13 s",
+          "l": "Clock spread between clients"
+        },
+        {
+          "n": "17 ms",
+          "l": "Spread between countdowns"
+        },
+        {
+          "n": "0",
+          "l": "Extra network requests"
+        }
+      ],
+      "ctaTitle": "Try it yourself",
+      "ctaText": "Open the same room code in two tabs; both will count down from 3 together.",
+      "ctaPlay": "Play Apex Shift",
+      "teaser": {
+        "eyebrow": "Writing",
+        "quote": "The bug was not that the code ran wrong — it was that it silently never ran at all.",
+        "cta": "Read the case study"
+      }
+    }
   }
 }

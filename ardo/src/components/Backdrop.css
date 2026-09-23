@@ -48,13 +48,26 @@
    birden olsaydı ışık fareden mahsus kaçıyormuş gibi görünürdü.
 ------------------------------------------------------------------- */
 
+/* İki katman. Tek geniş gradient hareket ederken "bir şey oluyor ama ne
+   olduğu belli değil" hissi veriyordu: kenarı o kadar yumuşaktı ki gözün
+   takip edeceği bir merkez yoktu. Alttaki geniş hale ortamı taşıyor,
+   üstteki küçük çekirdek ise imlecin nerede olduğunu okunur kılıyor.
+   Ortalama parlaklık neredeyse aynı kaldı — artan şey yayılma değil,
+   tepe noktası. */
 .bd-spot {
-  background: radial-gradient(
-    26rem 26rem at var(--mx, 50%) var(--my, 34%),
-    color-mix(in srgb, var(--bd-accent) 17%, transparent),
-    color-mix(in srgb, var(--bd-accent) 5%, transparent) 42%,
-    transparent 68%
-  );
+  background:
+    radial-gradient(
+      10rem 10rem at var(--mx, 50%) var(--my, 34%),
+      color-mix(in srgb, var(--bd-accent) 24%, transparent),
+      color-mix(in srgb, var(--bd-accent) 8%, transparent) 46%,
+      transparent 70%
+    ),
+    radial-gradient(
+      30rem 30rem at var(--mx, 50%) var(--my, 34%),
+      color-mix(in srgb, var(--bd-accent) 17%, transparent),
+      color-mix(in srgb, var(--bd-accent) 5%, transparent) 42%,
+      transparent 68%
+    );
 }
 
 /* Dokunmatik cihazda imleç yok; sabit bir noktada duran ışık lekesi
@@ -237,5 +250,53 @@
   .bd-blob-c {
     width: 86vw;
     height: 86vw;
+  }
+}
+
+/* --- Varyant: drift ------------------------------------------------
+   Zemini DriftField çiziyor (160×90'lık canvas, domain warping).
+   Burada yapılan tek şey onu ekrana yaymak ve yumuşatmak.
+
+   Bulanıklık neden bu kadar az: görüntü zaten 160 pikselden ~1900'e
+   büyütülüyor ve tarayıcının bilinear ara değeri işin çoğunu yapıyor.
+   14px yalnızca kalan basamaklanmayı siliyor. Tam çözünürlükte bir
+   alana 60-80px blur atmak gerekirdi; o da tam ekran, her karede.
+
+   Paralaks lekelerdekiyle aynı mantıkta: `translate` ayrı özellik
+   olduğu için canvas'ın kendi ölçeğiyle çakışmıyor.
+------------------------------------------------------------------- */
+
+.bd-field {
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: blur(14px) saturate(1.15);
+  transform: scale(1.12);
+  translate: calc(var(--px, 0) * 26px) calc(var(--py, 0) * 20px);
+  will-change: translate;
+}
+
+/* Alanın üstünde duran sabit ışık: sayfanın tepesi tamamen kararmasın
+   ve nav çubuğu boşlukta durmasın diye. aurora'daki bd-blob-c ile
+   aynı işi görüyor. */
+.bd-drift-glow {
+  background: radial-gradient(
+    58% 42% at 50% -6%,
+    color-mix(in srgb, var(--bd-accent) 12%, transparent),
+    transparent 70%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bd-field {
+    translate: none;
+  }
+}
+
+/* Dar ekranda büyütme oranı zaten çok yüksek; blur'u kısıp maliyeti
+   düşürüyoruz, görsel fark yok. */
+@media (max-width: 640px) {
+  .bd-field {
+    filter: blur(10px) saturate(1.15);
   }
 }

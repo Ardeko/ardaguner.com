@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import Magnetic from "../Magnetic";
 import Icon from "./Icon";
 import { stats } from "../data/projects";
 
@@ -26,7 +25,18 @@ function Hero({ language, strings, roles }) {
     return () => window.clearInterval(t);
   }, [roles.length]);
 
-  const cumle = language === "tr" ? ["Bir ", " İstanbul'da yaşıyor."] : ["A ", " based in Istanbul."];
+  /* Artikel sabit "A " yazarken dönen rollerden biri "A instructor"
+     çıkıyordu — sayfanın en üstünde, İngilizce bir dilbilgisi hatası.
+     Artık role göre seçiliyor. Not: İngilizce'de artikel yazıma değil
+     SESE bakıyor ("a university", "an hour"); mevcut dört rol için sesli
+     harf kontrolü doğru sonucu veriyor, istisnalı bir rol eklenirse
+     burası elle ele alınmalı. */
+  const rolAd = roles[rol] || "";
+  const artikel = /^[aeiou]/i.test(rolAd) ? "An " : "A ";
+  const cumle =
+    language === "tr"
+      ? ["Bir ", " İstanbul'da yaşıyor."]
+      : [artikel, " based in Istanbul."];
 
   return (
     <section className="hero" id="top">
@@ -56,18 +66,23 @@ function Hero({ language, strings, roles }) {
             {strings.nav.projects}
           </a>
 
-          <Magnetic
-            as="a"
+          {/* Buton eskiden imleci takip ediyordu (Magnetic). İki sorunu
+              vardı: fareden kaçıyormuş gibi görünüyordu ve tıklama hedefi
+              yer değiştirdiği için isabet ettirmek zorlaşıyordu — motor
+              becerisi kısıtlı biri için doğrudan erişilebilirlik sorunu.
+              Yerine amaca bağlı bir hareket geldi (.btn-cv): üzerine
+              gelince ince bir ışık soldan sağa süpürüyor ve ikon bir tık
+              aşağı iniyor. Buton yerinde duruyor, hareket anlam taşıyor. */}
+          <a
             href={language === "tr" ? "/files/arda-guner-cv-tr.pdf" : "/files/arda-guner-cv-en.pdf"}
-            className="btn btn-ghost"
+            className="btn btn-ghost btn-cv"
             target="_blank"
             rel="noopener noreferrer"
             download={language === "tr" ? "arda-guner-cv-tr.pdf" : "arda-guner-cv-en.pdf"}
-            strength={0.22}
           >
             <Icon name="file" size={16} />
             {strings.cv.downloadButton}
-          </Magnetic>
+          </a>
         </div>
 
         {/* Üç rakam. Hepsi projects.js'ten sayılıyor, elle yazılmıyor:

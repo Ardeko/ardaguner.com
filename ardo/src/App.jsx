@@ -10,6 +10,7 @@ import { tips } from "./tips";
 import Particles from "./Particles";
 import { useKonamiCode, ConfettiBurst } from "./KonamiConfetti";
 import PrivacyPolicy from "./PrivacyPolicy";
+import CaseStudy from "./CaseStudy";
 import StudioSpotlight from "./StudioSpotlight";
 
 import Backdrop from "./components/Backdrop";
@@ -17,6 +18,7 @@ import Preloader from "./components/Preloader";
 import Nav from "./components/Nav";
 import Hero from "./components/Hero";
 import Featured from "./components/Featured";
+import CaseTeaser from "./components/CaseTeaser";
 import Gallery from "./components/Gallery";
 import Timeline from "./components/Timeline";
 import About from "./components/About";
@@ -101,8 +103,8 @@ function App() {
           içeriğe atlayabiliyor. Odaklanmadıkça görünmüyor. */}
       <SkipLink label={strings.nav.skip} />
 
-      {/* Arka plan katmanı. Varyant: "aurora" | "beams" */}
-      <Backdrop variant="aurora" />
+      {/* Arka plan katmanı. Varyant: "aurora" | "beams" | "drift" */}
+      <Backdrop variant="drift" />
       <Particles />
       <ConfettiBurst active={celebrate} language={language} />
 
@@ -125,6 +127,8 @@ function App() {
               <Hero language={language} strings={strings} roles={roller} />
               <About strings={strings} language={language} />
               <Featured strings={strings} />
+              {/* Vitrin ne yaptigini gosterir; bu blok nasil dusundugunu. */}
+              <CaseTeaser strings={strings} />
               <Timeline strings={strings} language={language} />
               <Gallery strings={strings} />
               <StudioSpotlight language={language} />
@@ -149,6 +153,13 @@ function App() {
         />
 
         <Route path="/privacy-policy" element={<PrivacyPolicy language={language} />} />
+
+        {/* Vaka calismasi. Icerik locales icinde; yeni vaka eklemek
+            burada bir rota ve orada bir anahtar demek. */}
+        <Route
+          path="/case/apex-shift"
+          element={<CaseStudy strings={strings} />}
+        />
 
         {/* Yakalayıcı rota. Yoksa /eskisayfa gibi bir adres üst çubuk
             ile alt bilgi arasında bomboş bir gövde basıyordu. */}
