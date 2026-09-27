@@ -5,7 +5,7 @@ import { withImage, featuredProjects } from "../data/projects";
 /* ------------------------------------------------------------------
    Galeri — iki sütun, kaydırmayla ters yönlerde kayıyor.
 
-   Vitrinde zaten görünen dört iş buraya girmiyor, yoksa aynı görsel
+   Vitrinde zaten görünen işler buraya girmiyor, yoksa aynı görsel
    sayfada iki kez çıkardı.
 
    Paralaks tek bir scroll dinleyicisi ve iki `transform` ile yapıldı;

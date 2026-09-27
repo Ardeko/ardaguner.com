@@ -6,7 +6,7 @@ import { CATEGORIES, groupByYear, chronological } from "../data/projects";
 /* ------------------------------------------------------------------
    Çizelge — katalogdaki 23 projenin tamamı, yıla göre gruplanmış.
 
-   Vitrin dört işi öne çıkarıyor; burası "hepsi" listesi. Eski sitede
+   Vitrin seçilmiş işleri öne çıkarıyor; burası "hepsi" listesi. Eski sitede
    on proje aynı boyutta on kart halindeydi ve hiçbir sıra duygusu
    yoktu. Yıla bölünce 2023'te üç, 2026'da on iki proje olduğu tek
    bakışta görünüyor — asıl anlatmak istediğimiz şey bu.

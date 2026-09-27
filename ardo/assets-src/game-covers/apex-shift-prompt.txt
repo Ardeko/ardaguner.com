@@ -1,0 +1,19 @@
+Tool: built-in image_gen (image_gen__imagegen)
+
+Original generation prompt:
+Use case: stylized-concept
+Asset type: premium landscape portfolio cover image for the indie browser racing game Apex Shift.
+Primary request: Draw a polished, exciting illustrated racing key art scene in an exact 16:9 landscape canvas, preferably 2048x1152 pixels. The game is a top-down circuit arcade racer with NOS and pack racing, not a futuristic fantasy racer.
+Scene/backdrop: a sweeping charcoal asphalt racing circuit bend, clear red and ivory curb blocks, rich deep green infield, a subtle checkered track marking and small distant grandstand shapes. Environment has a convincing elevated/isometric perspective.
+Subject: exactly three powerful stock racing cars racing tightly through the same bend. A vivid scarlet red lead car with an ivory racing stripe, a golden yellow rival and a cobalt blue rival. Clear believable automobile proportions, all cars point in a consistent racing direction along the curve, four wheels per car, aerodynamic stock car bodies. No brands. The red hero car dominates near the center; rivals form an energetic diagonal pack. Very restrained cyan NOS streak behind the lead car and warm sunlit edges communicate speed.
+Style/medium: beautiful premium hand-painted digital game illustration, confident large graphic shapes, crisp sculpted silhouettes, subtle rich brush texture and controlled detail. Dramatic elevated three-quarter view. Illustrative, not photorealistic and not a gameplay screenshot. Readable and striking at 300 pixels wide.
+Lighting/mood: warm late-afternoon sunlight and cool shaded asphalt, energetic competitive motion, high clarity and rich color, subtle tire trails and motion accents without obscuring vehicles.
+Color palette: racing red #d93c2a, golden yellow #f2b300, cobalt blue, warm ivory #eceade, forest green #2d5a26 and charcoal #3a3934.
+Composition/framing: exact 16:9 horizontal landscape. Keep every car completely visible within the central 80 percent of the canvas, with generous clear environmental margin on all edges. Strong focal point in the central red car, striking visual flow from curved track. Do not crop any car or wheels. Mobile portfolio card composition.
+Constraints: image only, absolutely no text, letters, numbers, logos, sponsorship, watermark, UI, borders or frame. No duplicated malformed cars, floating wheels, sparks, explosions, people or futuristic city. Clean finished art.
+
+Final targeted cleanup prompt:
+Use case: precise-object-edit
+Asset type: landscape game portfolio illustration.
+Edit only the tiny manufacturer-like marks, badges, text and emblems on the three cars. Remove the grille badges, hood emblems and any small decals completely, replacing them with clean continuous painted bodywork or plain black grille mesh as appropriate. Cars must be unbranded, with no text and no logos. Preserve the entire beautiful illustration otherwise: exact 16:9 landscape composition, all three car positions, red lead car with ivory stripes, golden yellow and cobalt blue rivals, warm light, restrained cyan NOS trail, track, greenery, margins, perspective and painterly texture. Do not crop or move any car. Do not add anything.
+

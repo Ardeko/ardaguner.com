@@ -62,13 +62,14 @@ export const PROJECTS = [
   },
   {
     id: 'legendOfRey',
+    featured: 2,
     year: 2024,
     category: 'game',
-    status: 'source',
+    status: 'live',
     platforms: 'DESKTOP',
     tech: ['Python', 'Pygame'],
     image: '/games/legend-of-rey.jpg',
-    links: { github: `${GH}/Legend-Of-Rey` },
+    links: { itch: 'https://ardeko.itch.io/legend-of-rey' },
   },
   {
     id: 'renault',
@@ -104,7 +105,7 @@ export const PROJECTS = [
   },
   {
     id: 'revo',
-    featured: 2,
+    featured: 6,
     year: 2025,
     month: 7,
     category: 'app',
@@ -115,7 +116,6 @@ export const PROJECTS = [
     links: {
       live: 'https://ardekostudios.xyz',
       download: `${GH}/Revo/releases/latest/download/REVO-Setup.exe`,
-      github: `${GH}/Revo`,
     },
   },
   {
@@ -131,7 +131,7 @@ export const PROJECTS = [
   },
   {
     id: 'switchMaster',
-    featured: 3,
+    featured: 5,
     year: 2026,
     month: 5,
     category: 'game',
@@ -173,6 +173,7 @@ export const PROJECTS = [
   },
   {
     id: 'rushville',
+    featured: 3,
     year: 2026,
     month: 6,
     category: 'game',
@@ -180,23 +181,37 @@ export const PROJECTS = [
     platforms: 'IOS · ANDROID',
     tech: ['Godot'],
     image: '/games/rushville.jpg',
-    unverified: true,
-    links: {},
+    links: {
+      appStore: 'https://apps.apple.com/tr/app/rushville/id6808291839?l=tr',
+      googlePlay:
+        'https://play.google.com/store/apps/details?id=com.ardeko.rushville',
+    },
   },
   {
     id: 'skyline',
+    featured: 4,
     year: 2026,
     month: 6,
     category: 'game',
     status: 'live',
     platforms: 'IOS · ANDROID',
     tech: ['Godot'],
-    image: '/games/skyline.jpg',
-    links: {},
+    image: '/games/skyline-swinger-cover.webp',
+    artwork: {
+      width: 1600,
+      height: 900,
+      srcSet: '/games/skyline-swinger-cover-640.webp 640w, /games/skyline-swinger-cover.webp 1600w',
+      sizes: '(min-width: 1328px) 692px, (min-width: 860px) 58vw, 90vw',
+    },
+    links: {
+      appStore:
+        'https://apps.apple.com/tr/app/skyline-swinger/id6807957503?l=tr',
+      googlePlay:
+        'https://play.google.com/store/apps/details?id=com.ardeko.skylineswinger',
+    },
   },
   {
     id: 'sarteks',
-    featured: 4,
     year: 2026,
     month: 6,
     category: 'corporate',
@@ -208,6 +223,7 @@ export const PROJECTS = [
   },
   {
     id: 'forza',
+    featured: 9,
     year: 2026,
     month: 8,
     category: 'game',
@@ -220,14 +236,20 @@ export const PROJECTS = [
   },
   {
     id: 'apex',
-    featured: 1,
+    featured: 7,
     year: 2026,
     month: 8,
     category: 'game',
     status: 'live',
     platforms: 'WEB · BROWSER',
     tech: ['JavaScript', 'Canvas', 'Firebase RTDB', 'Netcode'],
-    image: '/games/apex.webp',
+    image: '/games/apex-shift-cover.webp',
+    artwork: {
+      width: 1600,
+      height: 900,
+      srcSet: '/games/apex-shift-cover-640.webp 640w, /games/apex-shift-cover.webp 1600w',
+      sizes: '(min-width: 1328px) 387px, (min-width: 860px) 33vw, 90vw',
+    },
     links: { play: '/apex-shift/index.html' },
   },
   {
@@ -245,6 +267,7 @@ export const PROJECTS = [
   },
   {
     id: 'torpidodan',
+    featured: 1,
     year: 2026,
     month: 8,
     category: 'game',
@@ -253,11 +276,14 @@ export const PROJECTS = [
     tech: ['React', 'TypeScript', 'Capacitor'],
     image: '/games/torpidodan.svg',
     links: {
-      appStore: 'https://apps.apple.com/app/torpidodan/id6807162427',
+      appStore: 'https://apps.apple.com/tr/app/torpidodan/id6807162427?l=tr',
+      googlePlay:
+        'https://play.google.com/store/apps/details?id=com.ardeko.torpidodan',
     },
   },
   {
     id: 'decoy',
+    featured: 8,
     year: 2026,
     month: 8,
     category: 'game',

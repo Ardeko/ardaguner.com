@@ -666,6 +666,13 @@
   padding: 0.3rem 0.7rem;
 }
 
+@media (max-width: 859px), (pointer: coarse) {
+  .project-link {
+    min-height: 44px;
+    justify-content: center;
+  }
+}
+
 .project-restricted {
   display: inline-flex;
   align-items: center;
@@ -718,6 +725,19 @@
   transform: scale(1.04);
 }
 
+/* Yatay kapakların tamamı her ekranda görünür; hover da kenarları kırpmaz. */
+.bento-media.is-artwork {
+  flex: none;
+}
+
+.bento-media.is-artwork img {
+  object-fit: contain;
+}
+
+.bento-card:hover .bento-media.is-artwork img {
+  transform: none;
+}
+
 .bento-placeholder {
   font-size: 4rem;
   color: var(--stroke-strong);
@@ -740,7 +760,19 @@
 
 @media (min-width: 860px) {
   .bento-card.span-7 { grid-column: span 7; }
+  .bento-card.span-6 { grid-column: span 6; }
   .bento-card.span-5 { grid-column: span 5; }
+  .bento-card.span-4 { grid-column: span 4; }
+
+  /* Üçerli satırdaki kartlar dar; başlık ve iç boşluk ona göre
+     küçülüyor, yoksa "Switch Master: Railway" üç satıra taşıyor. */
+  .bento-card.span-4 .bento-body {
+    padding: 1.25rem;
+  }
+
+  .bento-card.span-4 .bento-title {
+    font-size: clamp(1.25rem, 1.9vw, 1.6rem);
+  }
 }
 
 /* --- Galeri ----------------------------------------------------------- */

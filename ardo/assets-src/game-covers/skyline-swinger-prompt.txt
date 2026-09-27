@@ -1,0 +1,15 @@
+Mode: Built-in image_gen (image_gen.imagegen), new image generation.
+Original generated file: C:\Users\Arda\.codex\generated_images\01a0e27c-2dac-7f00-a819-370d1085d68e\exec-363575ef-e36e-46c2-ae20-1961526a035a.png
+
+Exact prompt:
+
+Use case: stylized-concept
+Asset type: premium landscape portfolio cover artwork for the original mobile arcade game Skyline Swinger. Create a brand new image.
+Primary request: a beautifully designed nighttime rooftop rope-swinging adventure illustration, cinematic and sharply readable as a small web portfolio card.
+Scene/backdrop: a layered side-scrolling city at blue-purple dusk, angular skyscrapers receding into atmospheric indigo haze. Thin cyan and occasional magenta illuminated roof rims and scattered warm amber windows. A beautiful large ivory moon behind the center action, a few understated stars. Rooftops rise from the lower third but do not obscure the hero.
+Subject: exactly one small original teal capsule-shaped masked arcade hero swinging dynamically to the right. Rounded compact stylized body, short simple limbs, round dark teal head and a single narrow glowing amber horizontal visor. Dark teal suit #1c6b72 with deeper #0e3b40 shadows, restrained cyan rim light. One raised hand clearly grips a single taut slender white cord; the cord climbs diagonally to a small glowing gold ring anchor above and to the right. Show a graceful thin cyan motion arc and a few fading teal trail dots behind the hero. Silhouette should clearly communicate joyful speed and swinging, feet trailing, no cape, no spider motif.
+Style/medium: premium polished stylized 2D game key art, clean precise shapes, sophisticated lighting, illustrative atmospheric depth, tastefully limited subtle gradients, rich clear contrast. Not a screenshot, not a realistic person or 3D toy. Cohesive professional art direction, not generic crowded game art.
+Composition/framing: exact 16:9 horizontal landscape canvas, preferably 2048x1152. Whole hero near the center (around 47% horizontal, 48% vertical) and fully visible with a crisp silhouette against moonlit haze; visually important hero, entire rope, and ring lie inside the central 80% of the frame with generous edge margins. Hero occupies about 26% canvas height. Ring about 64% horizontal and 18% vertical. Side buildings naturally frame rather than crowd. Readable composition at 300px wide. Keep all key action visible when entire 16:9 image is shown.
+Color palette: deep midnight navy #0a0e1a and #14203c, purple #2c2444, cyan #8fe3ec accents, warm window lights #ffd98a, gold #d9c45a, white rope #eef0f5. Saturated yet refined cyan-purple night atmosphere.
+Constraints: no text, no letters, no title, no logo, no watermark, no UI, no border, no collage, no split panels, no additional characters, no heavy blur, no excessive bloom, no photographic texture. Image itself fills the entire horizontal 16:9 frame.
+

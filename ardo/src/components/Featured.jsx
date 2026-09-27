@@ -3,15 +3,19 @@ import ProjectLinks from "./ProjectLinks";
 import { featuredProjects } from "../data/projects";
 
 /* ------------------------------------------------------------------
-   Vitrin — dört seçilmiş iş.
+   Vitrin — seçilmiş işler.
 
    Sıra `projects.js` içindeki `featured` numarasından geliyor, burada
-   sabit değil: 1 REVO, 2 Switch Master, 3 Sarteks, 4 Legend of Rey.
+   sabit değil: 1 Torpidodan, 2 Legend of Rey, 3 Rushville, 4 Skyline
+   Swinger, 5 Switch Master, 6 REVO, 7 Apex Shift, 8 Decoy, 9 Forza
+   Orbit.
 
-   Izgara 12 sütun ve açıklıklar 7/5/5/7 diye dönüşüyor — dört eşit
-   kutu yerine iki farklı genişlik, gözün satır satır taramasını
-   engelliyor. Eski sitede on kartın hepsi aynı boyuttaydı, o yüzden
-   hiçbiri öne çıkmıyordu.
+   Izgara 12 sütun. İlk dört iş büyük kartlarda, açıklıklar 7/5/5/7
+   diye dönüşüyor — dört eşit kutu yerine iki farklı genişlik, gözün
+   satır satır taramasını engelliyor. Geri kalanlar üçerli satırlara
+   (4/4/4) iniyor; son satır eksik kalırsa kartlar genişleyip satırı
+   dolduruyor (iki kart 6/6, tek kart tam genişlik), sağda boşluk
+   kalmıyor.
 
    Görseli olmayan proje kırık resim basmıyor: yerine numarasının
    büyük yazıldığı sade bir yüzey geliyor.
@@ -21,6 +25,16 @@ import { featuredProjects } from "../data/projects";
     `about.os` silindiğinde site tam olarak böyle beyaz ekrana düştü. */
 const metniAl = (strings, id) =>
   strings.projectItems[id] || { title: id, desc: "" };
+
+const BUYUK = 4;
+
+/** `i`. kartın 12 sütunda kaç sütun kaplayacağı. */
+function aciklik(i, toplam) {
+  if (i < BUYUK) return i % 4 === 0 || i % 4 === 3 ? 7 : 5;
+  const j = i - BUYUK;
+  const satirdaki = Math.min(3, toplam - BUYUK - (j - (j % 3)));
+  return 12 / satirdaki;
+}
 
 function Featured({ strings }) {
   const isler = featuredProjects();
@@ -50,11 +64,20 @@ function Featured({ strings }) {
                 as="article"
                 key={p.id}
                 delay={i * 80}
-                className={`bento-card span-${i % 4 === 0 || i % 4 === 3 ? 7 : 5}`}
+                className={`bento-card span-${aciklik(i, isler.length)}`}
               >
-                <div className="bento-media">
+                <div className={`bento-media${p.artwork ? " is-artwork" : ""}`}>
                   {p.image ? (
-                    <img src={p.image} alt={metin.title} loading="lazy" decoding="async" />
+                    <img
+                      src={p.image}
+                      srcSet={p.artwork?.srcSet}
+                      sizes={p.artwork?.sizes}
+                      width={p.artwork?.width}
+                      height={p.artwork?.height}
+                      alt={metin.title}
+                      loading="lazy"
+                      decoding="async"
+                    />
                   ) : (
                     <span className="bento-placeholder display" aria-hidden="true">
                       {String(i + 1).padStart(2, "0")}

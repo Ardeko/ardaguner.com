@@ -121,7 +121,7 @@ function App() {
                   projelere çarpıyor, "bunları yapan kim" sorusunun
                   cevabını sayfanın dibinde buluyordu.
 
-                  Öne çıkanlardan sonra çizelge geliyor (dört işten
+                  Öne çıkanlardan sonra çizelge geliyor (seçilmiş işlerden
                   tüm kataloga), arşiv en sonda: derinleşmek isteyen
                   oraya kadar iniyor. */}
               <Hero language={language} strings={strings} roles={roller} />

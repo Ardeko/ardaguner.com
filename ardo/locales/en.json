@@ -100,7 +100,8 @@
       "play": "Play",
       "download": "Download",
       "appStore": "App Store",
-      "googlePlay": "Google Play"
+      "googlePlay": "Google Play",
+      "itch": "itch.io"
     }
   },
   "projectItems": {
@@ -205,7 +206,7 @@
     "eyebrow": "Selected work",
     "titleLead": "Featured",
     "titleAccent": "projects",
-    "lede": "Four selected projects: a browser racing game, a communication app, a mobile game and a corporate site."
+    "lede": "On the App Store, Google Play, itch.io or right in the browser — all live, all ready to try."
   },
   "gallery": {
     "eyebrow": "",

@@ -9,13 +9,16 @@ import Icon from "./Icon";
    kaynak kodu. Ziyaretçinin ilk göreceği şey en doğrudan eylem olmalı.
 ------------------------------------------------------------------- */
 
-const SIRA = ["play", "live", "appStore", "googlePlay", "download", "github"];
+const SIRA = ["play", "live", "appStore", "googlePlay", "itch", "download", "github"];
 
+// Mağaza linkleri genel bir indirme oku yerine mağazanın kendi
+// logosunu taşıyor — ziyaretçi nereye gideceğini okumadan görüyor.
 const IKON = {
   play: "play",
   live: "rocket",
-  appStore: "download",
-  googlePlay: "download",
+  appStore: "apple",
+  googlePlay: "googleplay",
+  itch: "itch",
   download: "download",
   github: "github",
 };
@@ -45,7 +48,7 @@ function ProjectLinks({ project, labels, restrictedText, compact = false }) {
             key={k}
             href={href}
             className={`project-link ${
-             i === 0 || k === "googlePlay" ? "is-primary" : ""
+              i === 0 || k === "googlePlay" || k === "download" ? "is-primary" : ""
             }`}
             {...(dis ? { target: "_blank", rel: "noopener noreferrer" } : {})}
           >

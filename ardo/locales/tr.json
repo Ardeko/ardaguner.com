@@ -100,7 +100,8 @@
       "play": "Oyna",
       "download": "İndir",
       "appStore": "App Store",
-      "googlePlay": "Google Play"
+      "googlePlay": "Google Play",
+      "itch": "itch.io"
     }
   },
   "projectItems": {
@@ -205,7 +206,7 @@
     "eyebrow": "Seçilmiş işler",
     "titleLead": "Öne çıkan",
     "titleAccent": "projeler",
-    "lede": "Dört seçilmiş iş: bir tarayıcı yarış oyunu, bir iletişim uygulaması, bir mobil oyun ve bir kurumsal site."
+    "lede": "App Store’da, Google Play’de, itch.io’da ya da doğrudan tarayıcıda — hepsi yayında, hepsi hemen denenebilir."
   },
   "gallery": {
     "eyebrow": "",
