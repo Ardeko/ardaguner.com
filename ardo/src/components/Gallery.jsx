@@ -6,15 +6,16 @@ import { withImage, featuredProjects } from "../data/projects";
    Galeri — iki sütun, kaydırmayla ters yönlerde kayıyor.
 
    Vitrinde zaten görünen işler buraya girmiyor, yoksa aynı görsel
-   sayfada iki kez çıkardı.
+   sayfada iki kez çıkardı. Görseli olmayan iş de girmiyor: bir işi
+   arşivden çıkarmak için `projects.js`'te `image: null` yeterli,
+   çizelgede kalmaya devam ediyor.
 
    Paralaks tek bir scroll dinleyicisi ve iki `transform` ile yapıldı;
    bunun için bir animasyon kütüphanesi kurmaya değmez. Dinleyici
    `passive`, iş rAF içinde yapılıyor, yani kaydırma bloklanmıyor.
 
-   `/shots/*` dosyaları henüz yok. Yüklenemeyen görsel kırık ikon
-   basmasın diye karo `onError`'da kendini gizliyor — dosyalar gelince
-   kendiliğinden görünür olacaklar, kod değişmeyecek.
+   Yüklenemeyen görsel kırık ikon basmasın diye karo `onError`'da
+   kendini gizliyor.
 ------------------------------------------------------------------- */
 
 /** Locale'de karşılığı olmayan proje sayfayı düşürmesin — bugün
@@ -30,6 +31,8 @@ function Gallery({ strings }) {
   const kareler = withImage().filter((p) => !oneCikanIds.has(p.id));
   const orta = Math.ceil(kareler.length / 2);
   const sutunlar = [kareler.slice(0, orta), kareler.slice(orta)];
+  // İki karo tek satır demek; CSS o durumda sütun basamağını kaldırıyor.
+  const cift = kareler.length === 2;
 
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -82,7 +85,7 @@ function Gallery({ strings }) {
           {strings.gallery.lede && <p className="lede">{strings.gallery.lede}</p>}
         </Reveal>
 
-        <div className="gallery-grid">
+        <div className={`gallery-grid${cift ? " is-pair" : ""}`}>
           {sutunlar.map((sutun, si) => (
             <div
               key={si}

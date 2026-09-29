@@ -797,6 +797,14 @@
   margin-top: clamp(1.5rem, 6vw, 5rem);
 }
 
+/* Tek satırlık arşivde (iki karo) basamak yok. Basamak sütunlar
+   uzayınca ritim katıyor; tek satırda sağ kart sadece kaymış gibi
+   duruyordu. Paralaks yine çalışıyor ve bölüm ekranın ortasına
+   geldiğinde iki kartı aynı hizaya oturtuyor. */
+.gallery-grid.is-pair .gallery-col:last-child {
+  margin-top: 0;
+}
+
 .gallery-item {
   margin: 0;
   border: 1px solid var(--stroke);
@@ -805,9 +813,11 @@
   background: var(--surface);
 }
 
+/* Arşivdeki görseller 16:9 sunum kartları (1200×675). 16:10'a
+   kırpınca kartın kenarındaki logo ve yıl rozeti kesiliyordu. */
 .gallery-item img {
   width: 100%;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 16 / 9;
   object-fit: cover;
   transition: transform 0.6s var(--ease);
 }

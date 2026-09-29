@@ -89,7 +89,7 @@ export const PROJECTS = [
     status: 'live',
     platforms: 'WEB',
     tech: ['React', 'Vite'],
-    image: '/shots/ardaguner.webp',
+    image: null,
     links: { github: `${GH}/ardaguner.com`, live: 'https://ardaguner.com' },
   },
   {
@@ -154,7 +154,7 @@ export const PROJECTS = [
     status: 'live',
     platforms: 'WEB',
     tech: ['React 19', 'Vite 8', 'Tailwind v4'],
-    image: '/shots/ardekostudios.webp',
+    image: null,
     links: {
       github: `${GH}/ardekostudios.com`,
       live: 'https://ardekostudios.com',
@@ -168,7 +168,7 @@ export const PROJECTS = [
     status: 'wip',
     platforms: 'IOS · ANDROID',
     tech: ['Godot'],
-    image: '/games/kafa.jpg',
+    image: null,
     links: {},
   },
   {
@@ -260,7 +260,7 @@ export const PROJECTS = [
     status: 'live',
     platforms: 'WEB',
     tech: ['HTML', 'CSS', 'SEO'],
-    image: null,
+    image: '/shots/dny.webp',
     links: {
       live: 'https://dny.com.tr/',
     },
