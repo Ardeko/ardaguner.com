@@ -839,6 +839,53 @@
   font-style: italic;
 }
 
+/* Canlı linki olan karo. Link başlıkta duruyor, `::after` ile bütün
+   karoya yayılıyor. Odak halkası da o katmanda: varsayılan halka
+   yalnızca başlığın etrafını çizerdi, bu hâli kart kenarını izliyor. */
+.gallery-item.is-link {
+  position: relative;
+  transition: border-color var(--base) ease;
+}
+
+.gallery-item.is-link:hover {
+  border-color: var(--stroke-strong);
+}
+
+.gallery-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.gallery-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: calc(var(--radius-lg) - 1px);
+}
+
+.gallery-link:focus-visible {
+  outline: none;
+}
+
+.gallery-link:focus-visible::after {
+  outline: 2px solid var(--text);
+  outline-offset: -3px;
+}
+
+.gallery-link .icon {
+  color: var(--muted);
+  transition: transform var(--fast) ease, color var(--fast) ease;
+}
+
+.gallery-item.is-link:hover .icon,
+.gallery-link:focus-visible .icon {
+  color: var(--text);
+  transform: translate(2px, -2px);
+}
+
 /* --- Çizelge ----------------------------------------------------------- */
 
 .filters {

@@ -202,6 +202,12 @@ function Icon({ name, size = 20, className = "" }) {
           <path d="M16 12.5l1.8-1.8a3 3 0 00-4.2-4.2L12 8.3" />
         </svg>
       );
+    case "external":
+      return (
+        <svg {...props}>
+          <path d="M7 17L17 7M9 7h8v8" />
+        </svg>
+      );
     case "ban":
       return (
         <svg {...props}>

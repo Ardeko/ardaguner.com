@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import Reveal from "../Reveal";
+import Icon from "./Icon";
 import { withImage, featuredProjects } from "../data/projects";
 
 /* ------------------------------------------------------------------
@@ -94,8 +95,18 @@ function Gallery({ strings }) {
             >
               {sutun.map((p) => {
                 const metin = metniAl(strings, p.id);
+                // Karo canlı siteye gidiyor. Link başlıkta; CSS onu
+                // `::after` ile bütün karoya yayıyor, figure yapısı
+                // bozulmuyor ve ekran okuyucu linki tek isimle okuyor.
+                // Canlı linki olmayan iş düz karo olarak kalıyor.
+                const canli = p.links?.live;
+                const baslik = <span className="display">{metin.title}</span>;
                 return (
-                  <Reveal as="figure" key={p.id} className="gallery-item">
+                  <Reveal
+                    as="figure"
+                    key={p.id}
+                    className={`gallery-item${canli ? " is-link" : ""}`}
+                  >
                     <img
                       src={p.image}
                       alt={metin.title}
@@ -106,7 +117,19 @@ function Gallery({ strings }) {
                       }}
                     />
                     <figcaption>
-                      <span className="display">{metin.title}</span>
+                      {canli ? (
+                        <a
+                          className="gallery-link"
+                          href={canli}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {baslik}
+                          <Icon name="external" size={15} />
+                        </a>
+                      ) : (
+                        baslik
+                      )}
                       <span className={`status status-${p.status}`}>
                         {strings.projectLabels.status[p.status]}
                       </span>
