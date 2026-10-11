@@ -354,6 +354,32 @@
   color: var(--text);
 }
 
+/* "Verilerini silme" bölümündeki tek bağlantı: iletişim kartıyla aynı
+   kalıp, sağda ok. Mağaza incelemesi bu bağlantıyı arıyor; düz metin
+   içinde kaybolmasın. */
+.pp-delete-link {
+  position: relative;
+  max-width: 30rem;
+  margin-top: 1.15rem;
+  padding-right: 2.75rem;
+  overflow-wrap: anywhere;
+}
+
+.pp-delete-link::after {
+  content: "→";
+  position: absolute;
+  right: 1.1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  transition: transform var(--fast) ease, color var(--fast) ease;
+}
+
+.pp-delete-link:hover::after {
+  color: var(--text);
+  transform: translate(3px, -50%);
+}
+
 @media (max-width: 900px) {
   .pp {
     padding-top: 6rem;

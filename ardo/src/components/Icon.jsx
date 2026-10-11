@@ -237,6 +237,35 @@ function Icon({ name, size = 20, className = "" }) {
           <path d="M12 20s-7-4.4-9.5-9A5 5 0 0112 6a5 5 0 019.5 5c-2.5 4.6-9.5 9-9.5 9z" />
         </svg>
       );
+    case "phone":
+      return (
+        <svg {...props}>
+          <rect x="6.5" y="2.5" width="11" height="19" rx="2.5" />
+          <path d="M10.5 18.5h3" />
+        </svg>
+      );
+    case "trash":
+      return (
+        <svg {...props}>
+          <path d="M4 7h16" />
+          <path d="M9.5 7V5a1.5 1.5 0 011.5-1.5h2A1.5 1.5 0 0114.5 5v2" />
+          <path d="M6 7l1 12.5a1.5 1.5 0 001.5 1.5h7a1.5 1.5 0 001.5-1.5L18 7" />
+          <path d="M10 11v6M14 11v6" />
+        </svg>
+      );
+    case "check":
+      return (
+        <svg {...props}>
+          <path d="M5 12.5l4.5 4.5L19 7.5" />
+        </svg>
+      );
+    case "keep":
+      return (
+        <svg {...props}>
+          <path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.3-7.5 9.5-4.3-1.2-7.5-4.9-7.5-9.5V6L12 3z" />
+          <path d="M9 12l2 2 4-4" />
+        </svg>
+      );
     default:
       return null;
   }

@@ -10,6 +10,7 @@ import { tips } from "./tips";
 import Particles from "./Particles";
 import { useKonamiCode, ConfettiBurst } from "./KonamiConfetti";
 import PrivacyPolicy from "./PrivacyPolicy";
+import AccountDeletion from "./AccountDeletion";
 import CaseStudy from "./CaseStudy";
 import StudioSpotlight from "./StudioSpotlight";
 
@@ -36,11 +37,20 @@ const CodeLab = lazy(() => import("./CodeLab"));
 
    ROTALAR DEĞİŞMEDİ. `/privacy-policy` Google Play kaydında geçtiği
    için kırılamaz; `/codelab` de aynı adreste ve hâlâ tembel yükleniyor.
+   `/torpidodan/hesap-silme` da mağaza kayıtlarında geçiyor (hesap
+   silme adresi) — o da kırılamaz.
 ------------------------------------------------------------------- */
+
+const SILME_YOLU = "/torpidodan/hesap-silme";
 
 function SkipLink({ label }) {
   const { pathname } = useLocation();
-  const hedef = pathname === "/privacy-policy" ? "#privacy" : "#about";
+  const hedef =
+    pathname === "/privacy-policy"
+      ? "#privacy"
+      : pathname === SILME_YOLU
+        ? "#hesap-silme"
+        : "#about";
   return (
     <a href={hedef} className="skip-link">
       {label}
@@ -69,7 +79,12 @@ function App() {
     document.documentElement.lang = language;
   }, [language]);
 
-  const [yukleniyor, setYukleniyor] = useState(true);
+  // Hesap silme sayfası mağaza incelemesinden ve uygulamayı silmiş
+  // kullanıcılardan doğrudan açılıyor; iki saniyelik perde orada
+  // yalnızca bilgiyi geciktirir.
+  const [yukleniyor, setYukleniyor] = useState(
+    () => typeof window === "undefined" || window.location.pathname.replace(/\/$/, "") !== SILME_YOLU
+  );
   const bitir = useCallback(() => setYukleniyor(false), []);
 
   const [celebrate, setCelebrate] = useState(false);
@@ -153,6 +168,9 @@ function App() {
         />
 
         <Route path="/privacy-policy" element={<PrivacyPolicy language={language} />} />
+
+        {/* İki dilli, oturumsuz. Statik kopyası vite.config.js'te. */}
+        <Route path={SILME_YOLU} element={<AccountDeletion />} />
 
         {/* Vaka calismasi. Icerik locales icinde; yeni vaka eklemek
             burada bir rota ve orada bir anahtar demek. */}

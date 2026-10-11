@@ -1,0 +1,472 @@
+/* ------------------------------------------------------------------
+   Torpidodan — hesap ve veri silme.
+
+   Gizlilik politikasının kardeşi: aynı .pp iskeleti, meta satırı ve
+   iletişim kartları (PrivacyPolicy.css) kullanılıyor; burada yalnızca
+   bu sayfaya özgü parçalar var. Yeni renk yok. Tek vurgu, "önerilen"
+   rozetindeki --live noktası — o da bilgi taşıyor, süs değil.
+------------------------------------------------------------------- */
+
+.dl {
+  overflow-wrap: anywhere;
+}
+
+/* --- Hero --------------------------------------------------------- */
+
+.dl-hero {
+  max-width: 62rem;
+  margin-bottom: clamp(3rem, 7vw, 5rem);
+}
+
+.dl-app {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 1.75rem;
+}
+
+.dl-app-mark {
+  width: 3rem;
+  height: 3rem;
+}
+
+.dl-app-name {
+  display: block;
+  font-size: 0.98rem;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 0.15rem;
+}
+
+.dl-app .eyebrow {
+  display: block;
+  font-size: 0.64rem;
+}
+
+.dl-hero h1 {
+  font-size: clamp(2.25rem, 6.5vw, 4.25rem);
+  margin: 0;
+  overflow-wrap: normal;
+  text-wrap: balance;
+}
+
+.dl-hero-en {
+  margin: 0.5rem 0 0;
+  font-size: clamp(1.15rem, 2.6vw, 1.6rem);
+  color: var(--faint);
+  line-height: 1.2;
+}
+
+.dl-jump {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.75rem;
+}
+
+.dl-jump a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.45rem 0.95rem 0.45rem 0.45rem;
+  border: 1px solid var(--stroke-strong);
+  border-radius: 999px;
+  color: var(--text);
+  font-size: 0.82rem;
+  text-decoration: none;
+  transition: background var(--fast) ease, border-color var(--fast) ease;
+}
+
+.dl-jump a:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.dl-jump a span {
+  display: grid;
+  place-items: center;
+  width: 1.65rem;
+  height: 1.65rem;
+  border-radius: 50%;
+  background: var(--surface-hover);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.dl-hero .pp-meta {
+  max-width: 46rem;
+  margin-top: 1.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--stroke);
+  gap: 0.85rem 2rem;
+}
+
+.dl-hero .pp-meta a {
+  display: block;
+  width: fit-content;
+  color: var(--text);
+  text-decoration: none;
+  border-bottom: 1px solid var(--stroke-strong);
+  transition: border-color var(--fast) ease;
+}
+
+.dl-hero .pp-meta a + a {
+  margin-top: 0.3rem;
+}
+
+.dl-hero .pp-meta a:hover {
+  border-color: var(--text);
+}
+
+/* --- Dil bloğu ---------------------------------------------------- */
+
+.dl-lang {
+  scroll-margin-top: 6rem;
+}
+
+.dl-lang + .dl-lang {
+  margin-top: clamp(4rem, 9vw, 6.5rem);
+}
+
+.dl-lang-rule {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.dl-lang-rule::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--stroke);
+}
+
+.dl-lang-code {
+  padding: 0.25rem 0.55rem;
+  border: 1px solid var(--stroke-strong);
+  border-radius: 6px;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--text);
+}
+
+.dl-lang-name {
+  font-size: 0.7rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--faint);
+  font-weight: 500;
+}
+
+.dl-intro {
+  text-wrap: balance;
+  font-size: clamp(1.7rem, 3.6vw, 2.5rem);
+  line-height: 1.12;
+  max-width: 24ch;
+  margin: 0 0 clamp(1.5rem, 3.5vw, 2.25rem);
+  overflow-wrap: normal;
+}
+
+/* --- İki yol ------------------------------------------------------ */
+
+.dl-ways {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.dl-way {
+  display: flex;
+  flex-direction: column;
+  padding: clamp(1.25rem, 3vw, 1.75rem);
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-lg);
+  background: var(--bg-elevated);
+}
+
+.dl-way--primary {
+  border-color: var(--stroke-strong);
+  background: var(--surface);
+}
+
+.dl-way-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1.15rem;
+}
+
+.dl-way-icon {
+  display: grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 12px;
+  border: 1px solid var(--stroke);
+  background: var(--bg);
+  color: var(--text);
+}
+
+.dl-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--stroke);
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.dl-badge--live::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--live);
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.15);
+}
+
+.dl-way h3 {
+  font-size: 1.12rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  margin: 0 0 0.9rem;
+}
+
+.dl-way p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.93rem;
+  line-height: 1.65;
+}
+
+.dl-way p + p {
+  margin-top: 0.75rem;
+}
+
+.dl-way q {
+  color: var(--text);
+  quotes: "“" "”";
+}
+
+.dl-email {
+  font-weight: 500;
+  color: var(--text);
+}
+
+/* Adımlar: numaralı dikey yol, aradaki ince çizgi sırayı taşıyor.
+   Metin uygulamadaki menü adlarıyla birebir aynı. */
+.dl-steps {
+  list-style: none;
+  margin: 0.15rem 0 1.25rem;
+  padding: 0;
+}
+
+.dl-steps li {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.5rem 0;
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+.dl-steps li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: calc(0.8rem - 0.5px);
+  top: calc(50% + 0.8rem + 3px);
+  width: 1px;
+  height: calc(100% - 1.6rem - 6px);
+  background: var(--stroke-strong);
+}
+
+.dl-step-num {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  border: 1px solid var(--stroke-strong);
+  background: var(--bg);
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.dl-steps li:last-child .dl-step-num {
+  background: var(--text);
+  border-color: var(--text);
+  color: var(--bg);
+}
+
+.dl-fine {
+  font-size: 0.85rem !important;
+  color: var(--faint) !important;
+  margin-top: auto !important;
+  padding-top: 0.25rem;
+}
+
+.dl-mail {
+  align-self: flex-start;
+  margin-top: 1.25rem;
+  padding: 0.7rem 1.2rem;
+}
+
+/* --- Ne silinir / Ne kalır ---------------------------------------- */
+
+.dl-split {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+  margin-top: 0.85rem;
+}
+
+.dl-col {
+  padding: clamp(1.25rem, 3vw, 1.75rem);
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-lg);
+}
+
+.dl-col h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0 0 1rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 500;
+  line-height: 1;
+}
+
+.dl-col h3 .icon {
+  color: var(--text);
+}
+
+.dl-col ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.dl-col li {
+  position: relative;
+  padding: 0.62rem 0 0.62rem 1.6rem;
+  border-top: 1px solid var(--stroke);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.dl-col li:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.dl-col li::before {
+  position: absolute;
+  left: 0.15rem;
+  font-size: 0.85rem;
+  line-height: 1.55;
+}
+
+.dl-col--gone li::before {
+  content: "×";
+  color: var(--faint);
+}
+
+.dl-col--gone li {
+  color: var(--text);
+}
+
+.dl-col--kept {
+  background: var(--bg-elevated);
+}
+
+.dl-col--kept li::before {
+  content: "";
+  top: calc(0.62rem + 0.55em);
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+
+.dl-col--kept li:first-child::before {
+  top: 0.55em;
+}
+
+/* --- Not ---------------------------------------------------------- */
+
+.dl-note {
+  display: flex;
+  gap: 1rem;
+  align-items: baseline;
+  margin-top: 0.85rem;
+  padding: 1.1rem clamp(1.25rem, 3vw, 1.75rem);
+  border: 1px dashed var(--stroke-strong);
+  border-radius: var(--radius);
+}
+
+.dl-note-label {
+  flex-shrink: 0;
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.dl-note p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+
+/* --- Alt ---------------------------------------------------------- */
+
+.dl-foot {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.75rem;
+  margin-top: clamp(3.5rem, 8vw, 5.5rem);
+  padding-top: 2rem;
+  border-top: 1px solid var(--stroke);
+}
+
+/* --- Kırılımlar --------------------------------------------------- */
+
+@media (max-width: 860px) {
+  .dl-ways,
+  .dl-split {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .dl-note {
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .dl-mail {
+    align-self: stretch;
+    justify-content: center;
+  }
+  .dl-hero .pp-meta {
+    flex-direction: column;
+  }
+}

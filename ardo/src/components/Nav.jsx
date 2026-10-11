@@ -184,6 +184,17 @@ function Nav({ language, setLanguage, strings }) {
         >
           Code Lab
         </Link>
+        {/* Mobilde alt bilgiye inmeden ulaşılsın diye; mağaza
+            incelemesi ve oyuncular politikayı en çok telefondan açıyor. */}
+        <Link
+          to="/privacy-policy"
+          onClick={kapat}
+          className={pathname === "/privacy-policy" ? "is-current" : ""}
+          aria-current={pathname === "/privacy-policy" ? "page" : undefined}
+          style={{ transitionDelay: `${acik ? 120 + (linkler.length + 1) * 55 : 0}ms` }}
+        >
+          {language === "tr" ? "Gizlilik Politikası" : "Privacy Policy"}
+        </Link>
       </div>
     </header>
   );
