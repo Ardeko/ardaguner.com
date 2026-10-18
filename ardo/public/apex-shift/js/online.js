@@ -19,6 +19,9 @@ import {ONLINE_TRACKS,trackById,buildOnlineTrack,paintOnlineTrack,projectToTrack
 import {vehById,vehiclesFor,defaultVehFor,applyDamage,
         PIT_REPAIR_PER_S,PIT_CRAWL} from './online/vehicles.js';
 import {createField,stepField,botPose,serializeBots,adoptBots,MAX_FIELD} from './online/bots.js';
+import {specToDef,decodeSpec,encodeSpec} from './draw/geometry.js';
+import {createTiming} from './draw/timing.js';
+import {loadDraft} from './draw/editor.js';
 
 /* ── sabitler ───────────────────────────── */
 const SYNC_MS=450, RACE_SYNC_MS=220;
@@ -49,8 +52,23 @@ let T=null,trackImg=null,V=null,raceLaps=3,raceId='',isNight=false;
 let botField=null,lastStandings=[],cautionUntil=0;
 let cam={x:0,y:0,z:1},camReady=false;
 
-/* Lobide host'un seçtiği ayar; herkese meta üzerinden yayılıyor. */
-let cfg={trackId:'oval',vehId:'f4',night:0,bots:0,botLevel:2};
+/* Lobide host'un seçtiği ayar; herkese meta üzerinden yayılıyor.
+   laps: 0 pistin kendi tur sayısı · -1 antrenman (sınırsız tur) · N tur.  */
+let cfg={trackId:'oval',vehId:'f4',night:0,bots:0,botLevel:2,laps:0};
+
+/* Pist Çiz.
+   Tek başına mod (offline) ağı hiç kullanmıyor: aynı oda mantığı bellekteki
+   bir odaya yazıp okuyor, böylece lobi, geri sayım, botlar ve podyum
+   olduğu gibi çalışıyor. Çizilen pist odada ayrı bir /track düğümünde
+   (paylaşım koduyla) duruyor; ayar düğümü (meta) eskisi gibi küçük kalıyor
+   ve /track yazılamazsa yerleşik pistlerle oda yine çalışıyor.          */
+let offline=false, localRoom=null;
+let customSpec=null;              // bu oturumda bizim çizdiğimiz pist
+let roomTrackCode='';             // odadaki /track kodu (ağdan ya da bizden)
+let onExit=null;                  // tek başına / editörden gelince çıkışta dönülecek yer
+let practice=false, timing=null;  // antrenman: sınırsız tur, sektörler, hayalet
+let lobbyBgKey='';                // lobide arkadaki pist hangi ayarla çizildi
+let pickerKey='';                 // pist seçicideki "çizilen pist" kartı neyi gösteriyor
 
 /* ── motor sesi ─────────────────────────── */
 let engineOsc=null,engineGain=null,engineFilter=null;
@@ -94,6 +112,7 @@ const lobbyPanel=$('lobbyPanel'),lpLobby=$('lpLobby');
 const lpRoomCode=$('lpRoomCode');
 const trackPicker=$('trackPicker'),vehPicker=$('vehPicker'),colorPicker=$('colorPicker');
 const botCount=$('botCount'),botLevel=$('botLevel'),nightToggle=$('nightToggle');
+const lapCount=$('lapCount'),editTrackBtn=$('editTrackBtn'),inviteBtn=$('inviteBtn');
 const lpPlayerList=$('lpPlayerList'),lpCountLabel=$('lpCountLabel');
 const startRaceBtn=$('startRaceBtn'),hostNote=$('hostNote');
 const spectateEl=$('spectate'),spectateText=$('spectateText');
@@ -116,7 +135,39 @@ function nowSync(){return Date.now()+clockOffset;}
 function safeN(v,f){return isFinite(Number(v))?Number(v):f;}
 function randRoom(){const C='ABCDEFGHJKLMNPQRTVWXYZ23456789';let s='';for(let i=0;i<5;i++)s+=C[Math.random()*C.length|0];return s;}
 function sanitRoom(v){return(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,8);}
-const trackCls=id=>trackById(id).mode==='nascar'?'nascar':'normal';
+/* Ayardan pist tanımı. Çizilen pistin tek kaynağı odadaki /track kodu:
+   host da kendi yerel kopyasını değil odaya yazılanı kullanıyor, yoksa
+   yükleme başarısız olduğunda host başka, misafir başka pistte yarışırdı.
+   Kod henüz gelmediyse yerleşik ovale düşülüyor.                         */
+let defCache={code:'',def:null};
+function customDef(){
+  const code=roomTrackCode;
+  if(!code) return null;
+  if(defCache.code!==code){
+    const spec=decodeSpec(code);
+    defCache={code,def:spec?specToDef(spec):null};
+  }
+  return defCache.def;
+}
+function defFor(c){
+  if(c&&c.trackId==='custom') return customDef()||trackById('oval');
+  return trackById(c?c.trackId:'oval');
+}
+const trackCls=c=>defFor(c).mode==='nascar'?'nascar':'normal';
+/* Ağa giden ayar. Yeni "laps" alanı yalnız varsayılandan farklıysa yazılıyor:
+   sunucu kuralları ayar alanlarını sıkı denetliyorsa bile yerleşik pistlerle
+   kurulan oda eskisi gibi çalışsın, risk yalnız yeni özellikte kalsın.    */
+function netCfg(c){
+  const out={trackId:c.trackId,vehId:c.vehId,night:c.night,bots:c.bots,botLevel:c.botLevel};
+  if((c.laps|0)!==0) out.laps=c.laps|0;
+  return out;
+}
+/* Antrenman/tur ayarı → bu yarışın tur sayısı (antrenmanda 0 = sınırsız). */
+function lapsFor(c,def){
+  const l=c?c.laps|0:0;
+  if(l===-1) return 0;
+  return l>0?l:(def.laps||3);
+}
 const liveriesFor=cls=>cls==='nascar'?STOCK_LIVERIES:LIVERIES.filter(l=>l.pick);
 
 /* ── ağ katmanı ─────────────────────────── */
@@ -144,30 +195,64 @@ async function fbFetch(url,opts){
 function netUp(){ netFails=0; if(netOk!==true){ netOk=true; setConn(true); } }
 function netDown(){ netFails++; if(netFails>=NET_FAIL_LIMIT&&netOk!==false){ netOk=false; setConn(false); } }
 
+/* Ağdan (ya da tek başına moddaki bellek odasından) gelen ham odayı
+   güvenli bir duruma çevir. İki mod aynı ayrıştırıcıdan geçiyor.          */
+function parseRoom(raw){
+  const meta=(raw&&raw.meta&&typeof raw.meta==='object')?raw.meta:{};
+  const ph=meta.phase, mc=(meta.cfg&&typeof meta.cfg==='object')?meta.cfg:{};
+  const tr=raw&&raw.track;
+  return{
+    phase:(ph==='racing'||ph==='results')?ph:'lobby',
+    raceStartAt:safeN(meta.raceStartAt,0),
+    endedAt:safeN(meta.endedAt,0),
+    raceId:String(meta.raceId||''),
+    fieldSeed:safeN(meta.fieldSeed,1),
+    cfg:{trackId:String(mc.trackId||'oval'),
+         vehId:String(mc.vehId||'f4'),
+         night:safeN(mc.night,0)?1:0,
+         bots:clamp(safeN(mc.bots,0),0,MAX_FIELD),
+         botLevel:clamp(safeN(mc.botLevel,2),0,3),
+         laps:clamp(Math.round(safeN(mc.laps,0)),-1,20)},
+    players:(raw&&raw.players&&typeof raw.players==='object')?raw.players:{},
+    bots:(raw&&raw.bots&&typeof raw.bots==='object')?raw.bots:null,
+    track:(tr&&typeof tr==='object'&&typeof tr.code==='string'&&tr.code.length<=1200)?tr.code:''
+  };
+}
+/* Tek başına mod: oda bellekte. Sunucu damgası yerine yerel saat. */
+function localNetGet(){
+  const now=Date.now();
+  const me=localRoom.players[uid];
+  if(me) me.ts=now;
+  return parseRoom(JSON.parse(JSON.stringify(localRoom)));
+}
+function localPatch(target,patch){
+  for(const k in patch){
+    const v=patch[k];
+    if(v===null) delete target[k];
+    else if(v&&typeof v==='object'&&v['.sv']==='timestamp') target[k]=Date.now();
+    else target[k]=(v&&typeof v==='object')?JSON.parse(JSON.stringify(v)):v;
+  }
+}
+
 async function netGetRoom(){
+  if(offline){ netUp(); return localNetGet(); }
   try{
     const res=await fbFetch(roomPath(),{cache:'no-store'});
     const raw=await res.json();
     netUp();
-    const meta=(raw&&raw.meta&&typeof raw.meta==='object')?raw.meta:{};
-    const ph=meta.phase;
-    return{
-      phase:(ph==='racing'||ph==='results')?ph:'lobby',
-      raceStartAt:safeN(meta.raceStartAt,0),
-      endedAt:safeN(meta.endedAt,0),
-      raceId:String(meta.raceId||''),
-      fieldSeed:safeN(meta.fieldSeed,1),
-      cfg:{trackId:String((meta.cfg&&meta.cfg.trackId)||'oval'),
-           vehId:String((meta.cfg&&meta.cfg.vehId)||'f4'),
-           night:safeN(meta.cfg&&meta.cfg.night,0)?1:0,
-           bots:clamp(safeN(meta.cfg&&meta.cfg.bots,0),0,MAX_FIELD),
-           botLevel:clamp(safeN(meta.cfg&&meta.cfg.botLevel,2),0,3)},
-      players:(raw&&raw.players&&typeof raw.players==='object')?raw.players:{},
-      bots:(raw&&raw.bots&&typeof raw.bots==='object')?raw.bots:null
-    };
+    return parseRoom(raw);
   }catch(e){ netDown(); return null; }
 }
+/* Çizilen pisti odaya yaz. Başarısızsa false: çağıran yerleşik piste döner. */
+async function netPutTrack(code){
+  if(offline){ localRoom.track={code}; return true; }
+  try{
+    await fbFetch(roomPath('/track')+'?print=silent',{method:'PUT',headers:JSON_HDR,body:JSON.stringify({code})});
+    netUp(); return true;
+  }catch(e){ netDown(); return false; }
+}
 async function netPutMe(entry){
+  if(offline){ localRoom.players[uid]=Object.assign({},entry,{ts:Date.now()}); netUp(); return true; }
   try{
     const sentAt=Date.now();
     const body=Object.assign({},entry,{ts:SRV_TS});
@@ -179,6 +264,7 @@ async function netPutMe(entry){
 }
 /* Odaya girerken, faz/bayatlık kararı vermeden önce saati kilitle. */
 async function netSyncClock(){
+  if(offline){ clockOffset=0; clockSynced=true; return true; }
   try{
     const sentAt=Date.now();
     const res=await fbFetch(roomPath('/players/'+uid+'/ts'),{method:'PUT',headers:JSON_HDR,body:JSON.stringify(SRV_TS)});
@@ -187,24 +273,33 @@ async function netSyncClock(){
   }catch(e){ netDown(); return false; }
 }
 async function netPatchMeta(patch){
+  if(offline){ localPatch(localRoom.meta,Object.assign({ts:SRV_TS},patch)); return true; }
   try{ await fbFetch(roomPath('/meta')+'?print=silent',{method:'PATCH',headers:JSON_HDR,
         body:JSON.stringify(Object.assign({ts:SRV_TS},patch))}); netUp(); return true; }
   catch(e){ netDown(); return false; }
 }
 async function netPutBots(obj){
+  if(offline) return true;               // tek başına modda botları zaten biz simüle ediyoruz
   try{ await fbFetch(roomPath('/bots')+'?print=silent',{method:'PUT',headers:JSON_HDR,body:JSON.stringify(obj)}); return true; }
   catch(e){ return false; }
 }
-function netDropBots(){ return fetch(roomPath('/bots')+'?print=silent',{method:'DELETE'}).catch(()=>{}); }
+function netDropBots(){
+  if(offline) return Promise.resolve();
+  return fetch(roomPath('/bots')+'?print=silent',{method:'DELETE'}).catch(()=>{});
+}
 function netDropPlayer(pid,keepalive){
+  if(offline){ if(localRoom) delete localRoom.players[pid]; return Promise.resolve(); }
   return fetch(roomPath('/players/'+pid)+'?print=silent',{method:'DELETE',keepalive:!!keepalive}).catch(()=>{});
 }
-function netDropRoom(){ return fetch(roomPath()+'?print=silent',{method:'DELETE',keepalive:true}).catch(()=>{}); }
+function netDropRoom(){
+  if(offline) return Promise.resolve();
+  return fetch(roomPath()+'?print=silent',{method:'DELETE',keepalive:true}).catch(()=>{});
+}
 
 function setConn(ok){
   const cls='dot'+(ok?'':' bad');
   dot.className=cls; lpDot.className=cls;
-  const txt=ok?'Bağlı':'Bağlantı yok';
+  const txt=offline?'Tek başına · internetsiz':(ok?'Bağlı':'Bağlantı yok');
   connText.textContent=txt; lpConnText.textContent=txt;
 }
 function livePlayers(players,now){
@@ -230,10 +325,13 @@ function buildMyEntry(now){
 }
 
 /* ── yarış kurulumu ─────────────────────── */
+const bgKeyOf=c=>c.trackId+'|'+(c.trackId==='custom'?roomTrackCode:'')+'|'+(c.night?1:0);
 function setupRace(c){
-  const def=trackById(c.trackId);
+  const def=defFor(c);
+  lobbyBgKey=bgKeyOf(c);
   T=buildOnlineTrack(def);
-  raceLaps=T.laps;
+  practice=(c.laps|0)===-1;
+  raceLaps=lapsFor(c,def);
   isNight=!!c.night;
   const painted=paintOnlineTrack(T,dpr,{night:isNight});
   trackImg=painted.cv;
@@ -257,7 +355,7 @@ function placeOnGrid(slotIdx){
   const s=slots[clamp(slotIdx,0,slots.length-1)];
   car.x=s.x; car.y=s.y; car.angle=s.angle; car.speed=0;
   const pr=projectToTrack(T,car.x,car.y);
-  car.prevS=pr?pr.s:0; car.lapRaw=-1; car.prog=-T.len+(pr?pr.s:0);
+  car.prevS=pr?pr.s:0; car.prevI=pr?pr.i:-1; car.lapRaw=-1; car.prog=-T.len+(pr?pr.s:0);
 }
 
 /* ── araba ──────────────────────────────── */
@@ -471,25 +569,37 @@ function updateCar(dt,others){
    çizgiyi ters geçip tur kasmak mümkün değil. prog aynı zamanda canlı
    sıralamayı veriyor (eski "tur + süre" sıralaması tur ortasında yanlıştı). */
 function trackProgress(){
-  const pr=projectToTrack(T,car.x,car.y);
+  const pr=projectToTrack(T,car.x,car.y,car.prevI);
   if(!pr){ car.inPit=false; return; }   // pistten çok uzaktayız: ilerleme donuyor
+  car.prevI=pr.i;
   car.inPit=inPitLane(T,pr.s,pr.lane);
   const s=pr.s, half=T.len/2;
   let ds=s-car.prevS;
-  if(ds<-half){ car.lapRaw++; onLapCrossed(); }
-  else if(ds>half){ car.lapRaw--; }
+  /* lapMaxS: bu turda ulaşılan en uzak nokta. Çizgiyi geri geçip tekrar
+     ileri geçmek tur sayısını değiştirmiyordu ama birkaç saniyelik sahte
+     bir "en iyi tur" yazıyordu; tur süresi artık yalnız tam turda sayılıyor. */
+  if(ds<-half){
+    const full=(car.lapMaxS||0)>T.len*0.85;
+    car.lapRaw++; car.lapMaxS=0; onLapCrossed(full);
+  }
+  else if(ds>half){ car.lapRaw--; car.lapMaxS=0; }
+  else if(s>(car.lapMaxS||0)) car.lapMaxS=s;
   car.prevS=s;
   car.prog=car.lapRaw*T.len+s;
+  if(timing) timing.tick(nowSync(),car.x,car.y,car.angle,s);
 }
-function onLapCrossed(){
+function onLapCrossed(full){
   const now=nowSync();
+  if(timing&&(full||car.lapRaw<=0)) timing.lap(now);
   if(car.lapRaw<=0){ car.lastLapTs=now; return; }   // grid'den ilk geçiş: tur 1 başlıyor
+  if(!full) return;                                  // geri-ileri geçiş: tur süresi yok
   if(car.lastLapTs){
     const lt=now-car.lastLapTs;
     if(car.bestLap===null||lt<car.bestLap) car.bestLap=lt;
+    car.lastLap=lt;
   }
   car.lastLapTs=now;
-  if(car.lapRaw>=raceLaps){
+  if(!practice&&car.lapRaw>=raceLaps){
     car.finished=true; car.finishTime=now-car.raceStart; car.finishAt=now;
     showResults(); sfx.fanfare();
   } else sfx.lap();
@@ -741,6 +851,16 @@ function renderFrame(){
        damage:rc.dmg,braking:rc.crash});
     lit.push({x:rc.renderX,y:rc.renderY,angle:rc.renderAngle});
   }
+  // antrenman hayaleti: en iyi tur, yarı saydam, arabanın altında
+  if(timing&&car&&localPhase==='racing'&&!car.locked){
+    const gp=timing.ghostPose(nowSync());
+    if(gp){
+      ctx.save(); ctx.globalAlpha=.34;
+      drawCar(ctx,gp.x,gp.y,gp.a,car.color,{kind:V?V.kind:'f4',headlights:false,scale:.9,
+        label:'EN İYİ',labelSize:10});
+      ctx.restore();
+    }
+  }
   if(car&&localPhase!=='spectate'){
     const braking=!!(keys['arrowdown']||keys['s']||touch.b);
     drawCar(ctx,car.x,car.y,car.angle,car.color,
@@ -761,7 +881,7 @@ function drawMinimap(){
   const fits=(VIEW_W/cam.z>=T.W-1)&&(VIEW_H/cam.z>=T.H-1);
   miniCv.parentElement.style.display=fits?'none':'block';
   if(fits) return;
-  const key=T.def.id+'|'+(isNight?'n':'d');
+  const key=(T.def.key||T.def.id)+'|'+(isNight?'n':'d');
   if(miniTrackFor!==key&&trackImg){
     miniTrack=document.createElement('canvas');
     miniTrack.width=Math.round(MINI_W*dpr); miniTrack.height=Math.round(miniH*dpr);
@@ -833,7 +953,8 @@ function updateLB(){
     const pos=document.createElement('span'); pos.className='lbp'; pos.textContent=(i+1);
     const n=document.createElement('span'); n.className='lbn';
     n.textContent=(p.finished?'🏁 ':'')+p.name+(p.bot?' ·b':'');
-    const info=document.createElement('span'); info.textContent=Math.min(p.lap,raceLaps)+'/'+raceLaps;
+    const info=document.createElement('span');
+    info.textContent=practice?(p.lap+' tur'):(Math.min(p.lap,raceLaps)+'/'+raceLaps);
     row.appendChild(pos); row.appendChild(n); row.appendChild(info); lbRows.appendChild(row);
   });
 }
@@ -898,7 +1019,23 @@ function applyPhaseVisibility(){
   spectateEl.style.display=spect?'flex':'none';
   if(dmgRow) dmgRow.style.display=(racing&&T&&T.mode==='nascar')?'flex':'none';
   if(!racing&&!spect) countdownEl.style.display='none';
+  updateRotateHint();
 }
+/* Dikey telefonda yarış: tuval 1000×640 oranında, göstergeler ve kontroller
+   üst üste biniyor. Yan çevirme önerisi; istemeyen dikey devam edebilir.  */
+const rotateHint=$('rotateHint');
+const portraitMQ=window.matchMedia?window.matchMedia('(orientation: portrait)'):null;
+let rotateDismissed=false;
+function updateRotateHint(){
+  if(!rotateHint) return;
+  const playing=localPhase==='racing'||localPhase==='spectate';
+  rotateHint.hidden=!(isTouch&&playing&&!rotateDismissed&&portraitMQ&&portraitMQ.matches&&window.innerWidth<700);
+}
+if(portraitMQ){
+  if(portraitMQ.addEventListener) portraitMQ.addEventListener('change',updateRotateHint);
+  else if(portraitMQ.addListener) portraitMQ.addListener(updateRotateHint);
+}
+if($('rotateDismiss')) $('rotateDismiss').addEventListener('click',()=>{ rotateDismissed=true; updateRotateHint(); });
 function enterRacingPhase(startAt,state){
   const now=nowSync();
   // Emniyet kemeri: saat senkronu kaydıysa bile kimse 11 saniyelik geri sayım
@@ -909,9 +1046,11 @@ function enterRacingPhase(startAt,state){
   const start=now+wait;
 
   raceId=state.raceId||('r'+now);
+  if(state.track) roomTrackCode=state.track;
   setupRace(state.cfg);
   resetCarForRace();
   car.raceStart=start; car.lastLapTs=null; car.locked=wait>0;
+  timing=practice?createTiming(T.def.key||T.def.id,V?V.id:'f4',T.len):null;
 
   const live=Object.keys(state.players||{}).filter(pid=>{
     const p=state.players[pid];
@@ -927,6 +1066,8 @@ function enterRacingPhase(startAt,state){
 }
 function enterSpectate(state){
   raceId=state.raceId||'';
+  if(state.track) roomTrackCode=state.track;
+  timing=null;
   setupRace(state.cfg);
   localPhase='spectate'; camReady=false;
   setSyncRate(RACE_SYNC_MS);
@@ -934,9 +1075,9 @@ function enterSpectate(state){
   applyPhaseVisibility();
 }
 function resetCarForRace(){
-  car.lapRaw=-1; car.prog=0; car.prevS=0;
+  car.lapRaw=-1; car.prog=0; car.prevS=0; car.prevI=-1; car.lapMaxS=0;
   car.finished=false; car.finishTime=0; car.finishAt=0;
-  car.bestLap=null; car.lastLapTs=null;
+  car.bestLap=null; car.lastLapTs=null; car.lastLap=null;
   car.damage=0; car.spin=0; car.spinCool=0; car.onWall=false; car.inPit=false; car.draft=0;
   car.nitroCharges=V?V.nos:3;
   car.speed=0; car.lastTrail=0; car.lastDust=0; car.lastSmoke=0;
@@ -946,7 +1087,7 @@ function resetCarForRace(){
 }
 function resetToLobby(){
   localPhase='lobby';
-  botField=null; botCars={}; raceId='';
+  botField=null; botCars={}; raceId=''; timing=null;
   resetCarForRace();
   setSyncRate(SYNC_MS);
   document.body.classList.remove('night');
@@ -965,14 +1106,15 @@ function maybeCreateBots(state,humanCount){
   botField=null; botCars={};
   const want=state.cfg.bots|0;
   if(want<=0) return;
-  const cls=trackCls(state.cfg.trackId);
+  const cls=trackCls(state.cfg);
   const count=Math.min(want,Math.max(0,MAX_FIELD-humanCount));
   if(count<=0) return;
   if(!isHost) return;                 // host olmayan botları ağdan alır
   const taken=[];
   if(car) taken.push(liveryOf(car.color).hex);
   for(const pid in remoteCars) taken.push(liveryOf(remoteCars[pid].color).hex);
-  botField=createField({T,laps:raceLaps,vehicle:V,count,level:state.cfg.botLevel|0,
+  // antrenmanda botlar da bitirmeden dönmeye devam etsin
+  botField=createField({T,laps:practice?999:raceLaps,vehicle:V,count,level:state.cfg.botLevel|0,
     seed:state.fieldSeed,cls,takenColors:taken,gridStart:humanCount});
   feedBotsLocal();   // geri sayım boyunca botlar grid'de dursun, boş görünmesin
 }
@@ -997,9 +1139,38 @@ function stepBots(dt){
 }
 
 /* ── HUD ────────────────────────────────── */
+/* Zamana karşı göstergesi: dakika:saniye.salise (tur ve sektörde salise önemli). */
+function fmtLap(ms){
+  if(!isFinite(ms)||ms<0) return '–';
+  const m=Math.floor(ms/60000), s=(ms%60000)/1000;
+  return (m?m+':'+(s<10?'0':''):'')+s.toFixed(2);
+}
+const ttBox=$('ttBox'), ttLast=$('ttLast'), ttDelta=$('ttDelta');
+const ttSecs=[$('ttS1'),$('ttS2'),$('ttS3')];
+function updateTT(){
+  if(!ttBox) return;
+  const on=practice&&!!timing;
+  ttBox.style.display=on?'block':'none';
+  if(!on) return;
+  ttLast.textContent=timing.lastLap!==null?fmtLap(timing.lastLap):'–';
+  ttLast.className=timing.lastWasBest&&nowSync()<timing.flashUntil?'pb':'';
+  for(let k=0;k<3;k++){
+    const v=timing.cur[k], el=ttSecs[k];
+    el.textContent=v!==null?fmtLap(v):('S'+(k+1));
+    el.className=v!==null?timing.status[k]:(timing.sec===k&&timing.lapStart!==null?'live':'');
+  }
+  const s=car.prog-car.lapRaw*T.len;
+  const d=car.lapRaw>=0?timing.delta(nowSync(),s):null;
+  if(d===null||!isFinite(d)){ ttDelta.textContent=timing.best!==null?'':'İlk turunu tamamla: hayaletin kaydolsun'; ttDelta.className='tt-delta'; }
+  else{ ttDelta.textContent=(d>=0?'+':'−')+(Math.abs(d)/1000).toFixed(2); ttDelta.className='tt-delta '+(d>=0?'slow':'fast'); }
+}
+
 function updateHUD(){
   if(!car) return;
-  lapText.textContent='Tur '+Math.min(Math.max(0,car.lapRaw),raceLaps)+'/'+raceLaps;
+  lapText.textContent=practice
+    ? 'Tur '+Math.max(0,car.lapRaw)+' · ∞'
+    : 'Tur '+Math.min(Math.max(0,car.lapRaw),raceLaps)+'/'+raceLaps;
+  updateTT();
   const el=car.finished?car.finishTime:(nowSync()-car.raceStart);
   timeText.textContent=fmtTime(el);
   speedText.textContent=Math.round(Math.abs(car.speed))+' km/h'+(car.draft>0.15?' 🌀':'');
@@ -1064,6 +1235,11 @@ async function syncTick(){
     if(localPhase!=='spectate') writes.push(netPutMe(buildMyEntry(now)));
     const [state]=await Promise.all(writes);
     if(!state) return;                 // ağ hatası: faz kararı verme
+
+    // Çizilen pist: misafir odadakini izler. Host yüklediği kodu tutar;
+    // yazmadan önce yapılmış bayat bir okuma onu bir an boş göstermesin.
+    if(state.track) roomTrackCode=state.track;
+    else if(!isHost&&!offline) roomTrackCode='';
 
     const players=livePlayers(state.players,now);
     for(const pid in players){ if(pid!==uid) feedRemote(pid,players[pid],now); }
@@ -1152,7 +1328,8 @@ function hostDuties(state,live,now){
 
     const everyoneDone=allHumanDone&&botsDone;
     const windowUp=firstFin&&(now-firstFin>FINISH_WINDOW_MS);
-    const hardCap=now-started>RACE_MAX_MS;
+    // antrenman bitmez: oturum oyuncu ayrılınca kapanıyor
+    const hardCap=!practice&&now-started>RACE_MAX_MS;
     const abandoned=!anyHuman&&now-started>8000;
 
     if(abandoned){ netPatchMeta({phase:'lobby',raceStartAt:null,endedAt:null}); netDropBots(); return; }
@@ -1189,7 +1366,7 @@ function renderLobbyList(playersObj,now){
   renderColorPicker(rows);
 }
 function renderColorPicker(rows){
-  const cls=trackCls(cfg.trackId);
+  const cls=trackCls(cfg);
   const taken=new Set(rows.filter(r=>!r.me).map(r=>liveryOf(r.color).hex));
   const mine=liveryOf(car.color).hex;
   colorPicker.innerHTML='';
@@ -1207,20 +1384,57 @@ function renderColorPicker(rows){
     colorPicker.appendChild(b);
   });
 }
+/* Pist seçicideki "çizilen pist" kartı: odada çizilmiş bir pist varsa o;
+   yoksa host'un bu oturumda ya da en son çizdiği pist (seçilince odaya
+   yüklenir). Ad kullanıcıdan geldiği için her yerde textContent.          */
+function customOffer(){
+  const def=customDef();
+  if(def) return {def,draft:null,key:'r:'+roomTrackCode};
+  if(isHost&&!offline){
+    const draft=customSpec||loadDraft();
+    if(draft) return {def:null,draft,key:'d:'+encodeSpec(draft)};
+  }
+  return {def:null,draft:null,key:''};
+}
+async function uploadCustom(spec){
+  const code=encodeSpec(spec);
+  const ok=await netPutTrack(code);
+  if(!ok){ flashHint($('startHint'),'⚠ Çizdiğin pist odaya yüklenemedi — yerleşik pistlerden birini seç.'); return false; }
+  roomTrackCode=code; customSpec=spec;
+  return true;
+}
+function trackButton(o){
+  const b=document.createElement('button'); b.type='button'; b.dataset.id=o.id;
+  b.className='trk'+(o.cls?' '+o.cls:'')+(o.id===cfg.trackId?' picked':'');
+  for(const [c,t] of [['trk-i',o.icon],['trk-n',o.name],['trk-s',o.sub],['trk-l',o.laps]]){
+    const s=document.createElement('span'); s.className=c; s.textContent=t; b.appendChild(s);
+  }
+  return b;
+}
 /* Ayarları yalnız host değiştirebiliyor; diğerleri canlı olarak görüyor. */
 function renderLobbyControls(){
   const host=isHost;
   trackPicker.innerHTML='';
-  ONLINE_TRACKS.forEach(t=>{
-    const b=document.createElement('button'); b.type='button';
-    b.className='trk'+(t.id===cfg.trackId?' picked':'')+(t.mode==='nascar'?' nascar':'');
+  const off=customOffer(); pickerKey=off.key;
+  if(off.def||off.draft){
+    const src=off.def||off.draft;
+    const b=trackButton({id:'custom',icon:'✏️',name:src.name,cls:'custom',
+      sub:off.def?'Çizdiğin pist':'Son çizdiğin pist · seçince odaya yüklenir',laps:src.laps+' tur'});
     b.disabled=!host;
-    b.innerHTML='<span class="trk-i">'+t.icon+'</span><span class="trk-n">'+t.name+'</span>'+
-      '<span class="trk-s">'+t.sub+'</span><span class="trk-l">'+t.laps+' tur</span>';
+    b.addEventListener('click',async()=>{
+      if(!host) return;
+      if(!off.def&&off.draft){ b.disabled=true; const ok=await uploadCustom(off.draft); b.disabled=false; if(!ok) return; }
+      setCfg({trackId:'custom'});
+    });
+    trackPicker.appendChild(b);
+  }
+  ONLINE_TRACKS.forEach(t=>{
+    const b=trackButton({id:t.id,icon:t.icon,name:t.name,sub:t.sub,laps:t.laps+' tur',cls:t.mode==='nascar'?'nascar':''});
+    b.disabled=!host;
     b.addEventListener('click',()=>{ if(!host) return; setCfg({trackId:t.id}); });
     trackPicker.appendChild(b);
   });
-  const cls=trackCls(cfg.trackId);
+  const cls=trackCls(cfg);
   vehPicker.innerHTML='';
   vehiclesFor(cls).forEach(v=>{
     const b=document.createElement('button'); b.type='button';
@@ -1241,38 +1455,58 @@ function renderLobbyControls(){
     vehPicker.appendChild(b);
   });
   botCount.disabled=!host; botLevel.disabled=!host; nightToggle.disabled=!host;
-  hostNote.style.display=host?'none':'block';
+  if(lapCount) lapCount.disabled=!host;
+  hostNote.style.display=(host||offline)?'none':'block';
   startRaceBtn.disabled=!host;
-  startRaceBtn.textContent=host?'🏁 Yarışı Başlat':'Host başlatmayı bekliyor…';
+  lobbyPanel.classList.toggle('solo',offline);
+  if(editTrackBtn) editTrackBtn.hidden=!(onExit&&customSpec);
+  if(inviteBtn) inviteBtn.hidden=offline;
   syncCfgToUI();
 }
+function startLabel(){
+  if(!isHost) return 'Host başlatmayı bekliyor…';
+  if((cfg.laps|0)===-1) return '⏱ Antrenmana Başla';
+  return offline?'🏁 Sürüşe Başla':'🏁 Yarışı Başlat';
+}
 function syncCfgToUI(){
-  const cls=trackCls(cfg.trackId);
+  const cls=trackCls(cfg);
   if(vehById(cfg.vehId).cls!==cls) cfg.vehId=defaultVehFor(cls).id;
   V=vehById(cfg.vehId);
   botCount.value=String(cfg.bots);
   botLevel.value=String(cfg.botLevel);
   nightToggle.checked=!!cfg.night;
-  [...trackPicker.children].forEach((b,i)=>b.classList.toggle('picked',ONLINE_TRACKS[i].id===cfg.trackId));
+  if(lapCount) lapCount.value=String(cfg.laps|0);
+  startRaceBtn.textContent=startLabel();
+  // çizilen pist kartı geldi ya da değişti (misafir tarafı): seçiciyi yeniden kur
+  if(customOffer().key!==pickerKey){ renderLobbyControls(); return; }
+  [...trackPicker.children].forEach(b=>b.classList.toggle('picked',b.dataset.id===cfg.trackId));
   const vl=vehiclesFor(cls);
-  if(vehPicker.children.length!==vl.length) renderLobbyControls();
-  else [...vehPicker.children].forEach((b,i)=>b.classList.toggle('picked',vl[i].id===cfg.vehId));
+  if(vehPicker.children.length!==vl.length){ renderLobbyControls(); return; }
+  [...vehPicker.children].forEach((b,i)=>b.classList.toggle('picked',vl[i].id===cfg.vehId));
   // NASCAR'a geçince liveri ve araç sınıfı otomatik uysun
   const livs=liveriesFor(cls);
   if(car&&!livs.some(l=>l.hex===liveryOf(car.color).hex)) car.color=livs[0].hex;
+  // Lobide arkadaki pist seçimi izlesin: önceden odaya girildiği andaki
+  // pist yarış başlayana kadar arkada kalıyordu.
+  if(localPhase==='lobby'&&bgKeyOf(cfg)!==lobbyBgKey){ setupRace(cfg); camReady=false; }
 }
 function setCfg(patch){
   Object.assign(cfg,patch);
-  const cls=trackCls(cfg.trackId);
+  const cls=trackCls(cfg);
   if(vehById(cfg.vehId).cls!==cls) cfg.vehId=defaultVehFor(cls).id;
   if(cls==='nascar'&&cfg.bots===0) cfg.bots=Math.min(MAX_FIELD-1,11);   // NASCAR boş grid istemez
   renderLobbyControls();
-  netPatchMeta({cfg:cfg});
+  netPatchMeta({cfg:netCfg(cfg)});
+  saveSoloPrefs();
 }
 
 /* ── yarışı başlat ──────────────────────── */
 async function onStartClicked(){
   if(startingRace||!isHost) return;
+  if(cfg.trackId==='custom'&&!customDef()){
+    flashHint($('startHint'),'⚠ Çizilen pist odaya henüz yüklenmedi — kartına tekrar bas.');
+    return;
+  }
   startingRace=true; startRaceBtn.disabled=true;
   phaseGuardUntil=nowSync()+PHASE_GUARD_MS;
   try{
@@ -1282,7 +1516,7 @@ async function onStartClicked(){
     const seed=(Math.random()*1e9)|0;
     phaseGuardUntil=nowSync()+PHASE_GUARD_MS;
     const ok=await netPatchMeta({phase:'racing',raceStartAt:startAt,raceId:rid,
-      fieldSeed:seed,endedAt:null,cfg:cfg});
+      fieldSeed:seed,endedAt:null,cfg:netCfg(cfg)});
     if(!ok){ phaseGuardUntil=0; flashHint($('startHint'),'⚠ Bağlantı kurulamadı — tekrar dene.'); return; }
     const state=await netGetRoom();
     enterRacingPhase(startAt,state||{raceId:rid,fieldSeed:seed,cfg:cfg,players:{}});
@@ -1302,8 +1536,14 @@ async function leaveRoom(){
   trailPts=[]; dustPts=[]; smokePts=[]; sparkPts=[];
   hideResults(); countdownEl.style.display='none';
   phaseGuardUntil=0; isHost=false; netOk=null; netFails=0; raceId='';
+  timing=null; practice=false;
   document.body.classList.remove('night');
-  crossFade(gameEl,menuEl);
+  // editörden gelindiyse oraya dön (pist elde, düzenlemeye devam)
+  const back=onExit, spec=customSpec;
+  offline=false; localRoom=null; onExit=null; customSpec=null;
+  roomTrackCode=''; defCache={code:'',def:null};
+  if(back){ gameEl.style.display='none'; back(spec); }
+  else crossFade(gameEl,menuEl);
 }
 
 /* ── giriş ──────────────────────────────── */
@@ -1329,6 +1569,22 @@ $('muteBtn').addEventListener('click',()=>{ audio.muted=!audio.muted; $('muteBtn
 botCount.addEventListener('change',()=>{ if(isHost) setCfg({bots:clamp(parseInt(botCount.value,10)||0,0,MAX_FIELD-1)}); });
 botLevel.addEventListener('change',()=>{ if(isHost) setCfg({botLevel:clamp(parseInt(botLevel.value,10)||0,0,3)}); });
 nightToggle.addEventListener('change',()=>{ if(isHost) setCfg({night:nightToggle.checked?1:0}); });
+if(lapCount) lapCount.addEventListener('change',()=>{ if(isHost) setCfg({laps:clamp(parseInt(lapCount.value,10)||0,-1,20)}); });
+if(editTrackBtn) editTrackBtn.addEventListener('click',leaveRoom);
+/* Başarı mesajı: flashHint hata için kırmızı; bu sarı ve kısa. */
+function tellHint(el,msg){
+  if(!el) return;
+  if(!el.dataset.base) el.dataset.base=el.innerHTML;
+  el.textContent=msg; el.style.color='var(--yellow)';
+  clearTimeout(el._ht); el._ht=setTimeout(()=>{ el.innerHTML=el.dataset.base; el.style.color=''; },3200);
+}
+if(inviteBtn) inviteBtn.addEventListener('click',async()=>{
+  const url=location.origin+location.pathname.replace(/[^/]*$/,'')+'index.html#oda='+encodeURIComponent(roomCode);
+  try{
+    if(navigator.clipboard&&window.isSecureContext){ await navigator.clipboard.writeText(url); tellHint($('startHint'),'🔗 Davet linki kopyalandı — arkadaşın açınca bu odaya düşer.'); return; }
+  }catch(e){}
+  window.prompt('Davet linkini kopyala:',url);
+});
 
 /* ── menü ───────────────────────────────── */
 let roomShuffleTimer=null;
@@ -1350,26 +1606,49 @@ $('randBtn').addEventListener('click',()=>{
   animateRoomCode(randRoom());
 });
 
-$('joinBtn').addEventListener('click', async ()=>{
-  const btn=$('joinBtn');
-  if(btn.disabled) return;
+/* Tek başına modun son ayarı (araç, bot, tur) bir sonraki sürüşte hazır olsun. */
+const SOLO_KEY='apexShift.solo';
+function soloPrefs(){ try{ return JSON.parse(localStorage.getItem(SOLO_KEY))||{}; }catch(e){ return {}; } }
+function saveSoloPrefs(){
+  if(!offline) return;
+  try{ localStorage.setItem(SOLO_KEY,JSON.stringify({veh:cfg.vehId,bots:cfg.bots,level:cfg.botLevel,laps:cfg.laps,night:cfg.night})); }catch(e){}
+}
+
+/* Odaya gir. Üç yol aynı akıştan geçiyor:
+     menüden online oda · editörden tek başına (solo) · editörden arkadaşlarla.
+   opts: {solo, spec, onExit, from, code}. Ağ yoksa false döner.          */
+async function joinRoom(opts){
+  opts=opts||{};
   initAudio(); startEngine();
   $('muteBtn').textContent=audio.muted?'🔇':'🔊';
-  btn.disabled=true; btn.textContent='Bağlanılıyor…';
   pName=sanitName($('nameInput').value);
-  roomCode=sanitRoom($('roomInput').value)||randRoom();
-  $('roomInput').value=roomCode;
-  lpRoomCode.textContent=roomCode;
+  offline=!!opts.solo;
+  onExit=opts.onExit||null;
+  customSpec=opts.spec||null;
+  roomTrackCode=''; defCache={code:'',def:null};
+  if(offline){
+    const code=customSpec?encodeSpec(customSpec):'', sp=soloPrefs();
+    roomCode='SOLO';
+    localRoom={meta:{phase:'lobby',cfg:{trackId:code?'custom':'vadi',vehId:String(sp.veh||'f4'),
+      night:sp.night?1:0,bots:clamp(sp.bots|0,0,MAX_FIELD-1),botLevel:clamp(sp.level==null?2:sp.level|0,0,3),
+      laps:clamp(sp.laps|0,-1,20)}},players:{},bots:null,track:code?{code}:null};
+    roomTrackCode=code;
+  } else {
+    roomCode=sanitRoom(opts.code||$('roomInput').value)||randRoom();
+    $('roomInput').value=roomCode;
+  }
+  lpRoomCode.textContent=offline?'🏁 Tek başına':roomCode;
+  const lbl=$('lpRoomLabel'); if(lbl) lbl.textContent=offline?'':'Oda:';
 
   car=makeCar(); remoteCars={}; botCars={};
   trailPts=[]; dustPts=[]; smokePts=[]; sparkPts=[];
 
   const state=await netGetRoom();
-  btn.disabled=false; btn.textContent='Odaya Katıl';
-  if(!state){ flashHint($('joinHint'),'⚠ Sunucuya ulaşılamadı. Bağlantını kontrol edip tekrar dene.'); return; }
+  if(!state){ offline=false; onExit=null; customSpec=null; localRoom=null; return false; }
 
   // Faz, geri sayım ve bayatlık kararlarının hepsi sunucu saatine dayanır.
   await netSyncClock();
+  if(state.track) roomTrackCode=state.track;
 
   const now=nowSync();
   const players=livePlayers(state.players,now);
@@ -1381,9 +1660,14 @@ $('joinBtn').addEventListener('click', async ()=>{
     await netPatchMeta({phase:'lobby',raceStartAt:null,endedAt:null});
     state.phase='lobby';
   }
+  // editörden "arkadaşlarla yarış": çizilen pisti odaya yükleyip seç
+  if(!offline&&isHost&&customSpec&&await uploadCustom(customSpec)){
+    cfg=Object.assign({},cfg,{trackId:'custom'});
+    await netPatchMeta({cfg:netCfg(cfg)});
+  }
 
   const taken=new Set(live.map(pid=>liveryOf(players[pid].color).hex));
-  const livs=liveriesFor(trackCls(cfg.trackId));
+  const livs=liveriesFor(trackCls(cfg));
   const free=livs.find(l=>!taken.has(l.hex));
   car.color=(free||livs[Math.floor(Math.random()*livs.length)]).hex;
   V=vehById(cfg.vehId);
@@ -1405,10 +1689,29 @@ $('joinBtn').addEventListener('click', async ()=>{
   }
 
   await netPutMe(buildMyEntry(nowSync()));
-  crossFade(menuEl,gameEl);
+  crossFade(opts.from||menuEl,gameEl);
+  setConn(true);
   applyPhaseVisibility();
   startLoops();
+  return true;
+}
+
+$('joinBtn').addEventListener('click', async ()=>{
+  const btn=$('joinBtn');
+  if(btn.disabled) return;
+  btn.disabled=true; btn.textContent='Bağlanılıyor…';
+  const ok=await joinRoom({from:menuEl});
+  btn.disabled=false; btn.textContent='Odaya Katıl';
+  if(!ok) flashHint($('joinHint'),'⚠ Sunucuya ulaşılamadı. Bağlantını kontrol edip tekrar dene.');
 });
+
+/* Pist Çiz editörünün kullandığı girişler. */
+export function startSolo(spec,onExitCb){
+  return joinRoom({solo:true,spec,onExit:onExitCb,from:$('editor')});
+}
+export function startOnlineWith(spec,onExitCb){
+  return joinRoom({solo:false,spec,onExit:onExitCb,from:$('editor')});
+}
 
 // sekme kapanırsa lobide hayalet bırakma
 window.addEventListener('pagehide',()=>{ if(roomCode&&localPhase!=='menu') netDropPlayer(uid,true); });

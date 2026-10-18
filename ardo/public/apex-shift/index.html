@@ -41,8 +41,9 @@
     <div class="inner">
       <h1 class="title">🏁 APEX <span>SHIFT</span></h1>
       <div class="modes" role="tablist" aria-label="Oyun modu">
-        <button class="mode-tab on" type="button" role="tab" aria-selected="true" data-mode="online">🌐 Online Yarış</button>
-        <button class="mode-tab" type="button" role="tab" aria-selected="false" data-mode="manager">🏆 Takım Menajeri</button>
+        <button class="mode-tab on" type="button" role="tab" aria-selected="true" data-mode="online">🌐 Online</button>
+        <button class="mode-tab" type="button" role="tab" aria-selected="false" data-mode="draw">✏️ Pist Çiz</button>
+        <button class="mode-tab" type="button" role="tab" aria-selected="false" data-mode="manager">🏆 Menajer</button>
       </div>
       <p class="sub" id="modeSub">İsmini ve oda kodunu gir, lobiye düş. Odadaki herkes hazır olunca yarış aynı anda başlar.</p>
       <div class="field">
@@ -60,6 +61,13 @@
         <button class="btn btn-go" id="joinBtn">Odaya Katıl</button>
         <p class="hint" id="joinHint">💡 Arkadaşınla <b>aynı linki</b> açıp <b>aynı oda kodunu</b> girin.</p>
         <p class="hint">🎮 <b>↑W</b> gaz · <b>↓S</b> fren · <b>←→ AD</b> dönüş · <b>Shift</b> NOS</p>
+      </div>
+      <div id="drawPane" hidden>
+        <button class="btn btn-go" id="drawOpenBtn">✏️ Çizim Tahtasını Aç</button>
+        <p class="hint">🏁 Çizdiğin pistte <b>tek başına</b>, <b>botlarla</b> ya da <b>zamana karşı</b> sür; istersen odayı açıp arkadaşlarınla yarış.</p>
+        <label class="dp-h">Pistlerim</label>
+        <div class="ed-saved" id="menuSaved"></div>
+        <p class="hint">🔗 Pistini <b>linkle paylaş</b>: açan kişi aynı pisti görür, aynı rekor için yarışır.</p>
       </div>
       <div id="managerPane" hidden>
         <div class="mg-sum" id="mgSummary" hidden></div>
@@ -87,6 +95,11 @@
       <div id="bestLapText">En iyi tur: –</div>
       <div id="nosRow">NOS <span class="nos-pip on"></span><span class="nos-pip on"></span><span class="nos-pip on"></span></div>
       <div id="dmgRow"><span class="dmg-l">HASAR</span><span class="dmg-bar"><i id="dmgFill"></i></span></div>
+      <div id="ttBox">
+        <div class="tt-row"><span>Son tur</span><b id="ttLast">–</b></div>
+        <div class="tt-sec"><i id="ttS1">S1</i><i id="ttS2">S2</i><i id="ttS3">S3</i></div>
+        <div class="tt-delta" id="ttDelta"></div>
+      </div>
     </div>
 
     <div id="lbPanel">
@@ -108,7 +121,7 @@
 
     <div id="lobbyPanel">
       <div class="lp-top">
-        <div class="lp-room">Oda: <b id="lpRoomCode"></b></div>
+        <div class="lp-room"><span id="lpRoomLabel">Oda:</span> <b id="lpRoomCode"></b></div>
         <div class="lp-conn"><span id="lpDot" class="dot"></span><span id="lpConnText">Bağlanıyor…</span></div>
       </div>
 
@@ -146,10 +159,25 @@
               <option value="3">Zor</option>
             </select>
           </div>
+          <div class="opt">
+            <span class="opt-l">Tur</span>
+            <select id="lapCount">
+              <option value="0">Pistin turu</option>
+              <option value="-1">⏱ Antrenman (∞)</option>
+              <option value="1">1 tur</option>
+              <option value="3">3 tur</option>
+              <option value="5">5 tur</option>
+              <option value="10">10 tur</option>
+            </select>
+          </div>
           <label class="opt opt-chk" for="nightToggle">
             <input type="checkbox" id="nightToggle"/>
             <span class="opt-l">🌙 Gece</span>
           </label>
+        </div>
+        <div class="lp-actions">
+          <button class="btn lp-act" id="editTrackBtn" type="button" hidden>✏️ Pisti Düzenle</button>
+          <button class="btn lp-act" id="inviteBtn" type="button">🔗 Davet Linki</button>
         </div>
 
         <label id="lpCountLabel">Odadakiler</label>
@@ -174,6 +202,15 @@
     </div>
 
     <div id="countdown"><span id="cdNum"></span></div>
+
+    <div id="rotateHint" hidden>
+      <div class="rh-card">
+        <div class="rh-ic" aria-hidden="true">📱</div>
+        <b>Telefonu yan çevir</b>
+        <p>Yarış yatay ekranda daha rahat: pist, göstergeler ve kontroller sığar.</p>
+        <button class="btn" id="rotateDismiss" type="button">Dikey devam et</button>
+      </div>
+    </div>
 
     <div id="results">
       <div class="res-card">
@@ -246,6 +283,82 @@
       <p class="mg-note" id="mgStats"></p>
       <button class="btn mg-reset" id="mgReset" type="button">İlerlemeyi sıfırla</button>
     </div>
+  </div>
+</div>
+
+<!-- ═════════ PİST ÇİZ ═════════ -->
+<div id="editor">
+  <header class="ed-top">
+    <button class="ed-back" id="edBack" type="button" aria-label="Menüye dön">⟵ <span>Menü</span></button>
+    <div class="ed-brand">✏️ PİST <span>ÇİZ</span></div>
+    <div class="ed-tools" role="toolbar" aria-label="Çizim araçları">
+      <button type="button" id="edUndo" title="Geri al (Ctrl+Z)"><i aria-hidden="true">↶</i><span>Geri al</span></button>
+      <button type="button" id="edClear" title="Tahtayı temizle"><i aria-hidden="true">🗑</i><span>Temizle</span></button>
+      <button type="button" id="edReverse" title="Yarış yönünü ters çevir"><i aria-hidden="true">⇄</i><span>Ters çevir</span></button>
+      <button type="button" id="edShare" title="Linkle paylaş"><i aria-hidden="true">🔗</i><span>Paylaş</span></button>
+      <button type="button" id="edSave" title="Pistlerime kaydet"><i aria-hidden="true">💾</i><span>Kaydet</span></button>
+    </div>
+  </header>
+  <div class="ed-body">
+    <section class="ed-board" id="edBoard">
+      <canvas id="edCanvas" aria-label="Çizim tahtası"></canvas>
+      <div class="ed-toast" id="edToast" role="status" aria-live="polite"></div>
+      <div class="ed-stats">
+        <div><small>Uzunluk</small><b id="stLen">–</b></div>
+        <div><small>Viraj</small><b id="stCorners">–</b></div>
+        <div><small>En uzun düzlük</small><b id="stStraight">–</b></div>
+        <div><small>En dar viraj</small><b id="stTight">–</b></div>
+      </div>
+    </section>
+    <aside class="ed-side">
+      <p class="ed-help" id="edHelp"></p>
+      <label>Çizim</label>
+      <div class="seg" id="edMode">
+        <button type="button" data-v="free">✏️ Serbest</button>
+        <button type="button" data-v="dots">⚪ Noktalar</button>
+        <button type="button" data-v="start">🏁 Start</button>
+      </div>
+      <label>Hazır pist üret</label>
+      <div class="ed-gens" id="edGens">
+        <button type="button" data-g="gp">Grand Prix</button>
+        <button type="button" data-g="akici">Akıcı</button>
+        <button type="button" data-g="teknik">Teknik</button>
+        <button type="button" data-g="sokak">Sokak</button>
+        <button type="button" data-g="oval">Oval</button>
+        <button type="button" data-g="kart">Kart</button>
+      </div>
+      <div class="ed-warn" id="edWarn" hidden></div>
+      <label>Pist boyutu</label>
+      <div class="seg" id="edSize">
+        <button type="button" data-v="s">Küçük</button>
+        <button type="button" data-v="m">Orta</button>
+        <button type="button" data-v="l">Büyük</button>
+      </div>
+      <label for="edWidth">Yol genişliği <b id="edWidthV">12 m</b></label>
+      <input type="range" id="edWidth" min="20" max="44" step="1" value="30"/>
+      <label>Çizim yumuşatma</label>
+      <div class="seg" id="edSmooth">
+        <button type="button" data-v="0">Az</button>
+        <button type="button" data-v="1">Normal</button>
+        <button type="button" data-v="2">Çok</button>
+      </div>
+      <button type="button" class="btn ed-mini" id="edRelax">〰 Virajları yumuşat</button>
+      <label>Zemin</label>
+      <div class="seg" id="edTheme">
+        <button type="button" data-v="grass">🌲 Çimen</button>
+        <button type="button" data-v="desert">🏜️ Çöl</button>
+        <button type="button" data-v="snow">❄️ Kar</button>
+      </div>
+      <div class="field ed-name">
+        <input type="text" id="edName" maxlength="24" placeholder=" "/>
+        <label for="edName">Pist adı</label>
+      </div>
+      <button type="button" class="btn btn-go" id="edDrive">🏁 Sür</button>
+      <button type="button" class="btn ed-online" id="edOnline">🌐 Arkadaşlarla Yarış</button>
+      <p class="hint">Sürüş ekranında bot sayısını, aracı ve <b>⏱ antrenman</b> (sınırsız tur, sektörler, hayalet) seçeneğini seçebilirsin.</p>
+      <label>Pistlerim</label>
+      <div class="ed-saved" id="edSaved"></div>
+    </aside>
   </div>
 </div>
 

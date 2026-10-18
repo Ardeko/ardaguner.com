@@ -4,6 +4,7 @@
    projeksiyon (s + lane + mesafe), kamera ayarı ve gece/gündüz zemin çizimi. */
 import {buildTrack,sampleAt,limitAt,GRID_FRONT,GRID_GAP,GRID_LANE} from '../manager/track.js';
 import {drawTree,mulberry32,clamp} from '../common.js';
+import {findCrossings} from '../draw/geometry.js';
 
 export {sampleAt,limitAt,GRID_FRONT,GRID_GAP,GRID_LANE};
 
@@ -78,9 +79,18 @@ export function buildOnlineTrack(def){
     const k=gy*cols+gx;
     (cells[k]||(cells[k]=[])).push(i);
   }
-  return {def,trk,W:def.W,H:def.H,hw:def.hw||30,laps:def.laps||3,grip:def.grip||1,
+  const T={def,trk,W:def.W,H:def.H,hw:def.hw||30,laps:def.laps||3,grip:def.grip||1,
     zoom:def.zoom||1,mode:def.mode||'normal',len:trk.len,
-    idx:{cols,rows,cells}};
+    idx:{cols,rows,cells},cross:[],crossy:false};
+  /* Çizilen pist kendini kesebilir (köprü) ya da iki kolu birbirine
+     yaklaşabilir. O zaman en yakın merkez örneği öbür kola atlayıp tur
+     sayımını bozar; izdüşüm bir önceki konumun çevresinde aranıyor.      */
+  if(def.custom){
+    const fc=findCrossings(trk,T.hw);
+    T.cross=fc.crossings;
+    T.crossy=fc.crossings.length+fc.close.length>0;
+  }
+  return T;
 }
 /* En yakın merkez çizgi örneği. Pistten çok uzaktaysa null döner. */
 export function nearestSample(T,x,y){
@@ -100,8 +110,24 @@ export function nearestSample(T,x,y){
   }
   return best<0?null:{i:best,d:Math.sqrt(bd)};
 }
-/* (x,y) → {s, lane, dist, onTrack}. lane: merkez çizgiden işaretli yanal sapma. */
-export function projectToTrack(T,x,y){
+/* (x,y) → {s, lane, dist, onTrack}. lane: merkez çizgiden işaretli yanal sapma.
+   hint: önceki karedeki örnek indeksi. Kesişen pistte önce onun çevresine
+   bakılıyor; araç oradan çok uzaklaştıysa (pistten çıktı) genel aramaya dönülüyor. */
+const HINT_WIN=260;
+export function projectToTrack(T,x,y,hint){
+  if(T.crossy&&hint!=null&&hint>=0){
+    const trk=T.trk, n=trk.n, R=Math.ceil(HINT_WIN/trk.step);
+    let best=-1,bd=Infinity;
+    for(let k=-R;k<=R;k++){
+      const i=((hint+k)%n+n)%n, dx=trk.xs[i]-x, dy=trk.ys[i]-y, d=dx*dx+dy*dy;
+      if(d<bd){ bd=d; best=i; }
+    }
+    const dd=Math.sqrt(bd);
+    if(dd<=T.hw+40){
+      const lane=(x-trk.xs[best])*trk.nx[best]+(y-trk.ys[best])*trk.ny[best];
+      return {s:best*trk.step, i:best, lane, dist:dd, onTrack:dd<=T.hw+2};
+    }
+  }
   const ns=nearestSample(T,x,y);
   if(!ns) return null;
   const trk=T.trk, i=ns.i;
@@ -401,6 +427,41 @@ function drawInfield(c,T,inf,night){
   }
 }
 
+/* Köprü: çizilen pist kendini kestiğinde turun sonraki kolu üstten geçiyor.
+   Gölge + beton korkuluk + asfalt, alttaki yolun orta çizgisini örtüyor.  */
+function drawBridges(c,T,th,rnd,night){
+  const trk=T.trk, n=trk.n, HW=T.hw;
+  const seg=(i0,i1)=>{
+    c.beginPath();
+    for(let k=i0;k<=i1;k++){ const q=((k%n)+n)%n; k===i0?c.moveTo(trk.xs[q],trk.ys[q]):c.lineTo(trk.xs[q],trk.ys[q]); }
+  };
+  c.save(); c.lineJoin='round'; c.lineCap='butt';
+  for(const cr of T.cross){
+    const K=Math.ceil(HW*2.8/trk.step), a=cr.j-K, b=cr.j+K;
+    c.save(); c.translate(5,7); seg(a,b);
+    c.strokeStyle='rgba(0,0,0,.34)'; c.lineWidth=HW*2+20; c.stroke(); c.restore();
+    seg(a,b);
+    c.strokeStyle=night?'#6e6b64':'#c8c4b8'; c.lineWidth=HW*2+12; c.stroke();
+    c.strokeStyle=night?'#3a3934':'#7c786e'; c.lineWidth=HW*2+5; c.stroke();
+    c.strokeStyle=th.edge; c.lineWidth=HW*2+2; c.stroke();
+    c.strokeStyle=th.road; c.lineWidth=HW*2-2; c.stroke();
+    for(let k=0;k<Math.round((b-a)*0.6);k++){
+      const q=((a+Math.floor(rnd()*(b-a)))%n+n)%n, off=(rnd()*2-1)*(HW-4);
+      c.fillStyle=th.speck[k&1]; c.beginPath();
+      c.arc(trk.xs[q]+trk.nx[q]*off,trk.ys[q]+trk.ny[q]*off,.6+rnd()*1.2,0,Math.PI*2); c.fill();
+    }
+    if(th.line){ seg(a,b); c.setLineDash([16,16]); c.strokeStyle=th.line; c.lineWidth=2; c.stroke(); c.setLineDash([]); }
+    // köprü uçlarında genleşme derzi
+    for(const e of [a,b]){
+      const q=((e%n)+n)%n;
+      c.strokeStyle='rgba(0,0,0,.35)'; c.lineWidth=2; c.beginPath();
+      c.moveTo(trk.xs[q]+trk.nx[q]*(HW+5),trk.ys[q]+trk.ny[q]*(HW+5));
+      c.lineTo(trk.xs[q]-trk.nx[q]*(HW+5),trk.ys[q]-trk.ny[q]*(HW+5)); c.stroke();
+    }
+  }
+  c.restore();
+}
+
 /* Büyük dünyalarda cihaz pikseli patlamasın diye çözünürlük bütçesi. */
 const PX_BUDGET=4.2e6;
 export function trackDpr(def,dpr){
@@ -458,7 +519,8 @@ export function paintOnlineTrack(T,dpr,opts){
     }
   }
 
-  const specks=def.mode==='nascar'?2400:1100;
+  // çizilen pistin uzunluğu serbest: asfalt dokusu uzunlukla ölçeklensin
+  const specks=def.mode==='nascar'?2400:def.custom?Math.round(T.len*0.37):1100;
   for(let k=0;k<specks;k++){
     const i=rnd()*n|0, off=(rnd()*2-1)*(HW-4);
     c.fillStyle=th.speck[k&1]; c.beginPath(); c.arc(xs[i]+nx[i]*off,ys[i]+ny[i]*off,.6+rnd()*1.3,0,Math.PI*2); c.fill();
@@ -468,6 +530,7 @@ export function paintOnlineTrack(T,dpr,opts){
     [-10,10].forEach(off=>{ c.beginPath(); for(let i=0;i<=n;i++){ const q=i%n; const px=xs[q]+nx[q]*off,py=ys[q]+ny[q]*off; i?c.lineTo(px,py):c.moveTo(px,py);} c.stroke(); });
   }
   if(th.line&&def.mode!=='nascar'){ c.setLineDash([16,16]); c.strokeStyle=th.line; c.lineWidth=2; c.stroke(path); c.setLineDash([]); }
+  if(T.cross&&T.cross.length) drawBridges(c,T,th,rnd,night);
 
   if(def.mode==='nascar') drawBarrier(c,T,night);
   if(def.pit) drawPitRoad(c,T,night);
@@ -490,8 +553,10 @@ export function paintOnlineTrack(T,dpr,opts){
   if(def.pylons) drawPylons(c,T,def.pylons,night);
 
   if(th.deco!=='none'){
+    // büyük çizilmiş dünyalarda 60 ağaç seyrek kalıyordu: alanla ölçekle
+    const decoN=def.custom?Math.min(170,Math.round(60*W*H/640000)):60;
     const deco=[]; let tries=0;
-    while(deco.length<60&&tries++<5000){
+    while(deco.length<decoN&&tries++<decoN*90){
       const x=16+rnd()*(W-32), y=16+rnd()*(H-32);
       const ns=nearestSample(T,x,y);
       if(ns&&ns.d<HW+30) continue;
