@@ -75,6 +75,7 @@ const CONTENT = [
       'Sezon 1 hediye kaydın',
       'Devir kaydın',
       'Gönderdiğin bildirimler',
+      'Atelier ürün haklarının, kozmetik tercihlerinin ve günlük ödül sayacının sunucu kayıtları ile RevenueCat’teki müşteri kaydın',
     ],
     keptTitle: 'Ne kalır',
     kept: [
@@ -82,6 +83,7 @@ const CONTENT = [
       'Ortak site kasası ve yarış toplamları ile bazı özel araç sicilleri, başkalarının kayıtlarının tutarlılığı için adın ve hesap kimliğinle eşleşmesi kaldırılarak kalabilir.',
       'Cihazındaki oyun kaydı silinmez; sunucudaki kişisel doğrulama ve destek kopyaları silinir. Çevrimiçi kayıtlarda otomatik süre sonu silmesi yoktur; bu hesap silme yolu geçerlidir.',
       'Telefonundan seçtiğin portre fotoğrafı telefonunda kalır. Paylaşmadıysan sunucuya hiç gönderilmemiştir; paylaştıysan sunucudaki kopyası silinir.',
+      'Apple/Google’daki ödeme kayıtların mağazada kalır; hesabı silmek otomatik iade anlamına gelmez. Reklam gösteren Google AdMob, kendi politikasına göre tuttuğu reklam verilerini ayrıca saklayabilir.',
     ],
     noteLabel: 'Not',
     note: 'Hesabını bağlamadan uygulamayı silersen, anonim hesabına yeniden ulaşamayız; bu durumda silme talebini galeri adın ve oyun tarihlerinle yaparsın, eşleşen kayıtları sileriz.',
@@ -127,6 +129,7 @@ const CONTENT = [
       'Your Season 1 gift record',
       'Your handover record',
       'Notifications you sent',
+      'Your Atelier entitlements, cosmetic preferences and daily reward counter on our server, and your RevenueCat customer record',
     ],
     keptTitle: 'What remains',
     kept: [
@@ -134,6 +137,7 @@ const CONTENT = [
       'Shared site funds and race totals and some special vehicle registers may remain with your name and account association removed to preserve other players’ records.',
       'Your on-device save is not deleted; your personal online verification and support copies are deleted. Online records have no automatic expiry; this account deletion flow applies.',
       'A portrait you choose from your photos stays on your phone. If you never shared it, it was never sent to the server; if you shared it, the server copy is deleted.',
+      'Your payment records at Apple/Google remain with the store; deleting your account does not trigger an automatic refund. Google AdMob, which serves ads, may separately retain ad data under its own policy.',
     ],
     noteLabel: 'Note',
     note: 'If you uninstall the app without linking your account, we cannot reach your anonymous account again. In that case, send your deletion request with your gallery name and play dates, and we will delete the matching records.',

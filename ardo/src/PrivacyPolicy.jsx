@@ -125,12 +125,20 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
     tr: {
       badge: 'Gizlilik',
       title: 'Gizlilik Politikası',
-      updated: '21 Ekim 2026',
+      updated: '24 Ekim 2026',
       updatedLabel: 'Son güncelleme',
       controllerLabel: 'Veri sorumlusu',
       subtitle:
-        'Google Play, App Store ve ardaguner.com üzerinden sunduğumuz oyunlar; Torpidodan’ın sıralamaları, kayıt doğrulaması ve çevrimiçi özellikleri.',
+        'Google Play, App Store ve ardaguner.com üzerinden sunduğumuz oyunlar; Torpidodan’ın sıralamaları, kayıt doğrulaması, çevrimiçi özellikleri, uygulama içi satın almaları ve ödüllü reklamları.',
       toc: 'İçindekiler',
+      newBadge: 'Yeni',
+      glanceLabel: 'Bir bakışta',
+      glance: [
+        { k: 'Satmayız', v: 'Kullanıcı verisi satılmaz.' },
+        { k: 'Ödeme', v: 'Kart bilgisi Apple/Google’da kalır.' },
+        { k: 'Reklam', v: 'İsteğe bağlı, kişiselleştirilmemiş ödüllü reklam.' },
+        { k: 'Silme', v: 'Uygulamadan tek adımda hesabını sil.' },
+      ],
       alsoCovers:
         'Politika, Ardeko Studios adıyla yayınlanan tüm mobil uygulamaları ve ardaguner.com üzerinden oynanan tarayıcı oyunlarını kapsar.',
       introTitle: 'Giriş',
@@ -143,11 +151,11 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
       appsPlanned: 'Yakında',
       onlineTitle: 'Torpidodan — çevrimiçi oyun verileri',
       onlineLead:
-        'Torpidodan’ın kariyeri internetsiz oynanabilir. Oyun kaydınız cihazınızda saklanır; çevrimiçi doğrulama kayıtları ve açıkça gönderdiğiniz destek kopyaları ayrıca sunucuda tutulabilir. Galeri adınızı seçtiğinizde Online liste (Mal Beyanı) dahil tüm güncel çevrimiçi sıralamalara otomatik katılırsınız; oyun başladığında ve gün sonunda internet varsa beyan gönderilir. Bağlantı yoksa oyun sürer, gönderim daha sonra yeniden denenir. Apple/Google hesabı bağlama, fotoğraf paylaşma ve aşağıda belirtilen özel etkinliklere katılma oyuncunun seçimidir.',
+        'Torpidodan’ın kariyeri internetsiz oynanabilir. Oyun kaydınız cihazınızda saklanır; çevrimiçi doğrulama kayıtları ve açıkça gönderdiğiniz destek kopyaları ayrıca sunucuda tutulabilir. Galeri adınızı seçtiğinizde Online liste (Mal Beyanı) dahil tüm güncel çevrimiçi sıralamalara otomatik katılırsınız; oyun başladığında ve gün sonunda internet varsa beyan gönderilir. Bağlantı yoksa oyun sürer, gönderim daha sonra yeniden denenir. Apple/Google hesabı bağlama, fotoğraf paylaşma, Atelier’de satın alma, ödüllü reklam izleme ve aşağıda belirtilen özel etkinliklere katılma oyuncunun seçimidir.',
       onlineFacts: [
         {
           label: 'Hangi veriler',
-          desc: 'Oyuna başladığınızda şu bilgiler otomatik gönderilir: galeri adınız ve seçtiğiniz hazır oyun portresi; oyun içi kasa, mal varlığı, borç ve şirket değeri; oyundaki gün, galeri seviyeniz, sıralama sonuçlarınız ve oyun içi unvanlarınız; bunlarla birlikte Firebase’in cihazınıza atadığı anonim oturum kimliği. Haftanın Piyasası’nı bitirirseniz o haftanın listesine galeri adınız, skorunuz ve oyun içi kasa, stok ve borç değerleriniz aynı anonim kimlikle gönderilir. Oyundaki paralar gerçek para değildir; bunlar mali hesap bilgisi değildir. Gerçek adınız, telefon numaranız, konumunuz, telefon rehberiniz ve reklam kimliğiniz toplanmaz; e-posta yalnızca hesabınızı bağlarsanız saklanır. Kişisel portre fotoğrafınız yalnızca paylaşmayı seçerseniz gönderilir (bkz. “Kendi resminiz”).',
+          desc: 'Oyuna başladığınızda şu bilgiler otomatik gönderilir: galeri adınız ve seçtiğiniz hazır oyun portresi; oyun içi kasa, mal varlığı, borç ve şirket değeri; oyundaki gün, galeri seviyeniz, sıralama sonuçlarınız ve oyun içi unvanlarınız; bunlarla birlikte Firebase’in cihazınıza atadığı anonim oturum kimliği. Haftanın Piyasası’nı bitirirseniz o haftanın listesine galeri adınız, skorunuz ve oyun içi kasa, stok ve borç değerleriniz aynı anonim kimlikle gönderilir. Oyundaki paralar gerçek para değildir; bunlar mali hesap bilgisi değildir. Gerçek adınız, telefon numaranız, konumunuz ve telefon rehberiniz toplanmaz; bu oyun kayıtlarına reklam kimliği eklenmez; e-posta yalnızca hesabınızı bağlarsanız saklanır. Satın almalar ve ödüllü reklamlar için aşağıdaki ilgili bölümlere bakın. Kişisel portre fotoğrafınız yalnızca paylaşmayı seçerseniz gönderilir (bkz. “Kendi resminiz”).',
         },
         {
           label: 'İşleme amacı',
@@ -159,7 +167,7 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
         },
         {
           label: 'Hesap bağlama ve müşteri defteri',
-          desc: 'İsterseniz çevrimiçi hesabınızı Apple veya Google hesabınıza bağlayabilirsiniz (Ayarlar → Çevrimiçi hesap). Bağlarsanız sağlayıcı kimliği ve o hesabın e-posta adresi (Apple’da, isterseniz Apple’ın gizli aktarma adresi) hesap yönetimi için Firebase Authentication’da saklanır; kimseye gösterilmez, listelere girmez. Bağlamazsanız hiçbir e-posta toplanmaz. Hesabınızı sildiğinizde bağlantı ve e-posta da silinir; Apple ile bağlıysanız bir kerelik yetki koduyla Apple’ın yetkisi de iptal edilir. Oyunun müşteri defterindeki kişiler ve numaralar kurgudur; telefon rehberinize erişilmez.',
+          desc: 'İsterseniz çevrimiçi hesabınızı Apple veya Google hesabınıza bağlayabilirsiniz (Ayarlar → Çevrimiçi hesap). Bağlarsanız sağlayıcı kimliği, o hesabın e-posta adresi (Apple’da, isterseniz Apple’ın gizli aktarma adresi) ve Google’da hesabın görünen adı ile profil resmi bağlantısı hesap yönetimi için Firebase Authentication’da saklanır; kimseye gösterilmez, listelere girmez. Bağlamazsanız hiçbir e-posta toplanmaz. Hesabınızı sildiğinizde bağlantı, e-posta ve bu profil bilgileri de silinir; Apple ile bağlıysanız bir kerelik yetki koduyla Apple’ın yetkisi de iptal edilir. Oyunun müşteri defterindeki kişiler ve numaralar kurgudur; telefon rehberinize erişilmez.',
         },
         {
           label: 'Kendi resminiz',
@@ -186,12 +194,22 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
           desc: 'Ortak iş katkınızı gönderdiğinizde kariyerinizin oyun eylem defteri sunucuda doğrulanır. Site Kupası’na kaydolduğunuzda haftaya ait ayrı başlangıç ve koşu kimliği saklanır; bitişte koşunun eylem defteri doğrulama için gönderilir. Bu kanıtlar diğer oyunculara açılmaz. Haftalık kadro ve kişisel puanlar ilgili site görünümünde, site toplamı ve sırası genel sıralamada gösterilir. Kişisel haftalık hatıralar hesabınız için saklanır. Bağlantı kesilirse aynı bitiş kanıtı cihazda saklanıp bağlantı geldiğinde yeniden gönderilebilir.',
         },
         {
+          fresh: true,
+          label: 'Atelier — uygulama içi satın alımlar (RevenueCat)',
+          desc: 'Atelier’de tek seferlik, kalıcı kozmetik paketler satılır; abonelik veya oyun içi premium para yoktur. Ödemeyi Apple App Store veya Google Play alır; kart ve ödeme bilgileriniz bize ya da RevenueCat’e gelmez. Satın alımları doğrulamak, geri yüklemek, iadelerde hakları güncellemek ve satın alma istatistiklerini görmek için RevenueCat, Inc. kullanılır. Mağaza açıkken uygulama başladığında RevenueCat oyun hesabınızın anonim kimliğiyle (Firebase UID) yapılandırılır; satın alma yapmadıysanız yalnızca bu kimlik ile uygulama sürümü ve platform gibi teknik bilgiler iletilir. Satın alırsanız mağazanın satın alma kayıtları (ürün kimliği, işlem kimliği, satın alma/iade tarihi, fiyat, para birimi ve mağaza ülkesi) da eklenir. RevenueCat’e e-posta adresiniz veya reklam kimliğiniz gönderilmez; RevenueCat verileri hizmet sağlayıcı olarak adımıza işler ve satın alma değişikliklerini sunucumuza bildirir. Kalıcı ürün haklarınız, kozmetik tercihleriniz ve kuşandığınız tasarımlar Firebase’de hesabınızla tutulur; kuşanılan tasarımlar ve sergilenen nüshalar diğer oyunculara görünebilir, fiyat ve işlem makbuzu kimseye gösterilmez.',
+        },
+        {
+          fresh: true,
+          label: 'Ödüllü reklamlar (Google AdMob)',
+          desc: 'Atelier’de günlük kozmetik parça kazanmak için isteğe bağlı ödüllü reklam izleyebilirsiniz; banner veya zorunlu geçiş reklamı yoktur. Reklamlar Google AdMob ile gösterilir ve kişiselleştirilmemiş reklam istenir. Gerekli bölgelerde (ör. AB/AEA ve Birleşik Krallık) ilk reklamdan önce Google’ın izin formu (UMP) gösterilir; izin alınamazsa reklam istenmez. Tercihlerinizi Atelier → “Reklam gizlilik tercihleri” ile değiştirebilirsiniz. Uygulama iOS’ta uygulama izleme izni (ATT) istemez; bu izin olmadan iOS reklam kimliğine (IDFA) erişilemez. Kişiselleştirilmemiş reklamda da Google; IP adresi ve buradan çıkarılan yaklaşık konum, cihaz ve uygulama bilgileri, Android’de reklam kimliği, reklam etkileşimleri ile tanılama ve performans verilerini reklamı sunmak, sıklığı sınırlamak, ölçmek ve sahteciliği önlemek için işleyebilir; bu işleme Google’ın kendi politikasına tabidir (policies.google.com/technologies/ads). Ödülü doğrulamak için reklam isteğiyle birlikte oyun hesabınızın anonim kimliği ve tek kullanımlık bir istek kimliği Google’a verilir; Google reklam tamamlandığında bunları imzalı olarak sunucumuza geri iletir. Günlük ödül sayacı ve doğrulama kaydı Firebase’de tutulur. Galeri adınız, oyun değerleriniz, e-postanız ve fotoğrafınız reklam ağına verilmez.',
+        },
+        {
           label: 'Nerede tutulur',
-          desc: 'Veriler, hizmet sağlayıcımız Google Firebase’in (Cloud Firestore) Avrupa Birliği’ndeki sunucularında tutulur; bu, verilerin Türkiye dışına aktarılması anlamına gelir. Kimlik doğrulaması Firebase Authentication ile, paylaşılan fotoğrafların otomatik denetimi Google Cloud Vision ile yapılır. Google bu hizmetlerde verileri yalnızca adımıza işler; aktarım HTTPS ile şifrelenir. Bağlantı sırasında IP adresi ve teknik istemci bilgileri hizmetin sunulması ve güvenliği için işlenebilir.',
+          desc: 'Veriler, hizmet sağlayıcımız Google Firebase’in (Cloud Firestore) Avrupa Birliği’ndeki sunucularında tutulur; bu, verilerin Türkiye dışına aktarılması anlamına gelir. Kimlik doğrulaması Firebase Authentication ile, paylaşılan fotoğrafların otomatik denetimi Google Cloud Vision ile yapılır. Google bu hizmetlerde verileri yalnızca adımıza işler. Satın alma kayıtları RevenueCat’in, ödüllü reklam verileri Google’ın altyapısında işlenir; bu da yurt dışına aktarım anlamına gelir. Aktarım HTTPS ile şifrelenir. Bağlantı sırasında IP adresi ve teknik istemci bilgileri hizmetin sunulması ve güvenliği için işlenebilir.',
         },
         {
           label: 'Saklama ve silme',
-          desc: 'Çevrimiçi oyun kayıtlarınız ve destek kopyaları hesap silme talebine kadar tutulur; otomatik süre sonu silmesi yoktur. Ayarlar → Çevrimiçi hesap → “Çevrimiçi verilerimi sil” hesabınızı ve sıralama ile haftalık sonuçlarınız dahil kişisel çevrimiçi verilerinizi siler. Paylaştığınız fotoğraf, site üyeliğiniz, başvuru/davetleriniz, kişisel görev/kupa delilleriniz, katılım ve hatıralarınız da silinir. Diğer oyuncuların kayıtlarının tutarlılığı için ortak kasa ve yarış toplamları adınız ve hesap kimliğinizle ilişkisi kaldırılarak korunabilir; Gala ve Özel Plaka sicilinde diğer oyuncuların kayıtlarıyla bağlantılı işlem bilgileri isimsiz kalır. Cihazınızdaki oyun kaydı kalır. Ayrıntılar aşağıdaki silme sayfasındadır.',
+          desc: 'Çevrimiçi oyun kayıtlarınız ve destek kopyaları hesap silme talebine kadar tutulur; otomatik süre sonu silmesi yoktur. Ayarlar → Çevrimiçi hesap → “Çevrimiçi verilerimi sil” hesabınızı ve sıralama ile haftalık sonuçlarınız dahil kişisel çevrimiçi verilerinizi siler. Paylaştığınız fotoğraf, site üyeliğiniz, başvuru/davetleriniz, kişisel görev/kupa delilleriniz, katılım ve hatıralarınız; Atelier ürün haklarınız, kozmetik tercihleriniz, ödül sayacınız ve RevenueCat’teki müşteri kaydınız da silinir. Apple/Google’ın kendi ödeme kayıtları ve sağlayıcıların yasal saklama yükümlülükleri bundan ayrıdır; hesap silmek otomatik iade anlamına gelmez. Diğer oyuncuların kayıtlarının tutarlılığı için ortak kasa ve yarış toplamları adınız ve hesap kimliğinizle ilişkisi kaldırılarak korunabilir; Gala ve Özel Plaka sicilinde diğer oyuncuların kayıtlarıyla bağlantılı işlem bilgileri isimsiz kalır. Cihazınızdaki oyun kaydı kalır. Ayrıntılar aşağıdaki silme sayfasındadır.',
         },
         {
           label: 'Haklarınız',
@@ -203,12 +221,12 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
         },
         {
           label: 'Reklam ve takip',
-          desc: 'Torpidodan reklam, izleme veya analitik SDK kullanmaz. Çevrimiçi oyun verisi reklam ya da takip amacıyla kullanılmaz, satılmaz ve reklam ortaklarıyla paylaşılmaz.',
+          desc: 'Torpidodan yalnızca isteğe bağlı ödüllü reklamlar için Google AdMob’u kullanır ve kişiselleştirilmemiş reklam ister; Firebase Analytics gibi bir analitik SDK kullanmaz. Kullanıcı verisi satılmaz. Çevrimiçi oyun verisi reklam hedeflemesi için kullanılmaz; ödülü doğrulamak için gereken anonim kimlik dışında reklam ağıyla paylaşılmaz.',
         },
       ],
       deleteTitle: 'Verilerinizi silme',
       deleteText:
-        'Torpidodan’daki çevrimiçi hesabınızı ve kişisel verilerinizi uygulama içinden silebilirsiniz: Ayarlar → Çevrimiçi hesap → “Çevrimiçi verilerimi sil” → onaylayın. Paylaştığınız fotoğraf sunucudan silinir; cihazınızdaki oyun kaydı ve portre fotoğrafı bu işlemle silinmez. Uygulamayı açamıyorsanız e-posta ile talepte bulunabilirsiniz.',
+        'Torpidodan’daki çevrimiçi hesabınızı ve kişisel verilerinizi uygulama içinden silebilirsiniz: Ayarlar → Çevrimiçi hesap → “Çevrimiçi verilerimi sil” → onaylayın. Paylaştığınız fotoğraf sunucudan silinir; cihazınızdaki oyun kaydı ve portre fotoğrafı bu işlemle silinmez. Atelier ürün haklarınız ve RevenueCat kaydınız da silinir; Apple/Google’daki ödeme kayıtları mağazada kalır ve hesap silmek otomatik iade anlamına gelmez. Uygulamayı açamıyorsanız e-posta ile talepte bulunabilirsiniz.',
       deleteLinkLabel: 'Ayrıntılar ve uygulamayı silmiş kullanıcılar için',
       dataTitle: 'Topladığımız bilgiler',
       dataText:
@@ -227,12 +245,16 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
           desc: 'Torpidodan’da çevrimiçi hesabınızı isteğe bağlı olarak Apple veya Google ile bağlarsanız o hesabın e-posta adresi. Bağlamazsanız yalnızca anonim bir oturum kimliği kullanılır.',
         },
         {
+          label: 'Satın alma kayıtları',
+          desc: 'Torpidodan Atelier’de satın alırsanız ürün ve işlem kimliği, tarih, fiyat ve para birimi gibi mağaza kayıtları; anonim hesap kimliğinizle RevenueCat ve Firebase’de. Ödeme bilgileri Apple/Google’da kalır.',
+        },
+        {
           label: 'Cihaz bilgileri',
-          desc: 'Cihaz modeli, işletim sistemi, benzersiz tanımlayıcılar (ör. reklam kimlikleri) — yalnızca reklam veya analitik kullanan uygulamalarda.',
+          desc: 'Cihaz modeli, işletim sistemi, benzersiz tanımlayıcılar (ör. reklam kimlikleri) — yalnızca reklam veya analitik kullanan uygulamalarda. Torpidodan’da yalnızca ödüllü reklam izlediğinizde, Google AdMob tarafından.',
         },
         {
           label: 'Kullanım verileri',
-          desc: 'Uygulama içi etkileşimler, oynama süreleri ve hata/çökme raporları — analitik entegre edilmiş uygulamalarda.',
+          desc: 'Uygulama içi etkileşimler, oynama süreleri ve hata/çökme raporları — analitik entegre edilmiş uygulamalarda. Torpidodan’da yalnızca reklam etkileşimleri ve reklam SDK’sının tanılama verileri.',
         },
         {
           label: 'Yerel oyun verisi',
@@ -244,9 +266,9 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
         'Torpidodan’ın kariyerine Apple/Google hesabı bağlamadan başlayabilir ve internetsiz devam edebilirsiniz. Bağlantı olduğunda anonim oturum, otomatik sıralamalar ve Noter doğrulaması çalışır. Yeni oyun başlatmak veya uygulamayı kaldırmak sunucudaki hesabınızı silmez; çevrimiçi verileri silmek için uygulamadaki silme yolunu ya da aşağıdaki e-posta talebini kullanın.',
       thirdPartyTitle: 'Üçüncü taraf hizmetleri',
       thirdPartyText:
-        'Torpidodan’ın çevrimiçi oyun verileri için Google Firebase; isteğe bağlı hesap bağlantısı için Apple ile Giriş ve Google ile Giriş; paylaşılan portre fotoğraflarının otomatik içerik denetimi için Google Cloud Vision kullanılır. Google bu verileri hizmet sağlayıcı olarak adımıza işler. Reklam veya analitik kullanan diğer uygulamalar aşağıdaki hizmetlerden yararlanabilir.',
+        'Torpidodan’ın çevrimiçi oyun verileri için Google Firebase; isteğe bağlı hesap bağlantısı için Apple ile Giriş ve Google ile Giriş; paylaşılan portre fotoğraflarının otomatik içerik denetimi için Google Cloud Vision; uygulama içi satın almaların doğrulanması ve geri yüklenmesi için RevenueCat; isteğe bağlı ödüllü reklamlar ve reklam izin formu için Google AdMob ile Google UMP kullanılır. Google (Firebase, Cloud Vision) ve RevenueCat bu verileri hizmet sağlayıcı olarak adımıza işler; AdMob’daki reklam verileri Google’ın kendi politikasına tabidir. Reklam veya analitik kullanan diğer uygulamalar aşağıdaki hizmetlerden yararlanabilir.',
       thirdPartyNote:
-        'Firebase Analytics ve AdMob yalnızca ilgili diğer uygulamalarda geçerlidir; Torpidodan’da kullanılmaz.',
+        'Firebase Analytics yalnızca ilgili diğer uygulamalarda geçerlidir; Torpidodan’da kullanılmaz. Torpidodan’da AdMob yalnızca isteğe bağlı, kişiselleştirilmemiş ödüllü reklamlar için kullanılır.',
       usageTitle: 'Bilgilerin kullanımı',
       usageText: 'İşlediğimiz bilgileri şu amaçlarla kullanırız:',
       usageItems: [
@@ -255,11 +277,12 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
         'Paylaşmayı seçtiğiniz portre fotoğrafını uygunsuz içeriğe karşı denetlemek ve diğer oyunculara göstermek.',
         'Oyunların düzgün çalışmasını sağlamak ve iyileştirmek.',
         'Teknik sorunları tespit edip çözmek.',
-        'Reklam gösterilen uygulamalarda uygun reklamlar sunmak.',
+        'Torpidodan Atelier satın alımlarını doğrulamak, geri yüklemek ve iadelerde hakları güncellemek.',
+        'Reklam gösterilen uygulamalarda uygun reklamlar sunmak; Torpidodan’da ödüllü reklamın tamamlandığını doğrulayıp kozmetik ödülü vermek.',
       ],
       shareTitle: 'Bilgilerin paylaşımı',
       shareText:
-        'Kullanıcı verilerini satmıyoruz. Torpidodan’ın liste, ilan, vitrin, paylaşılan fotoğraf ve site verilerinin oyunculara görünürlüğü yukarıda açıklanmıştır; özel doğrulama ve destek kayıtları herkese açılmaz. Hizmet sağlayıcılar işlemleri adımıza yürütür. Reklam veya analitik kullanan diğer uygulamalarda anonimleştirilmiş veriler ilgili ortaklarla paylaşılabilir. Veriler ayrıca yasal zorunluluk halinde yetkili mercilere iletilebilir.',
+        'Kullanıcı verilerini satmıyoruz. Torpidodan’ın liste, ilan, vitrin, paylaşılan fotoğraf ve site verilerinin oyunculara görünürlüğü yukarıda açıklanmıştır; özel doğrulama ve destek kayıtları herkese açılmaz. Hizmet sağlayıcılar (Google Firebase, RevenueCat) işlemleri adımıza yürütür. Torpidodan’da ödüllü reklam izlediğinizde Google AdMob, reklamı sunmak için gereken cihaz ve teknik verileri kendi politikasına göre işler ve ödül doğrulaması için anonim hesap kimliğinizi alır. Reklam veya analitik kullanan diğer uygulamalarda anonimleştirilmiş veriler ilgili ortaklarla paylaşılabilir. Veriler ayrıca yasal zorunluluk halinde yetkili mercilere iletilebilir.',
       childrenTitle: 'Çocuklar',
       childrenText:
         'Oyunlarımız genel kitleye uygundur. Torpidodan’ın çevrimiçi özellikleri (Online liste / Mal Beyanı dahil) 13 yaş altı için tasarlanmamıştır. Bilerek 13 yaş altından kişisel veri toplamıyoruz. Ebeveyn veya veli olarak endişeniz varsa bizimle iletişime geçin.',
@@ -273,12 +296,20 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
     en: {
       badge: 'Privacy',
       title: 'Privacy Policy',
-      updated: '21 October 2026',
+      updated: '24 October 2026',
       updatedLabel: 'Last updated',
       controllerLabel: 'Data controller',
       subtitle:
-        'Our games on Google Play, the App Store and ardaguner.com, including Torpidodan rankings, save verification and online features.',
+        'Our games on Google Play, the App Store and ardaguner.com, including Torpidodan rankings, save verification, online features, in-app purchases and rewarded ads.',
       toc: 'Contents',
+      newBadge: 'New',
+      glanceLabel: 'At a glance',
+      glance: [
+        { k: 'Never sold', v: 'We do not sell user data.' },
+        { k: 'Payments', v: 'Card details stay with Apple/Google.' },
+        { k: 'Ads', v: 'Optional, non-personalized rewarded ads.' },
+        { k: 'Deletion', v: 'Delete your account in the app in one step.' },
+      ],
       alsoCovers:
         'The policy covers all mobile apps published under the Ardeko Studios name and the browser games playable on ardaguner.com.',
       introTitle: 'Introduction',
@@ -291,11 +322,11 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
       appsPlanned: 'Coming soon',
       onlineTitle: 'Torpidodan — online game data',
       onlineLead:
-        'Torpidodan’s career can be played offline. Your save is kept on your device; online verification records and support copies you explicitly submit may also be stored on the server. Choosing a dealership name automatically enrolls you in all current online rankings, including the Online leaderboard (Mal Beyanı); declarations are sent when play starts and at the end of game days if connected. Offline play continues and uploads retry later. Linking Apple/Google, sharing a photo and joining the specific activities below remain player choices.',
+        'Torpidodan’s career can be played offline. Your save is kept on your device; online verification records and support copies you explicitly submit may also be stored on the server. Choosing a dealership name automatically enrolls you in all current online rankings, including the Online leaderboard (Mal Beyanı); declarations are sent when play starts and at the end of game days if connected. Offline play continues and uploads retry later. Linking Apple/Google, sharing a photo, buying in the Atelier, watching rewarded ads and joining the specific activities below remain player choices.',
       onlineFacts: [
         {
           label: 'What is sent',
-          desc: 'When you start playing, the following is sent automatically: your dealership’s name and the ready-made portrait you chose; its in-game cash, assets, debt and company value; your in-game day, dealership level, rankings and game titles; and an anonymous session ID that Firebase assigns to your device. If you finish the weekly challenge (Haftanın Piyasası), your dealership’s name, your score and your in-game cash, stock and debt are sent to that week’s leaderboard with the same anonymous ID. In-game money is not real money and is not financial account information. We do not collect your real name, phone number, location, phone contacts or advertising ID; an email is stored only if you link your account. Your personal portrait photo is sent only if you choose to share it (see “Your own picture”).',
+          desc: 'When you start playing, the following is sent automatically: your dealership’s name and the ready-made portrait you chose; its in-game cash, assets, debt and company value; your in-game day, dealership level, rankings and game titles; and an anonymous session ID that Firebase assigns to your device. If you finish the weekly challenge (Haftanın Piyasası), your dealership’s name, your score and your in-game cash, stock and debt are sent to that week’s leaderboard with the same anonymous ID. In-game money is not real money and is not financial account information. We do not collect your real name, phone number, location or phone contacts; no advertising ID is attached to these game records; an email is stored only if you link your account. For purchases and rewarded ads, see the sections below. Your personal portrait photo is sent only if you choose to share it (see “Your own picture”).',
         },
         {
           label: 'Purpose',
@@ -307,7 +338,7 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
         },
         {
           label: 'Account linking and fictional contacts',
-          desc: 'You can link your online account to an Apple or Google account (Settings → Online account). If you do, the provider identifier and that account’s email address (for Apple, the private relay address if you choose to hide your email) are stored in Firebase Authentication for account management; they are shown to no one and never appear in lists. If you don’t link, no email is collected. Deleting your account removes the link and the email; for Apple-linked accounts, Apple’s authorization is also revoked using a one-time authorization code. The game’s customer contact book contains fictional characters and numbers; it does not access your phone contacts.',
+          desc: 'You can link your online account to an Apple or Google account (Settings → Online account). If you do, the provider identifier, that account’s email address (for Apple, the private relay address if you choose to hide your email) and, for Google, the account’s display name and profile picture URL are stored in Firebase Authentication for account management; they are shown to no one and never appear in lists. If you don’t link, no email is collected. Deleting your account removes the link, the email and this profile information; for Apple-linked accounts, Apple’s authorization is also revoked using a one-time authorization code. The game’s customer contact book contains fictional characters and numbers; it does not access your phone contacts.',
         },
         {
           label: 'Your own picture',
@@ -334,12 +365,22 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
           desc: 'When you submit a cooperative task contribution, your career action journal is verified on the server. Registering for Site Cup stores a separate weekly start and run identifier; finishing submits that run’s action journal for verification. Raw proofs are private. Weekly rosters and individual points appear in the relevant site view; site totals and ranks appear in the public rankings. Personal weekly keepsakes are stored for your account. An interrupted finish submission may be retained on your device and retried with the same proof when connected.',
         },
         {
+          fresh: true,
+          label: 'Atelier — in-app purchases (RevenueCat)',
+          desc: 'The Atelier sells one-time, permanent cosmetic packs; there are no subscriptions or premium in-game currency. Payment is handled by the Apple App Store or Google Play; your card and payment details never reach us or RevenueCat. We use RevenueCat, Inc. to validate and restore purchases, update entitlements after refunds and view purchase statistics. When the store is enabled, RevenueCat is configured with your game account’s anonymous ID (Firebase UID) as the app starts; if you have not bought anything, only that ID and technical details such as app version and platform are sent. If you buy, the store’s purchase records (product ID, transaction ID, purchase/refund date, price, currency and storefront country) are added. Your email address and advertising ID are not sent to RevenueCat; RevenueCat processes the data on our behalf as a service provider and notifies our server of purchase changes. Your permanent entitlements, cosmetic preferences and equipped designs are stored with your account in Firebase; equipped designs and displayed copies may be visible to other players, while prices and receipts are shown to no one.',
+        },
+        {
+          fresh: true,
+          label: 'Rewarded ads (Google AdMob)',
+          desc: 'In the Atelier you can choose to watch rewarded ads to earn daily cosmetic pieces; there are no banner or forced interstitial ads. Ads are served by Google AdMob and non-personalized ads are requested. Where required (e.g. the EU/EEA and the UK), Google’s consent form (UMP) is shown before the first ad; without consent, no ad is requested. You can change your choices under Atelier → “Reklam gizlilik tercihleri” (ad privacy options). On iOS the app does not request App Tracking Transparency permission; without it, the iOS advertising identifier (IDFA) is not accessible. Even for non-personalized ads, Google may process your IP address and the approximate location derived from it, device and app information, the advertising ID on Android, ad interactions, and diagnostic and performance data to serve ads, cap frequency, measure performance and prevent fraud, under its own policy (policies.google.com/technologies/ads). To verify a reward, your game account’s anonymous ID and a one-time request ID are passed to Google with the ad request; when the ad completes, Google returns them to our server in a signed callback. The daily reward counter and verification record are stored in Firebase. Your dealership name, game values, email and photo are not given to the ad network.',
+        },
+        {
           label: 'Where it is stored',
-          desc: 'On the European Union servers of our service provider Google Firebase (Cloud Firestore); for users in Türkiye this means data is transferred abroad. Firebase Authentication handles sign-in, and Google Cloud Vision performs the automatic check of shared photos. Google processes the data only on our behalf; transfers are encrypted with HTTPS. IP addresses and technical client information may be processed to provide and secure network requests.',
+          desc: 'On the European Union servers of our service provider Google Firebase (Cloud Firestore); for users in Türkiye this means data is transferred abroad. Firebase Authentication handles sign-in, and Google Cloud Vision performs the automatic check of shared photos. Google processes this data only on our behalf. Purchase records are processed on RevenueCat’s infrastructure and rewarded-ad data on Google’s, which also means a transfer abroad. Transfers are encrypted with HTTPS. IP addresses and technical client information may be processed to provide and secure network requests.',
         },
         {
           label: 'Retention and deletion',
-          desc: 'Online game records and support copies are kept until you request account deletion; there is no automatic expiry. Settings → Online account → “Delete my online data” removes your account and all personal online records, including rankings and weekly results. Your shared photo, site membership, applications/invitations, personal task/Cup proofs, participation records and keepsakes are also deleted. Shared treasury and competition totals may remain with your name and account association removed to preserve other players’ records; in the Gala and Special Plate registers, transaction details linked to other players’ records remain without your name. Your local game save remains. Details are on the deletion page below.',
+          desc: 'Online game records and support copies are kept until you request account deletion; there is no automatic expiry. Settings → Online account → “Delete my online data” removes your account and all personal online records, including rankings and weekly results. Your shared photo, site membership, applications/invitations, personal task/Cup proofs, participation records and keepsakes, as well as your Atelier entitlements, cosmetic preferences, reward counter and RevenueCat customer record, are also deleted. Apple’s and Google’s own payment records and providers’ legal retention duties are separate; deleting your account does not trigger an automatic refund. Shared treasury and competition totals may remain with your name and account association removed to preserve other players’ records; in the Gala and Special Plate registers, transaction details linked to other players’ records remain without your name. Your local game save remains. Details are on the deletion page below.',
         },
         {
           label: 'Your rights',
@@ -351,12 +392,12 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
         },
         {
           label: 'Ads and tracking',
-          desc: 'Torpidodan does not use advertising, tracking or analytics SDKs. Online game data is not used for advertising or tracking, is never sold and is not shared with advertising partners.',
+          desc: 'Torpidodan uses Google AdMob only for optional rewarded ads and requests non-personalized ads; it uses no analytics SDK such as Firebase Analytics. User data is never sold. Online game data is not used for ad targeting and is not shared with the ad network, apart from the anonymous ID needed to verify a reward.',
         },
       ],
       deleteTitle: 'Deleting your data',
       deleteText:
-        'Delete your Torpidodan online account and personal records in Settings → Online account → “Delete my online data” → confirm. A shared photo is deleted from the server; the save and portrait photo on your device are not deleted. If you cannot open the app, you can request deletion by email.',
+        'Delete your Torpidodan online account and personal records in Settings → Online account → “Delete my online data” → confirm. A shared photo is deleted from the server; the save and portrait photo on your device are not deleted. Your Atelier entitlements and RevenueCat record are also deleted; payment records stay with Apple/Google, and deleting your account does not trigger an automatic refund. If you cannot open the app, you can request deletion by email.',
       deleteLinkLabel: 'Details, and for users who have uninstalled the app',
       dataTitle: 'Information we process',
       dataText:
@@ -375,12 +416,16 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
           desc: 'In Torpidodan, if you choose to link your online account with Apple or Google, that account’s email address. If you don’t link it, only an anonymous session ID is used.',
         },
         {
+          label: 'Purchase records',
+          desc: 'If you buy in the Torpidodan Atelier, store records such as product and transaction ID, date, price and currency, held with your anonymous account ID in RevenueCat and Firebase. Payment details stay with Apple/Google.',
+        },
+        {
           label: 'Device information',
-          desc: 'Device model, OS version, unique identifiers (e.g. ad IDs) — only in apps that use ads or analytics.',
+          desc: 'Device model, OS version, unique identifiers (e.g. ad IDs) — only in apps that use ads or analytics. In Torpidodan, only by Google AdMob when you watch a rewarded ad.',
         },
         {
           label: 'Usage data',
-          desc: 'In-app interactions, play time, and crash reports — in apps with analytics.',
+          desc: 'In-app interactions, play time, and crash reports — in apps with analytics. In Torpidodan, only ad interactions and the ad SDK’s diagnostic data.',
         },
         {
           label: 'Local game data',
@@ -392,9 +437,9 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
         'You can start Torpidodan’s career without linking Apple/Google and continue offline. When connected, anonymous sign-in, automatic rankings and Notary verification operate. Starting a new game or uninstalling does not delete your server account; use in-app deletion or the email request below to delete online data.',
       thirdPartyTitle: 'Third-party services',
       thirdPartyText:
-        'Torpidodan uses Google Firebase for online game data, Sign in with Apple/Google Sign-In for optional account linking, and Google Cloud Vision to automatically check shared portrait photos for inappropriate content. Google processes this data on our behalf as a service provider. Other apps that use ads or analytics may rely on the services below.',
+        'Torpidodan uses Google Firebase for online game data, Sign in with Apple/Google Sign-In for optional account linking, Google Cloud Vision to automatically check shared portrait photos for inappropriate content, RevenueCat to validate and restore in-app purchases, and Google AdMob with Google UMP for optional rewarded ads and the ad consent form. Google (Firebase, Cloud Vision) and RevenueCat process this data on our behalf as service providers; ad data in AdMob is subject to Google’s own policy. Other apps that use ads or analytics may rely on the services below.',
       thirdPartyNote:
-        'Firebase Analytics and AdMob apply only to the relevant other apps; they are not used by Torpidodan.',
+        'Firebase Analytics applies only to the relevant other apps; it is not used by Torpidodan. In Torpidodan, AdMob is used only for optional, non-personalized rewarded ads.',
       usageTitle: 'Use of information',
       usageText: 'We use processed information to:',
       usageItems: [
@@ -403,11 +448,12 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
         'Check a portrait photo you choose to share for inappropriate content and show it to other players.',
         'Ensure proper functioning and improvement of our games.',
         'Detect and resolve technical issues.',
-        'Serve ads in apps that display advertising.',
+        'Validate and restore Torpidodan Atelier purchases and update entitlements after refunds.',
+        'Serve ads in apps that display advertising; in Torpidodan, verify that a rewarded ad was completed and grant the cosmetic reward.',
       ],
       shareTitle: 'Sharing of information',
       shareText:
-        'We do not sell user data. Visibility of Torpidodan rankings, listings, showcases, shared photos and site data is described above; private verification and support records are not public. Service providers process data on our behalf. In other apps with ads or analytics, anonymized data may be shared with relevant partners. Data may also be provided to authorities when legally required.',
+        'We do not sell user data. Visibility of Torpidodan rankings, listings, showcases, shared photos and site data is described above; private verification and support records are not public. Service providers (Google Firebase, RevenueCat) process data on our behalf. When you watch a rewarded ad in Torpidodan, Google AdMob processes the device and technical data needed to serve it under its own policy and receives your anonymous account ID for reward verification. In other apps with ads or analytics, anonymized data may be shared with relevant partners. Data may also be provided to authorities when legally required.',
       childrenTitle: 'Children',
       childrenText:
         'Our games are suitable for general audiences. Torpidodan’s online features (including the Online list / Asset Declaration) are not intended for children under 13. We do not knowingly collect personal data from children under 13. Parents may contact us with any concerns.',
@@ -423,6 +469,24 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
   const t = content[language] || content.tr;
   const live = GAMES.filter((g) => g.released);
   const planned = GAMES.filter((g) => !g.released);
+  const [activeId, setActiveId] = useState(SECTIONS[0].id);
+
+  /* İçindekiler: ekranın üst üçte birinde duran bölümü vurgular. */
+  useEffect(() => {
+    const els = SECTIONS.map((s) => document.getElementById(s.id)).filter(Boolean);
+    if (!els.length || typeof IntersectionObserver === 'undefined') return undefined;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const hit = entries.filter((e) => e.isIntersecting).sort(
+          (a, b) => a.boundingClientRect.top - b.boundingClientRect.top
+        )[0];
+        if (hit) setActiveId(hit.target.id);
+      },
+      { rootMargin: '-15% 0px -70% 0px' }
+    );
+    els.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, [language]);
 
   useEffect(() => {
     const prev = document.title;
@@ -452,6 +516,14 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
               {CONTROLLER}
             </li>
           </ul>
+          <ul className="pp-glance" aria-label={t.glanceLabel}>
+            {t.glance.map((g) => (
+              <li key={g.k}>
+                <strong>{g.k}</strong>
+                <span>{g.v}</span>
+              </li>
+            ))}
+          </ul>
         </header>
 
         <div className="pp-layout">
@@ -460,7 +532,13 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
             <ol>
               {SECTIONS.map((s) => (
                 <li key={s.id}>
-                  <a href={`#${s.id}`}>{t[s.key]}</a>
+                  <a
+                    href={`#${s.id}`}
+                    className={activeId === s.id ? 'is-active' : undefined}
+                    aria-current={activeId === s.id ? 'true' : undefined}
+                  >
+                    {t[s.key]}
+                  </a>
                 </li>
               ))}
             </ol>
@@ -495,8 +573,11 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
               <p>{t.onlineLead}</p>
               <div className="pp-facts">
                 {t.onlineFacts.map((item) => (
-                  <div key={item.label} className="pp-fact">
-                    <h3>{item.label}</h3>
+                  <div key={item.label} className={item.fresh ? 'pp-fact is-new' : 'pp-fact'}>
+                    <h3>
+                      {item.label}
+                      {item.fresh && <span className="pp-badge">{t.newBadge}</span>}
+                    </h3>
                     <p>{item.desc}</p>
                   </div>
                 ))}
@@ -540,9 +621,11 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
                   'Sign in with Apple',
                   'Google Sign-In',
                   'Google Cloud Vision',
+                  'RevenueCat',
                   'Google Play Services',
                   'Firebase Analytics',
                   'Google AdMob',
+                  'Google UMP',
                 ].map(
                   (s) => (
                     <span key={s} className="pp-pill">
