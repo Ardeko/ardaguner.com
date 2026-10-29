@@ -561,3 +561,129 @@
     transition: none;
   }
 }
+
+/* ------------------------------------------------------------------
+   30 Ekim 2026 — telefon.
+
+   Dar ekranda sayfa 1.600 px'e yayılıyordu: içindekiler şeridi sarılmayan
+   çiplerden oluşuyor, grid sütunu (1fr = minmax(auto, 1fr)) çiplerin
+   toplamından küçük olamıyordu; bütün metin ekrandan taşıyor, telefon
+   sayfayı küçültüyordu. Sütun artık minmax(0, 1fr), şerit kendi içinde
+   kayar. Torpidodan'ın 20 maddesi açılır-kapanır; telefonda kapalı başlar.
+------------------------------------------------------------------- */
+
+.pp-contact { min-height: 44px; }
+.pp-contact-val { overflow-wrap: anywhere; }
+
+.pp-facts-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.35rem;
+  color: var(--faint);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.pp-facts-toggle {
+  min-height: 44px;
+  padding: 0 1.1rem;
+  border: 1px solid var(--stroke);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  cursor: pointer;
+  transition: border-color var(--fast) ease, background var(--fast) ease;
+}
+
+.pp-facts-toggle:hover { border-color: var(--stroke-strong); background: var(--surface-hover); }
+.pp-facts-toggle:focus-visible { outline: 2px solid var(--stroke-strong); outline-offset: 3px; }
+
+.pp-facts-bar + .pp-facts { margin-top: 0.75rem; }
+
+details.pp-fact {
+  display: block;
+  padding: 0;
+}
+
+details.pp-fact > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 52px;
+  padding: 0.85rem 1.25rem;
+  list-style: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+details.pp-fact > summary::-webkit-details-marker { display: none; }
+
+details.pp-fact > summary::after {
+  content: "+";
+  flex-shrink: 0;
+  width: 1.5rem;
+  text-align: center;
+  font-size: 1.2rem;
+  line-height: 1;
+  color: var(--muted);
+  transition: transform var(--fast) ease, color var(--fast) ease;
+}
+
+details.pp-fact[open] > summary::after { transform: rotate(45deg); color: var(--text); }
+details.pp-fact > summary:hover h3 { color: var(--text); }
+details.pp-fact > summary:focus-visible { outline: 2px solid var(--stroke-strong); outline-offset: -2px; border-radius: var(--radius); }
+details.pp-fact > summary h3 { transition: color var(--fast) ease; }
+details.pp-fact > p { padding: 0 1.25rem 1.15rem; }
+
+@media (max-width: 900px) {
+  .pp-layout { grid-template-columns: minmax(0, 1fr); }
+  .pp-toc { min-width: 0; }
+  .pp-toc ol {
+    max-width: 100%;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+  }
+  .pp-toc li { scroll-snap-align: center; }
+  .pp-toc a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+  }
+}
+
+@media (max-width: 720px) {
+  .pp { padding-top: 5.5rem; }
+  .pp-section { padding: 1.6rem 0; }
+  .pp-section p { font-size: 1rem; line-height: 1.65; }
+  .pp-glance { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; }
+  .pp-glance li { padding: 0.8rem 0.85rem; }
+  .pp-glance strong { font-size: 1.05rem; }
+  .pp-glance span { font-size: 0.78rem; }
+  .pp-games { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.55rem; }
+  .pp-game { padding: 0.8rem; }
+  .pp-game-head { gap: 0.6rem; }
+  .pp-game-mark { width: 2.6rem; height: 2.6rem; border-radius: 10px; }
+  .pp-game h3 { font-size: 0.86rem; line-height: 1.25; }
+  .pp-game p { font-size: 0.76rem !important; }
+  .pp-grid,
+  .pp-contacts { grid-template-columns: minmax(0, 1fr); }
+  .pp-callout { padding: 1.15rem 1rem; border-radius: var(--radius); }
+  details.pp-fact > summary { padding: 0.8rem 1rem; }
+  details.pp-fact > p { padding: 0 1rem 1rem; font-size: 0.95rem !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  details.pp-fact > summary::after,
+  .pp-facts-toggle { transition: none; }
+}
+
+/* Kapsam paragrafi ile ilk oyun grubu arasi (telefonda "Yayinda" paragrafa yapisiyordu). */
+.pp-section > p + .pp-games-group { margin-top: 1.5rem; }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import './PrivacyPolicy.css';
 
@@ -125,7 +125,7 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
     tr: {
       badge: 'Gizlilik',
       title: 'Gizlilik Politikası',
-      updated: '24 Ekim 2026',
+      updated: '30 Ekim 2026',
       updatedLabel: 'Son güncelleme',
       controllerLabel: 'Veri sorumlusu',
       subtitle:
@@ -223,6 +223,11 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
           label: 'Reklam ve takip',
           desc: 'Torpidodan yalnızca isteğe bağlı ödüllü reklamlar için Google AdMob’u kullanır ve kişiselleştirilmemiş reklam ister; Firebase Analytics gibi bir analitik SDK kullanmaz. Kullanıcı verisi satılmaz. Çevrimiçi oyun verisi reklam hedeflemesi için kullanılmaz; ödülü doğrulamak için gereken anonim kimlik dışında reklam ağıyla paylaşılmaz.',
         },
+        {
+          fresh: true,
+          label: 'Telif ve içerik bildirimleri',
+          desc: `Torpidodan’da paylaşılan bir fotoğraf hakkınızı ihlal ediyorsa fotoğrafa dokunup “Fotoğrafı bildir” → “Telif hakkı ihlali (izinsiz kullanılan resim)” seçeneğini kullanabilir ya da ${CONTACT_EMAIL} adresine yazabilirsiniz. Bildirilen içerik incelenir; ihlal görülürse kaldırılır. Uygulamanın içinde Ayarlar → Hakkında → “KVKK aydınlatma metni” bu politikanın Torpidodan’a ilişkin kısa Türkçe aydınlatma metnini internetsiz de gösterir.`,
+        },
       ],
       deleteTitle: 'Verilerinizi silme',
       deleteText:
@@ -296,7 +301,7 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
     en: {
       badge: 'Privacy',
       title: 'Privacy Policy',
-      updated: '24 October 2026',
+      updated: '30 October 2026',
       updatedLabel: 'Last updated',
       controllerLabel: 'Data controller',
       subtitle:
@@ -394,6 +399,11 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
           label: 'Ads and tracking',
           desc: 'Torpidodan uses Google AdMob only for optional rewarded ads and requests non-personalized ads; it uses no analytics SDK such as Firebase Analytics. User data is never sold. Online game data is not used for ad targeting and is not shared with the ad network, apart from the anonymous ID needed to verify a reward.',
         },
+        {
+          fresh: true,
+          label: 'Copyright and content reports',
+          desc: `If a photo shared in Torpidodan infringes your rights, tap it and choose “Fotoğrafı bildir” → “Telif hakkı ihlali (izinsiz kullanılan resim)” (report → copyright infringement), or write to ${CONTACT_EMAIL}. Reported content is reviewed and removed if it infringes. Inside the app, Settings → About → “KVKK aydınlatma metni” shows a short Turkish privacy notice for Torpidodan, also offline.`,
+        },
       ],
       deleteTitle: 'Deleting your data',
       deleteText:
@@ -470,6 +480,19 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
   const live = GAMES.filter((g) => g.released);
   const planned = GAMES.filter((g) => !g.released);
   const [activeId, setActiveId] = useState(SECTIONS[0].id);
+  /* Torpidodan maddeleri (19 başlık) telefonda kapalı başlar: başlıklar bir bakışta okunur, istenen açılır. */
+  const [factsOpen, setFactsOpen] = useState(() => typeof window === 'undefined' || !window.matchMedia || window.matchMedia('(min-width: 721px)').matches);
+  const [factsKey, setFactsKey] = useState(0);
+  const tocRef = useRef(null);
+
+  /* Telefonda içindekiler yatay şerit: etkin bölümün çipi görünür kalsın. */
+  useEffect(() => {
+    const strip = tocRef.current;
+    const chip = strip?.querySelector('a.is-active');
+    if (!strip || !chip || strip.scrollWidth <= strip.clientWidth) return;
+    const left = chip.offsetLeft - (strip.clientWidth - chip.offsetWidth) / 2;
+    strip.scrollTo({ left: Math.max(0, left), behavior: 'smooth' });
+  }, [activeId]);
 
   /* İçindekiler: ekranın üst üçte birinde duran bölümü vurgular. */
   useEffect(() => {
@@ -529,7 +552,7 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
         <div className="pp-layout">
           <aside className="pp-toc" aria-label={t.toc}>
             <p className="eyebrow pp-toc-label">{t.toc}</p>
-            <ol>
+            <ol ref={tocRef}>
               {SECTIONS.map((s) => (
                 <li key={s.id}>
                   <a
@@ -571,15 +594,31 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
             <section className="pp-section pp-callout" id="online-list">
               <h2 className="display">{t.onlineTitle}</h2>
               <p>{t.onlineLead}</p>
+              <div className="pp-facts-bar">
+                <span>{t.onlineFacts.length} {language === 'tr' ? 'başlık' : 'topics'}</span>
+                <button
+                  type="button"
+                  className="pp-facts-toggle"
+                  aria-expanded={factsOpen}
+                  onClick={() => {
+                    setFactsOpen((v) => !v);
+                    setFactsKey((k) => k + 1);
+                  }}
+                >
+                  {factsOpen ? (language === 'tr' ? 'Tümünü kapat' : 'Collapse all') : (language === 'tr' ? 'Tümünü aç' : 'Expand all')}
+                </button>
+              </div>
               <div className="pp-facts">
                 {t.onlineFacts.map((item) => (
-                  <div key={item.label} className={item.fresh ? 'pp-fact is-new' : 'pp-fact'}>
-                    <h3>
-                      {item.label}
-                      {item.fresh && <span className="pp-badge">{t.newBadge}</span>}
-                    </h3>
+                  <details key={`${factsKey}-${item.label}`} className={item.fresh ? 'pp-fact is-new' : 'pp-fact'} open={factsOpen}>
+                    <summary>
+                      <h3>
+                        {item.label}
+                        {item.fresh && <span className="pp-badge">{t.newBadge}</span>}
+                      </h3>
+                    </summary>
                     <p>{item.desc}</p>
-                  </div>
+                  </details>
                 ))}
               </div>
             </section>
