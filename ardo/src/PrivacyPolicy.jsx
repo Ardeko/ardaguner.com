@@ -6,6 +6,9 @@ const CONTACT_EMAIL = 'ardaguner2000@gmail.com';
 const STUDIO_EMAIL = 'info@ardekostudios.com';
 const CONTROLLER = 'Arda Güner / Ardeko Studios';
 const DELETION_PATH = '/torpidodan/hesap-silme';
+/* Torpidodan'da hata bildirimi Instagram'dan (uygulamada Ayarlar -> Sorun bildir, 5.0.3). Yasal talepler e-postada. */
+const SUPPORT_INSTAGRAM = 'ardekostudios';
+const SUPPORT_DM_URL = `https://ig.me/m/${SUPPORT_INSTAGRAM}`;
 
 /* Politikanın kapsadığı oyunlar.
 
@@ -125,7 +128,7 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
     tr: {
       badge: 'Gizlilik',
       title: 'Gizlilik Politikası',
-      updated: '30 Ekim 2026',
+      updated: '31 Ekim 2026',
       updatedLabel: 'Son güncelleme',
       controllerLabel: 'Veri sorumlusu',
       subtitle:
@@ -180,6 +183,10 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
         {
           label: 'Noter, kayıt doğrulaması ve destek',
           desc: 'Galeri başlangıcı ve oyun hamlelerinden oluşan kayıt defteri doğrulama için sunucuya gönderilir; mühürler, gerekli kayıt parçaları ve doğrulanmış anlık görüntüler saklanabilir. “Kopyayı desteğe gönder” işlemini seçerseniz tam oyun kaydınız ve ilgili şahsi hesap, sezon hediyesi, miras/devir verileri; uygulama sürümü ve platformuyla birlikte özel destek incelemesine gönderilir. Fotoğraf, e-posta ve giriş belirteçleri bu kopyaya eklenmez. Kopyaya yalnız sahibi ve yetkili yönetici erişebilir.',
+        },
+        {
+          label: 'Sorun bildirimi (Instagram)',
+          desc: `Uygulamada Ayarlar → “Sorun bildir” Instagram’da @${SUPPORT_INSTAGRAM} ile konuşma açar ve kısa bir notu panoya kopyalar; uygulama kendisi bir şey göndermez. Notu mesajınıza yapıştırırsanız uygulama sürümü, cihazın işletim sistemi, galeri adı ve oyun günü, çevrimiçi hesap kimliği ve son hata bilgisi; mesajınız ve Instagram kullanıcı adınızla birlikte bize Instagram (Meta) üzerinden ulaşır. Yalnızca sorunu incelemek ve size cevap vermek için kullanılır. Instagram mesajları Meta’nın kendi politikasına da tabidir; KVKK / GDPR talepleri için aşağıdaki e-posta adreslerini kullanın.`,
         },
         {
           label: 'Mezat, Prestij Pazarı ve diğer çevrimiçi alanlar',
@@ -296,12 +303,13 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
         'Bu politika güncellenebilir. Güncel sürüm ardaguner.com/privacy-policy adresinde yayınlanır. Yeni oyun veya özellik eklendiğinde sayfa güncellenir.',
       contactTitle: 'İletişim',
       contactText: `Sorular, rıza geri çekme ve KVKK / GDPR talepleri için veri sorumlusu ${CONTROLLER}:`,
+      instagramLabel: 'Instagram · Torpidodan hata bildirimi',
       backHome: 'Anasayfaya dön',
     },
     en: {
       badge: 'Privacy',
       title: 'Privacy Policy',
-      updated: '30 October 2026',
+      updated: '31 October 2026',
       updatedLabel: 'Last updated',
       controllerLabel: 'Data controller',
       subtitle:
@@ -356,6 +364,10 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
         {
           label: 'Notary, save verification and support',
           desc: 'A journal containing the dealership start and game actions is sent to the server for verification; seals, required journal segments and verified snapshots may be retained. If you choose to send a support copy, your full save and related personal in-game account, season gift and legacy/handover records are sent with the app version and platform for private support review. Photos, emails and login tokens are excluded from that copy. Only its owner and authorized administrators can access it.',
+        },
+        {
+          label: 'Bug reports (Instagram)',
+          desc: `In the app, Settings → “Sorun bildir” (report a problem) opens a conversation with @${SUPPORT_INSTAGRAM} on Instagram and copies a short note to your clipboard; the app itself sends nothing. If you paste the note into your message, the app version, your device’s operating system, dealership name and game day, online account ID and last error reach us through Instagram (Meta), together with your message and Instagram username. They are used only to investigate the problem and reply to you. Instagram messages are also subject to Meta’s own policy; please use the email addresses below for KVKK / GDPR requests.`,
         },
         {
           label: 'Auctions, Prestige Market and other online activities',
@@ -472,6 +484,7 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
         'This policy may be updated. The current version is at ardaguner.com/privacy-policy. This page is updated when new games or features are added.',
       contactTitle: 'Contact',
       contactText: `Questions, consent withdrawal, and KVKK / GDPR requests — data controller ${CONTROLLER}:`,
+      instagramLabel: 'Instagram · Torpidodan bug reports',
       backHome: 'Back to home',
     },
   };
@@ -480,7 +493,7 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
   const live = GAMES.filter((g) => g.released);
   const planned = GAMES.filter((g) => !g.released);
   const [activeId, setActiveId] = useState(SECTIONS[0].id);
-  /* Torpidodan maddeleri (19 başlık) telefonda kapalı başlar: başlıklar bir bakışta okunur, istenen açılır. */
+  /* Torpidodan maddeleri (20 başlık) telefonda kapalı başlar: başlıklar bir bakışta okunur, istenen açılır. */
   const [factsOpen, setFactsOpen] = useState(() => typeof window === 'undefined' || !window.matchMedia || window.matchMedia('(min-width: 721px)').matches);
   const [factsKey, setFactsKey] = useState(0);
   const tocRef = useRef(null);
@@ -711,6 +724,10 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
                 <a href={`mailto:${STUDIO_EMAIL}`} className="pp-contact">
                   <span className="pp-contact-label">E-posta · Ardeko Studios</span>
                   <span className="pp-contact-val">{STUDIO_EMAIL}</span>
+                </a>
+                <a href={SUPPORT_DM_URL} className="pp-contact" target="_blank" rel="noopener noreferrer">
+                  <span className="pp-contact-label">{t.instagramLabel}</span>
+                  <span className="pp-contact-val">@{SUPPORT_INSTAGRAM}</span>
                 </a>
                 <Link to="/" className="pp-contact">
                   <span className="pp-contact-label">Web</span>
