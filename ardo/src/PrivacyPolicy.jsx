@@ -74,6 +74,7 @@ const SECTIONS = [
   { id: 'offline', key: 'offlineTitle' },
   { id: 'third-party', key: 'thirdPartyTitle' },
   { id: 'usage', key: 'usageTitle' },
+  { id: 'fair-play', key: 'fairTitle' },
   { id: 'share', key: 'shareTitle' },
   { id: 'children', key: 'childrenTitle' },
   { id: 'changes', key: 'changesTitle' },
@@ -128,7 +129,7 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
     tr: {
       badge: 'Gizlilik',
       title: 'Gizlilik Politikası',
-      updated: '31 Ekim 2026',
+      updated: '17 Kasım 2026',
       updatedLabel: 'Son güncelleme',
       controllerLabel: 'Veri sorumlusu',
       subtitle:
@@ -292,6 +293,11 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
         'Torpidodan Atelier satın alımlarını doğrulamak, geri yüklemek ve iadelerde hakları güncellemek.',
         'Reklam gösterilen uygulamalarda uygun reklamlar sunmak; Torpidodan’da ödüllü reklamın tamamlandığını doğrulayıp kozmetik ödülü vermek.',
       ],
+      fairTitle: 'Adil oyun',
+      fairText:
+        'Torpidodan’daki sıralamalar, etkinlikler ve çevrimiçi pazarlar tüm oyuncular için adil olmalıdır. Bu nedenle şunlar yasaktır: oyundaki bir hatayı ya da açığı (bug) kendi çıkarın için kullanmak, yazılım ya da kayıt oynamasıyla oyun sonucu, para veya sıralama elde etmek, aynı kişinin birden fazla hesapla liste ve etkinliklerde avantaj sağlaması. Bir açık fark edersen onu kullanmak yerine Instagram’dan @ardekostudios hesabına bildir.',
+      fairText2:
+        'Bu kuralı ihlal ettiği tespit edilen hesap, önceden bildirim yapılmadan çevrimiçi özelliklerden (sıralamalar, Canlı Mezat, etkinlikler, çarklar ve sandıklar) kalıcı olarak çıkarılabilir; listelerdeki ve herkese açık kayıtlardaki satırları kaldırılabilir. Hesabın çevrimdışı oyunu cihazında kalır. Karar, oyuncuların adil rekabeti korumak için verilir ve genel olarak geri alınmaz.',
       shareTitle: 'Bilgilerin paylaşımı',
       shareText:
         'Kullanıcı verilerini satmıyoruz. Torpidodan’ın liste, ilan, vitrin, paylaşılan fotoğraf ve site verilerinin oyunculara görünürlüğü yukarıda açıklanmıştır; özel doğrulama ve destek kayıtları herkese açılmaz. Hizmet sağlayıcılar (Google Firebase, RevenueCat) işlemleri adımıza yürütür. Torpidodan’da ödüllü reklam izlediğinizde Google AdMob, reklamı sunmak için gereken cihaz ve teknik verileri kendi politikasına göre işler ve ödül doğrulaması için anonim hesap kimliğinizi alır. Reklam veya analitik kullanan diğer uygulamalarda anonimleştirilmiş veriler ilgili ortaklarla paylaşılabilir. Veriler ayrıca yasal zorunluluk halinde yetkili mercilere iletilebilir.',
@@ -309,7 +315,7 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
     en: {
       badge: 'Privacy',
       title: 'Privacy Policy',
-      updated: '31 October 2026',
+      updated: '17 November 2026',
       updatedLabel: 'Last updated',
       controllerLabel: 'Data controller',
       subtitle:
@@ -473,6 +479,11 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
         'Validate and restore Torpidodan Atelier purchases and update entitlements after refunds.',
         'Serve ads in apps that display advertising; in Torpidodan, verify that a rewarded ad was completed and grant the cosmetic reward.',
       ],
+      fairTitle: 'Fair play',
+      fairText:
+        'Leaderboards, events and online markets in Torpidodan must be fair for every player. The following are prohibited: exploiting a bug or loophole in the game for your own gain, obtaining game results, currency or rankings by tampering with software or save data, and using multiple accounts to gain an advantage in lists and events. If you notice a loophole, please report it to @ardekostudios on Instagram instead of using it.',
+      fairText2:
+        'An account found to have broken this rule may be permanently removed from online features (leaderboards, Live Auction, events, wheels and chests) without prior notice, and its rows in lists and public records may be deleted. The account’s offline game stays on the device. Decisions are made to protect fair competition among players and are generally not reversed.',
       shareTitle: 'Sharing of information',
       shareText:
         'We do not sell user data. Visibility of Torpidodan rankings, listings, showcases, shared photos and site data is described above; private verification and support records are not public. Service providers (Google Firebase, RevenueCat) process data on our behalf. When you watch a rewarded ad in Torpidodan, Google AdMob processes the device and technical data needed to serve it under its own policy and receives your anonymous account ID for reward verification. In other apps with ads or analytics, anonymized data may be shared with relevant partners. Data may also be provided to authorities when legally required.',
@@ -696,6 +707,12 @@ const PrivacyPolicy = ({ language = 'tr' }) => {
                   <li key={item}>{item}</li>
                 ))}
               </ul>
+            </section>
+
+            <section className="pp-section" id="fair-play">
+              <h2 className="display">{t.fairTitle}</h2>
+              <p>{t.fairText}</p>
+              <p>{t.fairText2}</p>
             </section>
 
             <section className="pp-section" id="share">
