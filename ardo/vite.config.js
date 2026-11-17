@@ -18,6 +18,13 @@ const SAYFALAR = [
     description:
       'Torpidodan hesabını ve çevrimiçi verilerini silme: uygulama içinden anında ya da uygulamayı sildiysen e-postayla. How to delete your Torpidodan account and online data.',
   },
+  {
+    file: 'torpidodan/kullanim-kosullari.html',
+    url: 'https://ardaguner.com/torpidodan/kullanim-kosullari',
+    title: 'Torpidodan — Kullanım Koşulları · Terms of Use',
+    description:
+      'Torpidodan kullanım koşulları: adil oyun, açık (bug) kullanımı yasağı, hesap yaptırımları ve itiraz. Terms of use for Torpidodan: fair play, exploit prohibition, enforcement and appeals.',
+  },
 ]
 
 const kacir = (s) =>

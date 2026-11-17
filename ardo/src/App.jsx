@@ -11,6 +11,7 @@ import Particles from "./Particles";
 import { useKonamiCode, ConfettiBurst } from "./KonamiConfetti";
 import PrivacyPolicy from "./PrivacyPolicy";
 import AccountDeletion from "./AccountDeletion";
+import TermsOfUse from "./TermsOfUse";
 import CaseStudy from "./CaseStudy";
 import StudioSpotlight from "./StudioSpotlight";
 
@@ -42,13 +43,16 @@ const CodeLab = lazy(() => import("./CodeLab"));
 ------------------------------------------------------------------- */
 
 const SILME_YOLU = "/torpidodan/hesap-silme";
+const KOSUL_YOLU = "/torpidodan/kullanim-kosullari";
 
 function SkipLink({ label }) {
   const { pathname } = useLocation();
   const hedef =
     pathname === "/privacy-policy"
       ? "#privacy"
-      : pathname === SILME_YOLU
+      : pathname === KOSUL_YOLU
+        ? "#terms"
+        : pathname === SILME_YOLU
         ? "#hesap-silme"
         : "#about";
   return (
@@ -171,6 +175,9 @@ function App() {
 
         {/* İki dilli, oturumsuz. Statik kopyası vite.config.js'te. */}
         <Route path={SILME_YOLU} element={<AccountDeletion />} />
+
+        {/* Oyun kuralları, açık kullanımı yasağı, yaptırımlar. Statik kopyası vite.config.js'te. */}
+        <Route path={KOSUL_YOLU} element={<TermsOfUse language={language} />} />
 
         {/* Vaka calismasi. Icerik locales icinde; yeni vaka eklemek
             burada bir rota ve orada bir anahtar demek. */}
