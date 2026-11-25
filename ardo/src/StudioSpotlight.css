@@ -1,242 +1,213 @@
+/* ------------------------------------------------------------------
+   Ardeko Studios — izometrik vitrin.
+
+   Sol: piksel etiket, logo + başlık, oyun ikonları rafı, piksel buton.
+   Sağ: izometrik maket (şeffaf webp), arkasında soluk bir hale,
+   altında yere düşen gölge. Maketi GSAP kaydırmaya bağlı süzüyor,
+   useTilt imlece göre eğiyor; ikisi farklı elemanlarda (.studio-diorama
+   ve .studio-tilt), transform'ları çakışmıyor.
+------------------------------------------------------------------- */
+
 .studio-section {
-  padding: 5.5rem 1.5rem 6rem;
-  text-align: center;
   border-top: 1px solid var(--stroke);
+  overflow: clip;
 }
 
-.studio-inner {
-  max-width: 620px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
+.studio-grid {
+  display: grid;
+  gap: 2.5rem;
   align-items: center;
 }
 
-.studio-eyebrow {
-  display: inline-block;
-  padding: 5px 14px;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  border-radius: 999px;
-  /* Mor rozet kaldırıldı — sitenin geri kalanında vurgu rengi yok,
-     tek bir yerde kalması yamalı duruyordu. */
-  background: transparent;
-  color: var(--faint);
-  border: 1px solid var(--stroke);
-  opacity: 0;
-}
-
-.reveal-visible .studio-eyebrow {
-  animation: studio-fade-up var(--slow) var(--ease) forwards;
-  animation-delay: 0.05s;
-}
-
-.studio-kickoff {
+.studio-copy {
   position: relative;
-  width: 140px;
-  height: 112px;
-  margin-top: 1.75rem;
-  opacity: 0;
-}
-
-.reveal-visible .studio-kickoff {
-  animation: studio-fade-up var(--slow) var(--ease) forwards;
-  animation-delay: 0.18s;
-}
-
-.studio-pitch-line {
-  position: absolute;
-  bottom: 16px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 92px;
-  height: 1px;
-  background: var(--stroke-strong);
-}
-
-.studio-shadow {
-  position: absolute;
-  bottom: 11px;
-  left: 50%;
-  width: 32px;
-  height: 7px;
-  margin-left: -16px;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.5);
-  filter: blur(1.5px);
-  animation: studio-shadow-pulse 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-}
-
-.studio-ball {
-  position: absolute;
-  bottom: 12px;
-  left: 50%;
-  width: 40px;
-  height: 40px;
-  margin-left: -20px;
-  display: block;
-  transform-origin: bottom center;
-  animation: studio-ball-bounce 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-}
-
-.studio-ball svg {
-  width: 100%;
-  height: 100%;
-  display: block;
-  filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.35));
-}
-
-@keyframes studio-ball-bounce {
-  0%, 100% { transform: translateY(0) scaleX(1) scaleY(1); }
-  8% { transform: translateY(0) scaleX(1.22) scaleY(0.78); }
-  45% { transform: translateY(-58px) scaleX(0.97) scaleY(1.03); }
-  50% { transform: translateY(-60px) scaleX(0.95) scaleY(1.05); }
-  55% { transform: translateY(-58px) scaleX(0.97) scaleY(1.03); }
-  92% { transform: translateY(0) scaleX(1.22) scaleY(0.78); }
-}
-
-@keyframes studio-shadow-pulse {
-  0%, 100% { transform: scaleX(1); opacity: 0.5; }
-  8% { transform: scaleX(1.15); opacity: 0.55; }
-  50% { transform: scaleX(0.4); opacity: 0.16; }
-  92% { transform: scaleX(1.15); opacity: 0.55; }
-}
-
-.studio-logo-wrap {
-  margin-top: 1.5rem;
-  opacity: 0;
-}
-
-.reveal-visible .studio-logo-wrap {
-  animation: studio-fade-up var(--slow) var(--ease) forwards;
-  animation-delay: 0.26s;
-}
-
-.studio-logo {
-  display: block;
-  width: auto;
-  height: auto;
-  max-width: 240px;
-  max-height: 120px;
-  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.4));
-  will-change: transform;
-}
-
-.reveal-visible .studio-logo {
-  animation: studio-logo-float 4.5s ease-in-out infinite;
-  animation-delay: 1s;
-}
-
-@keyframes studio-logo-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.35rem;
 }
 
 .studio-heading {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 0.3rem 0 0;
+  font-size: clamp(2.7rem, 6vw, 4.6rem);
+  line-height: 1;
+}
+
+.studio-logo {
+  flex: none;
+  width: clamp(46px, 5vw, 64px);
+  height: auto;
+  filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.5));
+}
+
+.studio-title {
+  display: inline;
 }
 
 .studio-tagline {
-  margin: 1.75rem 0 0;
-  max-width: 460px;
-  font-size: 1.02rem;
-  line-height: 1.65;
-  color: var(--muted);
-  opacity: 0;
+  max-width: 40ch;
+  margin: 0;
 }
 
-.reveal-visible .studio-tagline {
-  animation: studio-fade-up var(--slow) var(--ease) forwards;
-  animation-delay: 0.46s;
+.studio-games {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
 }
 
-@keyframes studio-fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.studio-games-label {
+  font-size: 0.78rem;
+  color: var(--faint);
 }
 
-.studio-cta {
+.studio-games ul {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin: 0;
+  padding: 0.6rem;
+  border-radius: 22px;
+  border: 1px solid var(--stroke);
+  background: rgba(255, 255, 255, 0.03);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.studio-games a,
+.studio-games span[role="img"] {
   position: relative;
+  display: block;
+  border-radius: 14px;
+  transition: transform 0.45s var(--spring);
+}
+
+.studio-games img {
+  width: 52px;
+  height: 52px;
+  border-radius: 13px;
+  box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.8);
+}
+
+.studio-games a:hover,
+.studio-games a:focus-visible {
+  transform: translateY(-6px) scale(1.06);
+}
+
+/* İkonun adı: üzerine gelince küçük bir balon. */
+.studio-games [data-tip]::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  z-index: 3;
+  padding: 0.3rem 0.55rem;
+  border-radius: 8px;
+  border: 1px solid var(--stroke-strong);
+  background: #16161a;
+  color: var(--text);
+  font-size: 0.7rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 4px);
+  transition: opacity 0.2s ease, transform 0.3s var(--ease);
+}
+
+.studio-games [data-tip]:hover::after,
+.studio-games [data-tip]:focus-visible::after {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.studio-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.4rem;
+  margin-top: 0.4rem;
+}
+
+.studio-url {
   display: inline-flex;
   align-items: center;
-  gap: 0.55rem;
-  margin-top: 2rem;
-  padding: 0.85rem 1.9rem;
-  border-radius: 999px;
-  /* Gradient ve parıltı gitti; birincil buton sitenin her yerinde
-     olduğu gibi düz beyaz. */
-  background: var(--text);
-  color: var(--bg);
-  font-weight: 500;
-  font-size: 0.9rem;
-  text-decoration: none;
-  opacity: 0;
-  transition: transform var(--fast) ease, background var(--fast) ease;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--faint);
 }
 
-.reveal-visible .studio-cta {
-  animation: studio-fade-up var(--slow) var(--ease) forwards;
-  animation-delay: 0.6s;
+.studio-art {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 420px;
 }
 
-.studio-cta:hover {
-  transform: translateY(-2px);
-  background: #ffffff;
+.studio-glow {
+  position: absolute;
+  inset: 8% 4% 2%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(137, 170, 204, 0.26), rgba(106, 95, 193, 0.09) 60%, transparent 76%);
+  filter: blur(30px);
 }
 
-.studio-cta-arrow {
-  transition: transform var(--fast) ease;
+.studio-diorama {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 560px);
 }
 
-.studio-cta:hover .studio-cta-arrow {
-  transform: translateX(5px);
+.studio-tilt {
+  margin: 0;
+  transform: perspective(1100px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 0.25s ease-out;
+  filter: drop-shadow(0 40px 50px rgba(0, 0, 0, 0.6));
+}
+
+.studio-tilt img {
+  width: 100%;
+  height: auto;
+}
+
+.studio-floor {
+  position: absolute;
+  left: 16%;
+  right: 16%;
+  bottom: 1%;
+  height: 40px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.65), transparent);
+  filter: blur(8px);
+}
+
+.pixel-hud {
+  position: absolute;
+  top: 3%;
+  right: 2%;
+  font-family: var(--font-pixel);
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  color: var(--wip);
+  text-shadow: 0 0 10px rgba(251, 191, 36, 0.35);
+  opacity: 0.85;
+}
+
+@media (min-width: 980px) {
+  .studio-grid {
+    grid-template-columns: 0.95fr 1.05fr;
+    gap: 4rem;
+  }
 }
 
 @media (max-width: 640px) {
-  .studio-section {
-    padding: 4rem 1.25rem 4.5rem;
+  .studio-art {
+    min-height: 300px;
   }
-
-  .studio-logo {
-    max-width: 160px;
-    max-height: 84px;
-  }
-
-  .studio-tagline {
-    font-size: 0.95rem;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .studio-eyebrow,
-  .studio-kickoff,
-  .studio-logo-wrap,
-  .studio-tagline,
-  .studio-cta {
-    animation: none;
-    opacity: 1;
-    transform: none;
-  }
-
-  .studio-logo,
-  .studio-ball,
-  .studio-shadow {
-    animation: none;
+  .studio-games img {
+    width: 46px;
+    height: 46px;
   }
 }

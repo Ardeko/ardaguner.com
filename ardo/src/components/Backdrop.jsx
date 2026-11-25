@@ -1,43 +1,33 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import AuroraField from "./AuroraField";
 import DriftField from "./DriftField";
 import "./Backdrop.css";
 
 /* ------------------------------------------------------------------
    Arka plan katmanı — imlece tepki veren ışık.
 
-   Üç varyant var:
-     "aurora" — üç yumuşak leke + imleci takip eden ışık   (varsayılan)
+   Varyantlar:
+     "aurora" — WebGL kuzey ışığı perdesi (AuroraField)       ← v2 varsayılan
+                WebGL yoksa kendiliğinden "drift"e düşer.
+     "drift"  — 2D domain-warp alanı (DriftField)
      "beams"  — eğik huzmeler, sadece imlecin çevresinde görünüyor
-     "drift"  — domain-warp alanı (DriftField), organik ve tekrarsız
 
-   Üçünün de üstünde aynı imleç ışığı var; değişen yalnızca zemin.
+   Hepsinin üstünde aynı imleç ışığı (.bd-spot) ve grain var.
 
-   Izgara ve nokta varyantları kaldırıldı: sabit bir desen, hareket
-   eden bir zemine göre hem daha sönük hem de metnin arkasında daha
-   gürültülüydü.
+   ETKİLEŞİM
+   JS dört CSS değişkeni yazıyor (--mx/--my yüzde, --px/--py -1..1) ve
+   aynı konumu bir ref'te tutuyor; aurora shader'ı imleci oradan okuyor.
+   React state'i yok, fare hareketinde yeniden render yok. Değerler lerp
+   ile (0.08) yaklaşıyor: ışık fareye yapışmıyor, ağırlığı var.
 
-   ETKİLEŞİM NASIL ÇALIŞIYOR
-   JS'in tek işi dört CSS değişkeni yazmak:
-     --mx / --my  imlecin viewport içindeki yüzde konumu (ışığın merkezi)
-     --px / --py  aynı konumun -1..1 aralığına indirgenmiş hâli
-                  (lekelerin paralaks kayması için)
-   Boyamanın tamamı CSS'te. React state'i yok, yani her fare
-   hareketinde yeniden render olmuyor — 60fps'te bileşen ağacını
-   yeniden çizmek bu efektin görsel değerinden çok daha pahalı olurdu.
-
-   Değerler doğrudan yazılmıyor, lerp ile yaklaşıyor (0.08 katsayısı).
-   Ham imleç konumu kullanılsaydı ışık fareye yapışık dururdu; bu
-   gecikme ona ağırlık veriyor.
-
-   KAPANDIĞI DURUMLAR
-   - Dokunmatik cihaz (pointer: coarse): imleç yok, dinleyici hiç
-     kurulmuyor. Lekeler kendi yavaş animasyonlarıyla dönmeye devam
-     ediyor, ekran yine boş kalmıyor.
-   - prefers-reduced-motion: hem takip hem sürüklenme duruyor.
+   Dokunmatikte ve reduced-motion'da imleç dinleyicisi kurulmuyor.
 ------------------------------------------------------------------- */
 
 function Backdrop({ variant = "aurora", grain = true }) {
   const ref = useRef(null);
+  const imlec = useRef({ x: 0.5, y: 0.34 });
+  const [glYok, setGlYok] = useState(false);
+  const dus = useCallback(() => setGlYok(true), []);
 
   useEffect(() => {
     const el = ref.current;
@@ -48,18 +38,10 @@ function Backdrop({ variant = "aurora", grain = true }) {
     if (dokunmatik || azalt) return undefined;
 
     let raf = 0;
-    // Başlangıç: ekranın biraz üstü. Sayfa açıldığında ışık hero
-    // başlığının arkasında olsun, imleç hiç kıpırdamasa bile.
     let hedefX = 50;
     let hedefY = 34;
     let x = hedefX;
     let y = hedefY;
-
-    // Değişkenler artık <html> üzerine yazılıyor, Backdrop'un kendi
-    // div'ine değil. Miras yoluyla bu katman aynen çalışmaya devam
-    // ediyor ama sayfadaki BAŞKA bileşenler de (hero başlığı gibi)
-    // aynı imleç konumunu okuyabiliyor — ikinci bir dinleyici kurmaya,
-    // ikinci bir rAF döngüsü çevirmeye gerek kalmıyor.
     const kok = document.documentElement;
 
     const cizim = () => {
@@ -70,9 +52,10 @@ function Backdrop({ variant = "aurora", grain = true }) {
       kok.style.setProperty("--my", `${y.toFixed(2)}%`);
       kok.style.setProperty("--px", ((x - 50) / 50).toFixed(4));
       kok.style.setProperty("--py", ((y - 50) / 50).toFixed(4));
+      imlec.current.x = x / 100;
+      imlec.current.y = y / 100;
 
-      // Hedefe yeterince yaklaşınca döngü duruyor. Sürekli dönen bir
-      // rAF, fare dururken de pil yakardı.
+      // Hedefe yaklaşınca döngü duruyor; fare dururken pil yakmıyor.
       if (Math.abs(hedefX - x) > 0.03 || Math.abs(hedefY - y) > 0.03) {
         raf = requestAnimationFrame(cizim);
       } else {
@@ -97,18 +80,19 @@ function Backdrop({ variant = "aurora", grain = true }) {
     };
   }, []);
 
+  const zemin = variant === "aurora" && glYok ? "drift" : variant;
+
   return (
-    <div ref={ref} className={`backdrop bd-${variant}`} aria-hidden="true">
-      {variant === "aurora" && (
+    <div ref={ref} className={`backdrop bd-${zemin}`} aria-hidden="true">
+      {zemin === "aurora" && (
         <>
-          <div className="bd-blob bd-blob-a" />
-          <div className="bd-blob bd-blob-b" />
-          <div className="bd-blob bd-blob-c" />
+          <div className="bd-aurora-glow" />
+          <AuroraField pointer={imlec} onFail={dus} />
           <div className="bd-spot" />
         </>
       )}
 
-      {variant === "beams" && (
+      {zemin === "beams" && (
         <>
           <div className="bd-beams-glow" />
           <div className="bd-beams-field" />
@@ -116,7 +100,7 @@ function Backdrop({ variant = "aurora", grain = true }) {
         </>
       )}
 
-      {variant === "drift" && (
+      {zemin === "drift" && (
         <>
           <DriftField />
           <div className="bd-drift-glow" />

@@ -1,5 +1,10 @@
 const GH = 'https://github.com/Ardeko';
 
+/* `accent` (yalnız öne çıkanlarda): vitrin kartının hover parıltısı.
+   Renk uydurulmadı, her oyunun KENDİ kapak görselinden alındı
+   (Torpidodan galeri sarısı, Apex yarış kırmızısı...). Kart üzerine
+   gelinmedikçe görünmüyor; site paleti tek renkli kalıyor. */
+
 export const CATEGORIES = ['game', 'app', 'web', 'corporate', 'rnd'];
 
 export const STATUSES = ['live', 'source', 'wip', 'restricted'];
@@ -63,6 +68,7 @@ export const PROJECTS = [
   {
     id: 'legendOfRey',
     featured: 2,
+    accent: '#c9a64a',
     year: 2024,
     category: 'game',
     status: 'live',
@@ -106,6 +112,7 @@ export const PROJECTS = [
   {
     id: 'revo',
     featured: 6,
+    accent: '#4fd1c5',
     year: 2025,
     month: 7,
     category: 'app',
@@ -132,6 +139,7 @@ export const PROJECTS = [
   {
     id: 'switchMaster',
     featured: 5,
+    accent: '#3ee0e6',
     year: 2026,
     month: 5,
     category: 'game',
@@ -174,6 +182,7 @@ export const PROJECTS = [
   {
     id: 'rushville',
     featured: 3,
+    accent: '#f0a35e',
     year: 2026,
     month: 6,
     category: 'game',
@@ -190,6 +199,7 @@ export const PROJECTS = [
   {
     id: 'skyline',
     featured: 4,
+    accent: '#8fe3ec',
     year: 2026,
     month: 6,
     category: 'game',
@@ -224,6 +234,7 @@ export const PROJECTS = [
   {
     id: 'forza',
     featured: 9,
+    accent: '#38bdf8',
     year: 2026,
     month: 8,
     category: 'game',
@@ -237,6 +248,7 @@ export const PROJECTS = [
   {
     id: 'apex',
     featured: 7,
+    accent: '#d93c2a',
     year: 2026,
     month: 8,
     category: 'game',
@@ -268,6 +280,7 @@ export const PROJECTS = [
   {
     id: 'torpidodan',
     featured: 1,
+    accent: '#f7bd3f',
     year: 2026,
     month: 8,
     category: 'game',
@@ -284,6 +297,7 @@ export const PROJECTS = [
   {
     id: 'decoy',
     featured: 8,
+    accent: '#a5b4fc',
     year: 2026,
     month: 8,
     category: 'game',

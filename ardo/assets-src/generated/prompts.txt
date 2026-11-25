@@ -1,0 +1,86 @@
+Tool: Codex CLI built-in image_gen (codex exec, 2026-11-25)
+
+=== studio-diorama.png
+Use your built-in image generation tool (image_gen) to create exactly ONE image, then copy the resulting PNG from the generated_images folder into the current working directory as studio.png and print its pixel size and mode with Python PIL. Do not write any code to draw the image; use image generation only. Do not create any other files.
+
+Request a TRANSPARENT background from the tool and keep the alpha channel.
+
+Use case: website illustration for the "indie game studio" section of a dark, premium personal portfolio site.
+
+Image: an isometric 3D diorama of a small indie game developer's studio room, shown as a cutaway cube (floor plus two back walls) at a true isometric angle, floating alone with nothing around it.
+Inside the room: a wooden desk with two monitors glowing with colorful abstract game scenes; a mechanical keyboard and a game controller on the desk; a compact retro arcade cabinet in one corner with a glowing screen; a wall shelf holding a small quadcopter drone, a scuba diving mask, a pair of ice skates and a football; a miniature model railway track running along the floor with a tiny train passing a rail switch; a tall window in the back wall showing a night city skyline with a full moon; a potted plant; a warm desk lamp.
+
+Lighting and style: premium stylized 3D render, like a high-end Blender miniature, soft global illumination, gentle ambient occlusion, subtle bevels, clean matte materials, slight tilt-shift miniature feel.
+Palette: deep navy and charcoal surfaces, steel blue (#89AACC) monitor and moon light, warm amber lamp light as the only warm accent, small saturated color pops only on the screens.
+
+Composition: the whole room fully visible and centered with generous empty margins on a square 1:1 canvas.
+
+Avoid: any text, letters, numbers, logos, brand names, watermarks, people, any ground plane or cast shadow outside the room.
+
+=== case-apex-clock.png
+Use your built-in image generation tool (image_gen) to create exactly ONE image, then copy the resulting PNG from the generated_images folder into the current working directory as case.png and print its pixel size and mode with Python PIL. Do not write any code to draw the image; use image generation only. Do not create any other files.
+
+Use case: editorial cover illustration for a technical case-study article on a dark portfolio website. The article is about an online multiplayer racing game where the players' clocks were out of sync, so the race countdowns disagreed and players could not see each other.
+
+Image: two sleek modern race cars racing side by side on a dark asphalt circuit at night, seen from a high three-quarter aerial angle, with soft motion light trails behind them. Above each car floats a large translucent glass analog stopwatch; the two stopwatches clearly show different times (their hands point in different directions). Thin glowing data lines run from each car toward a distant glowing server tower on the horizon; one of the lines is broken and flickering.
+
+Style: cinematic, moody, magazine-cover quality digital painting with photographic lighting, fine film grain, high detail but uncluttered.
+Palette: near-black background (#0A0A0A), cool steel blue (#89AACC) light, one warm orange-red accent on the tail lights.
+
+Composition: wide 3:2 landscape; the main subjects sit in the right two-thirds; calm dark negative space on the left third.
+
+Avoid: any text, letters, digits on the clock faces (tick marks only), logos, brand names, watermarks, people.
+
+=== lost-404.png
+Use your built-in image generation tool (image_gen) to create exactly ONE image, then copy the resulting PNG from the generated_images folder into the current working directory as lost.png and print its pixel size and mode with Python PIL. Do not write any code to draw the image; use image generation only. Do not create any other files.
+
+Use case: illustration for a playful "404 page not found" page of an indie game developer's portfolio website.
+
+Image: a 16-bit pixel art scene. A tiny hooded adventurer holding a small glowing lantern stands at the very edge of a broken floating stone platform, looking down into an empty dark void where the next platform should be. A few broken platform fragments drift in the distance, tiny twinkling pixel stars, a faint steel-blue glow rising from below.
+
+Style: authentic retro 16-bit pixel art, crisp hard-edged square pixels, no anti-aliasing, no blur, limited palette of about 12 colors: near-black navy, steel blue (#89AACC), pale off-white, warm amber for the lantern, a little moss green on the stones.
+
+Composition: square 1:1 canvas; the character and the platform slightly below center, lots of empty dark space around them; a solid flat background color #0A0A0A filling the whole canvas.
+
+Avoid: any text, letters, numbers, UI elements, logos, watermarks, smooth gradients.
+
+=== istanbul-skyline.png
+Use your built-in image generation tool (image_gen) to create exactly ONE image, then copy the resulting PNG from the generated_images folder into the current working directory as skyline.png and print its pixel size and mode with Python PIL. Do not write any code to draw the image; use image generation only. Do not create any other files.
+
+Request a TRANSPARENT background from the tool and keep the alpha channel.
+
+Use case: decorative line-art band for the footer of a dark portfolio website of a software developer based in Istanbul.
+
+Image: a minimal monoline line drawing of the Istanbul skyline panorama seen across the water: Galata Tower, the domes and slender minarets of Hagia Sophia and the Blue Mosque, the Suleymaniye Mosque, the Bosphorus Bridge with its suspension cables, a few small seagulls, and a single gentle horizontal waterline with two or three short wave strokes.
+
+Style: elegant architectural monoline illustration with one consistent thin off-white (#F5F5F4) stroke weight, no fills, no shading, no hatching, no color.
+
+Composition: a very wide panoramic band; the skyline spans the full width of a 3:2 landscape canvas as one long horizontal strip, vertically centered, everything above and below it empty and transparent.
+
+Avoid: any text, letters, logos, watermarks, background color, frames, borders.
+
+=== studio-diorama.png (duzeltme)
+Ilk uretimde raftaki top Amerikan futbolu topuydu; ayni gorsel uzerinde edit modu ile siyah-beyaz futbol topuna cevrildi:
+First load ./source.png with your built-in view_image tool so it is visible in the conversation. Then use your built-in image generation tool (image_gen) in EDIT mode on that image to produce exactly ONE edited image, and copy the resulting PNG from the generated_images folder into the current working directory as studio-v2.png, then print its pixel size and mode with Python PIL. Do not write any code to draw or modify pixels yourself. Do not create any other files.
+
+Use case: precise-object-edit. Keep a TRANSPARENT background and preserve the alpha channel.
+
+Edit only one object: on the right end of the wall shelf there is a brown American football. Replace it with a classic black-and-white association football (soccer ball) of similar size, resting in the same spot on the shelf, lit by the same soft blue and warm light.
+
+Preserve everything else exactly: the isometric room shape and angle, the window with the moon and city, the drone, scuba mask and ice skates on the shelf, both monitors and their screens, desk, chair, keyboard, controller, lamp, plant, arcade cabinet, the model railway with the train and the rail switch, colors, lighting and margins. Do not add anything else. No text, no logos, no watermark.
+
+=== ag-mark.png (nav / favicon monogrami)
+Use your built-in image generation tool (image_gen) to create exactly ONE image, then copy the resulting PNG from the generated_images folder into the current working directory as mark.png and print its pixel size and mode with Python PIL. Do not write any code to draw the image; use image generation only. Do not create any other files.
+
+Request a TRANSPARENT background from the tool and keep the alpha channel.
+
+Use case: logo-brand. Asset type: personal monogram logo in an app-icon shape, for the portfolio website of Arda Guner, a software engineer and indie game developer. It will be shown very small (24 to 48 pixels) in a navigation bar and as a browser favicon, and larger (180 pixels) as a home-screen icon.
+
+Image: one square app icon. A rounded-square tile with smooth superellipse corners, made of dark smoked liquid glass: a deep near-black body (#0B0C10) with subtle depth, a thin bright specular rim highlight along the top edge, soft inner reflections, and a faint steel-blue (#89AACC) glow rising from inside the bottom edge.
+Centered on the tile: an elegant monogram made of exactly two capital letters, "A" and "G", in a refined high-contrast italic serif typeface (in the spirit of Instrument Serif Italic). The letters are polished silver-white with a soft vertical gradient from pure white at the top to light grey at the bottom. The A and G are tightly kerned and slightly overlap, forming one balanced, confident mark that stays clearly readable at 32 pixels.
+
+Style: premium, minimal, Apple iOS 26 Liquid Glass icon aesthetic, crisp clean edges, no clutter.
+
+Composition: the tile fills about 90% of a square 1:1 canvas and is perfectly centered; everything outside the tile is transparent.
+
+Avoid: any other text, words, extra letters, numbers, logos, watermarks, cast shadows outside the tile, busy textures, rainbow or neon colors.

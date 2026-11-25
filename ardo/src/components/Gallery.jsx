@@ -1,138 +1,118 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import Reveal from "../Reveal";
 import Icon from "./Icon";
+import KineticTitle from "../motion/KineticTitle";
+import { gsap, useGSAP, azalt } from "../motion/core";
+import { useSpotlight } from "../motion/pointer";
 import { withImage, featuredProjects } from "../data/projects";
 
 /* ------------------------------------------------------------------
-   Galeri — iki sütun, kaydırmayla ters yönlerde kayıyor.
+   Arşiv — iki sütun, kaydırmayla ters yönlerde kayıyor.
 
-   Vitrinde zaten görünen işler buraya girmiyor, yoksa aynı görsel
-   sayfada iki kez çıkardı. Görseli olmayan iş de girmiyor: bir işi
-   arşivden çıkarmak için `projects.js`'te `image: null` yeterli,
-   çizelgede kalmaya devam ediyor.
+   Vitrinde zaten görünen işler buraya girmiyor (aynı görsel iki kez
+   çıkmasın). Görseli olmayan iş de girmiyor.
 
-   Paralaks tek bir scroll dinleyicisi ve iki `transform` ile yapıldı;
-   bunun için bir animasyon kütüphanesi kurmaya değmez. Dinleyici
-   `passive`, iş rAF içinde yapılıyor, yani kaydırma bloklanmıyor.
+   v2:
+   - Paralaks eskiden scroll dinleyicisi + React state ile yapılıyordu:
+     her kaydırma karesinde bileşen yeniden çiziliyordu. Şimdi GSAP
+     ScrollTrigger (scrub) doğrudan transform yazıyor; render yok.
+   - Görseller birer tarayıcı penceresinin içinde (üç nokta + adres
+     çubuğunda sitenin alan adı): bunlar web işleri, çerçeve onu
+     söylüyor.
 
    Yüklenemeyen görsel kırık ikon basmasın diye karo `onError`'da
    kendini gizliyor.
 ------------------------------------------------------------------- */
 
-/** Locale'de karşılığı olmayan proje sayfayı düşürmesin — bugün
-    `about.os` silindiğinde site tam olarak böyle beyaz ekrana düştü. */
-const metniAl = (strings, id) =>
-  strings.projectItems[id] || { title: id, desc: "" };
+const metniAl = (strings, id) => strings.projectItems[id] || { title: id, desc: "" };
+
+const alanAdi = (url) => {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return "";
+  }
+};
 
 function Gallery({ strings }) {
   const bolumRef = useRef(null);
-  const [kayma, setKayma] = useState(0);
+  const izgara = useRef(null);
+  useSpotlight(izgara);
 
   const oneCikanIds = new Set(featuredProjects().map((p) => p.id));
   const kareler = withImage().filter((p) => !oneCikanIds.has(p.id));
   const orta = Math.ceil(kareler.length / 2);
   const sutunlar = [kareler.slice(0, orta), kareler.slice(orta)];
-  // İki karo tek satır demek; CSS o durumda sütun basamağını kaldırıyor.
   const cift = kareler.length === 2;
 
-  useEffect(() => {
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) return undefined;
-
-    let raf = 0;
-    const olc = () => {
-      raf = 0;
-      const el = bolumRef.current;
-      if (!el) return;
-      const kutu = el.getBoundingClientRect();
-      // Bölüm ekranın ortasına geldiğinde 0, uzaklaştıkça artıyor.
-      const ilerleme = (window.innerHeight / 2 - (kutu.top + kutu.height / 2)) / window.innerHeight;
-      setKayma(Math.max(-1, Math.min(1, ilerleme)) * 40);
-    };
-
-    const onScroll = () => {
-      if (!raf) raf = requestAnimationFrame(olc);
-    };
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    olc();
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-      if (raf) cancelAnimationFrame(raf);
-    };
-  }, []);
+  useGSAP(
+    () => {
+      if (azalt() || !bolumRef.current) return;
+      const mm = gsap.matchMedia();
+      // Tek sütuna düşünce paralaks anlamsız; yalnız geniş ekranda.
+      mm.add("(min-width: 621px)", () => {
+        const [a, b] = bolumRef.current.querySelectorAll(".gallery-col");
+        const st = { trigger: bolumRef.current, start: "top bottom", end: "bottom top", scrub: true };
+        if (a) gsap.fromTo(a, { y: 50 }, { y: -50, ease: "none", scrollTrigger: st });
+        if (b) gsap.fromTo(b, { y: -50 }, { y: 50, ease: "none", scrollTrigger: { ...st } });
+      });
+    },
+    { scope: bolumRef }
+  );
 
   if (!kareler.length) return null;
 
   return (
     <section className="section gallery" id="gallery" ref={bolumRef}>
       <div className="shell">
-        <Reveal className="section-head">
+        <div className="section-head">
           <div>
-            {/* Bu bölümün başlığı tek kelime: "Arşiv". Eyebrow ve
-                titleLead locale'de boş; diğer bölümlerdeki iki
-                parçalı kalıp burada kasıtlı olarak kullanılmıyor,
-                çünkü bölüm bir vitrin değil bir depo. */}
-            {strings.gallery.eyebrow && (
-              <span className="eyebrow">{strings.gallery.eyebrow}</span>
-            )}
-            <h2 className="grad-text">
-              {strings.gallery.titleLead && `${strings.gallery.titleLead} `}
-              <em className="display">{strings.gallery.titleAccent}</em>
-            </h2>
+            {/* Bölüm başlığı tek kelime: "Arşiv". Bölüm bir vitrin değil
+                bir depo; iki parçalı başlık kalıbı burada kullanılmıyor. */}
+            {strings.gallery.eyebrow && <span className="eyebrow">{strings.gallery.eyebrow}</span>}
+            <KineticTitle lead={strings.gallery.titleLead} accent={strings.gallery.titleAccent} />
           </div>
           {strings.gallery.lede && <p className="lede">{strings.gallery.lede}</p>}
-        </Reveal>
+        </div>
 
-        <div className={`gallery-grid${cift ? " is-pair" : ""}`}>
+        <div className={`gallery-grid${cift ? " is-pair" : ""}`} ref={izgara}>
           {sutunlar.map((sutun, si) => (
-            <div
-              key={si}
-              className="gallery-col"
-              style={{ transform: `translate3d(0, ${si === 0 ? kayma : -kayma}px, 0)` }}
-            >
+            <div key={si} className="gallery-col">
               {sutun.map((p) => {
                 const metin = metniAl(strings, p.id);
-                // Karo canlı siteye gidiyor. Link başlıkta; CSS onu
-                // `::after` ile bütün karoya yayıyor, figure yapısı
-                // bozulmuyor ve ekran okuyucu linki tek isimle okuyor.
-                // Canlı linki olmayan iş düz karo olarak kalıyor.
                 const canli = p.links?.live;
                 const baslik = <span className="display">{metin.title}</span>;
                 return (
-                  <Reveal
-                    as="figure"
-                    key={p.id}
-                    className={`gallery-item${canli ? " is-link" : ""}`}
-                  >
-                    <img
-                      src={p.image}
-                      alt={metin.title}
-                      loading="lazy"
-                      decoding="async"
-                      onError={(e) => {
-                        e.currentTarget.closest(".gallery-item").hidden = true;
-                      }}
-                    />
+                  <Reveal as="figure" key={p.id} className={`gallery-item spot${canli ? " is-link" : ""}`}>
+                    <div className="browser-bar" aria-hidden="true">
+                      <span className="browser-dots">
+                        <i />
+                        <i />
+                        <i />
+                      </span>
+                      {canli && <span className="browser-url">{alanAdi(canli)}</span>}
+                    </div>
+                    <div className="gallery-shot">
+                      <img
+                        src={p.image}
+                        alt={metin.title}
+                        loading="lazy"
+                        decoding="async"
+                        onError={(e) => {
+                          e.currentTarget.closest(".gallery-item").hidden = true;
+                        }}
+                      />
+                    </div>
                     <figcaption>
                       {canli ? (
-                        <a
-                          className="gallery-link"
-                          href={canli}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
+                        <a className="gallery-link" href={canli} target="_blank" rel="noopener noreferrer">
                           {baslik}
                           <Icon name="external" size={15} />
                         </a>
                       ) : (
                         baslik
                       )}
-                      <span className={`status status-${p.status}`}>
-                        {strings.projectLabels.status[p.status]}
-                      </span>
+                      <span className={`status status-${p.status}`}>{strings.projectLabels.status[p.status]}</span>
                     </figcaption>
                   </Reveal>
                 );

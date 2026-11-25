@@ -266,6 +266,88 @@ function Icon({ name, size = 20, className = "" }) {
           <path d="M9 12l2 2 4-4" />
         </svg>
       );
+    /* --- v2: komut paleti ve hobi kartı için eklenenler ----------- */
+    case "search":
+      return (
+        <svg {...props}>
+          <circle cx="11" cy="11" r="6.5" />
+          <path d="M20 20l-4.2-4.2" />
+        </svg>
+      );
+    case "globe":
+      return (
+        <svg {...props}>
+          <circle cx="12" cy="12" r="9" />
+          <path d="M3 12h18M12 3c2.6 2.6 3.8 5.6 3.8 9s-1.2 6.4-3.8 9c-2.6-2.6-3.8-5.6-3.8-9S9.4 5.6 12 3z" />
+        </svg>
+      );
+    case "arrowUp":
+      return (
+        <svg {...props}>
+          <path d="M12 19V5M5.5 11.5L12 5l6.5 6.5" />
+        </svg>
+      );
+    case "hash":
+      return (
+        <svg {...props}>
+          <path d="M9.5 4L7.5 20M16.5 4l-2 16M4.5 9h16M3.5 15h16" />
+        </svg>
+      );
+    case "film":
+      return (
+        <svg {...props}>
+          <rect x="3.5" y="5" width="17" height="14" rx="2" />
+          <path d="M3.5 9h17M3.5 15h17M8 5v4M8 15v4M16 5v4M16 15v4" />
+        </svg>
+      );
+    case "skate":
+      return (
+        <svg {...props}>
+          <path d="M6 4h5v6.5c2.8.4 6 1.4 7.5 3.2.5.6.5 1.3.5 2.3H6V4z" />
+          <path d="M4 19.5h16M8 16v3.5M17 16v3.5" />
+        </svg>
+      );
+    case "scuba":
+      return (
+        <svg {...props}>
+          <path d="M4 9.5C4 8 5.2 7 6.6 7h8.8C16.8 7 18 8 18 9.5v2.2c0 1.6-1.3 2.8-2.9 2.8h-1.4L12.5 13h-3l-1.2 1.5H6.9C5.3 14.5 4 13.3 4 11.7V9.5z" />
+          <path d="M18 11h1.5V5.5M19.5 18.5c-1.2 1.2-3.3 1.2-4.5 0" />
+        </svg>
+      );
+    case "drone":
+      return (
+        <svg {...props}>
+          <rect x="9" y="10" width="6" height="4.5" rx="1.5" />
+          <path d="M9 11L6 8.5M15 11l3-2.5M9 13.5L6 16M15 13.5l3 2.5" />
+          <path d="M3 8.5h6M15 8.5h6M3 16h6M15 16h6" />
+        </svg>
+      );
+    case "cap":
+      return (
+        <svg {...props}>
+          <path d="M2.5 9.5L12 5l9.5 4.5L12 14 2.5 9.5z" />
+          <path d="M6.5 11.5v4c1.4 1.4 3.4 2 5.5 2s4.1-.6 5.5-2v-4M21.5 9.5v5" />
+        </svg>
+      );
+    case "spark":
+      return (
+        <svg {...props}>
+          <path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M18 6l-2.5 2.5M8.5 15.5L6 18" />
+        </svg>
+      );
+    case "copy":
+      return (
+        <svg {...props}>
+          <rect x="8.5" y="8.5" width="11" height="11" rx="2" />
+          <path d="M15.5 8.5V6a1.5 1.5 0 00-1.5-1.5H6A1.5 1.5 0 004.5 6v8A1.5 1.5 0 006 15.5h2.5" />
+        </svg>
+      );
+    case "enter":
+      return (
+        <svg {...props}>
+          <path d="M19 5v7a3 3 0 01-3 3H6M9.5 11.5L6 15l3.5 3.5" />
+        </svg>
+      );
     default:
       return null;
   }

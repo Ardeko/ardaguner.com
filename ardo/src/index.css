@@ -1,60 +1,65 @@
 /* ------------------------------------------------------------------
    Temel katman: jetonlar, sıfırlama, tipografi ölçeği ve site geneline
-   yayılan üç efekt (particles, reveal, konami confetti).
+   yayılan yardımcılar (cam yüzey, kinetik başlık, particles, reveal,
+   konami confetti).
 
-   PALET NOTU — eski dosyada cyan (#22d3ee) + mor (#a78bfa) gradient
-   vardı. O ikili her yerde tekrarlandığı için site "şablon" gibi
-   duruyordu; kaldırıldı. Yerine tek renkli, kontrastı tipografiden ve
-   boşluktan alan bir palet geldi. Geriye kalan tek renkli vurgu, durum
-   noktaları (yayında / geliştiriliyor) — onlar da bilgi taşıdığı için
-   duruyor, süs değiller.
+   v2 — "Gece editoryali × oyun stüdyosu"
+   Zemin OLED siyahına indi (#0a0a0a → #060607), metin kontrastı bir tık
+   arttı. Kimlik aynı: italik serif başlık + nötr grotesk gövde, tek
+   renkli palet. Yeni renk yalnızca iki yerde: hero'nun aurora ışığı
+   (aksan mavisinin akrabaları) ve proje kartlarının hover parıltısı —
+   o renk de kartın kendi oyun görselinden geliyor, süs değil bilgi.
+
+   PALET NOTU (eski) — cyan (#22d3ee) + mor (#a78bfa) gradyanı hâlâ yok.
+   Metin, buton ve çerçeveler tek renkli kalıyor.
 ------------------------------------------------------------------- */
 
 :root {
-  --bg: #0a0a0a;
-  --bg-elevated: #101010;
-  --surface: #141414;
-  --surface-hover: #1a1a1a;
+  --bg: #060607;
+  --bg-elevated: #0c0c0e;
+  --surface: #101012;
+  --surface-hover: #161619;
 
   --stroke: rgba(255, 255, 255, 0.08);
   --stroke-strong: rgba(255, 255, 255, 0.16);
 
   --text: #f5f5f4;
-  --muted: rgba(245, 245, 244, 0.56);
-  --faint: rgba(245, 245, 244, 0.32);
+  /* Zemin koyulaşınca iki gri tonu bir tık açıldı: --faint artık küçük
+     etiketlerde ~4.5:1 kontrasta yaklaşıyor (eskisi ~2.8:1'di). */
+  --muted: rgba(245, 245, 244, 0.6);
+  --faint: rgba(245, 245, 244, 0.42);
 
-  /* Vurgu — şimdilik yalnızca arka plan katmanı (Backdrop) kullanıyor.
-     Metin ve butonlar hâlâ tek renkli; palet burada patlamasın. */
+  /* Aksan — arka plan ışığı, aurora ve odak halkalarının ikinci tonu. */
   --accent: #89aacc;
 
-  /* --- Metin gradyanı ---------------------------------------------
-     Tek renkli paletin içinde kalan tonal bir geçiş: tepede saf beyaz,
-     tabanda gövde metninin grisi. Renk katmıyor, ışık katıyor — bu
-     yüzden yukarıda kaldırılan cyan/mor ikilisinin hatasını
-     tekrarlamıyor.
+  /* --- Liquid Glass ------------------------------------------------
+     Apple'ın 2025 malzemesinden alınan üç katman: bulanık + doygun
+     arka plan, üst kenarda ince speküler ışık, altta karartılmış kenar.
+     Yalnızca gezinme ve kontrollerde (üst çubuk, dil anahtarı, başa dön,
+     ikincil buton, görsel üstü rozetler). İçerik yüzeylerinde yok —
+     okunan metnin arkası cam olunca kontrast düşüyor. */
+  --glass-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.025));
+  --glass-stroke: rgba(255, 255, 255, 0.11);
+  --glass-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.03),
+    0 12px 32px -12px rgba(0, 0, 0, 0.7);
+  --glass-blur: blur(18px) saturate(170%);
 
-     Bitiş tonu bilerek 0.58: --muted (0.56) ile aynı yerde duruyor,
-     yani başlığın en sönük noktası bile yanındaki lede'den koyu
-     değil. Geçişi sertleştirmek için bu değeri düşür, yumuşatmak
-     için yükselt — ayar tek noktadan yapılıyor. */
+  /* --- Metin gradyanı ---------------------------------------------
+     Tepede saf beyaz, tabanda gövde metninin grisi. Bitiş tonu --muted
+     ile aynı yerde: başlığın en sönük noktası yanındaki lede'den koyu
+     değil. */
   --grad-text: linear-gradient(
     180deg,
     #ffffff 0%,
     #f2f1ef 38%,
-    rgba(245, 245, 244, 0.58) 100%
+    rgba(245, 245, 244, 0.6) 100%
   );
 
-  /* Zaten --faint ile basılan büyük rakamlar için sönük eşi
-     (çizelgedeki yıllar, 404 kodu). Aynı eğri, bir oktav aşağıda.
-
-     Aralık --faint'in (0.32) iki yanına açılıyor: tepe 0.56, taban
-     0.30. Kasıtlı olarak dar — daha aşağı inen bir taban çizelgedeki
-     yılları şu ankinden okunaksız yapardı ve o yıllar süs değil,
-     bilgi. Ortalama parlaklık artıyor, en zayıf nokta yerinde
-     kalıyor. */
   --grad-text-dim: linear-gradient(
     180deg,
-    rgba(245, 245, 244, 0.56) 0%,
+    rgba(245, 245, 244, 0.58) 0%,
     rgba(245, 245, 244, 0.3) 100%
   );
 
@@ -64,17 +69,21 @@
 
   --font-body: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-display: "Instrument Serif", Georgia, serif;
+  --font-pixel: "Silkscreen", ui-monospace, "Cascadia Mono", monospace;
 
   --radius: 14px;
   --radius-lg: 24px;
+  --radius-xl: 32px;
 
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-io: cubic-bezier(0.76, 0, 0.24, 1);
+  --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --fast: 0.2s;
   --base: 0.4s;
   --slow: 0.8s;
 
   --gutter: clamp(1.25rem, 5vw, 4rem);
-  --max: 1200px;
+  --max: 1240px;
 
   font-family: var(--font-body);
   line-height: 1.55;
@@ -106,6 +115,14 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Lenis açıkken kaydırmayı o yumuşatıyor; tarayıcının kendi smooth
+   davranışı da açık kalırsa iki yumuşatma üst üste biniyor ve çapa
+   linkleri sekerek gidiyor. */
+html.lenis,
+html.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -135,6 +152,18 @@ img {
   display: block;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* --- Tipografi ölçeği ---------------------------------------------
    Display yazıtipi yalnızca başlıklarda ve italik. Sitenin "editoryal"
    hissi buradan geliyor: gövde nötr bir grotesk, başlıklar serif.
@@ -157,27 +186,14 @@ h3 {
 }
 
 /* --- Metin gradyanı -------------------------------------------------
-   Yalnızca büyük başlıklarda. Kural: bir bölümde gradyan alan tek bir
-   şey var, o da bölümün başlığı. Kart başlıkları, gövde metni ve
-   rozetler düz kalıyor — gradyan her yere yayılırsa vurgu olmaktan
-   çıkıp yeni bir "şablon" görüntüsüne dönüşür.
+   Yalnızca büyük başlıklarda. Üç şey bilerek yapılıyor:
 
-   Üç şey burada bilerek yapılıyor:
-
-   1) Yedek renk önce yazılıyor, gradyan @supports'un içinde duruyor.
-      background-clip: text desteklenmiyorsa metin düz --text ile
-      basılır; şeffaf dolgu kalıp başlık kaybolmaz.
+   1) Yedek renk önce yazılıyor, gradyan @supports'un içinde. clip:text
+      desteklenmiyorsa başlık düz --text ile basılır, kaybolmaz.
    2) Kutu dört yandan büyütülüp aynı miktar negatif marjla geri
-      alınıyor. Sebebi: gradyan yalnızca elemanın kutusunun içinde
-      boyanıyor, dışarı taşan piksel boyanmadığı için görünmez oluyor.
-      Altta, line-height 1'in altına indiğinde (hero) ve Türkçe
-      inişlerde (ş, ç, ğ) harf kuyrukları oraya düşüyordu. Yanlarda,
-      italik serifin ilk harfi kutunun soluna taşıyor: hero'daki "A"
-      ve Arşiv başlığındaki "A" tıraşlanmış görünüyordu. Düzen
-      kaymıyor, yalnızca boyama alanı büyüyor.
-   3) forced-colors (Windows yüksek kontrast) modunda gradyan hiç
-      çizilmez; şeffaf dolgu kalırsa bütün başlıklar yok olur. Orada
-      sistem rengine geri dönülüyor.
+      alınıyor: gradyan yalnız kutunun içine boyanıyor, italik serifin
+      taşan ilk harfi ve Türkçe inişler (ş, ç, ğ) aksi hâlde tıraşlanıyor.
+   3) forced-colors modunda sistem rengine dönülüyor.
 ------------------------------------------------------------------- */
 
 .grad-text {
@@ -205,9 +221,6 @@ h3 {
     background-image: var(--grad-text-dim);
   }
 
-  /* Dolgu şeffaf olduğu için ::selection'ın `color`'ı iş görmüyor;
-     seçilen başlık aksi hâlde beyaz zeminde görünmez kalıyor.
-     İkinci çift seçici, h2'nin içindeki <em class="display"> için. */
   .grad-text::selection,
   .grad-text-dim::selection,
   .grad-text ::selection,
@@ -224,12 +237,31 @@ h3 {
   }
 }
 
+/* Üst etiket. v2'de büyük harf + geniş aralık yerine cümle düzeni ve
+   önünde kısa bir çizgi: tasarım skill'lerinin "şablon işareti" diye
+   ayıkladığı all-caps eyebrow'u yumuşatıyor, editoryal ritmi koruyor. */
 .eyebrow {
-  font-size: 0.7rem;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: var(--faint);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.01em;
+  color: var(--muted);
   font-weight: 500;
+}
+
+.eyebrow::before {
+  content: "";
+  width: 1.4rem;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.55;
+  flex: none;
+}
+
+/* Rakamın altındaki küçük etiketlerde çizgi yok. */
+.eyebrow.is-bare::before {
+  display: none;
 }
 
 .lede {
@@ -241,7 +273,8 @@ h3 {
 /* --- Bölüm iskeleti ------------------------------------------------ */
 
 .section {
-  padding: clamp(4rem, 10vw, 8rem) var(--gutter);
+  position: relative;
+  padding: clamp(4rem, 8vw, 7rem) var(--gutter);
 }
 
 .shell {
@@ -254,23 +287,106 @@ h3 {
   flex-wrap: wrap;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 1.5rem;
+  gap: 1.5rem 3rem;
   margin-bottom: clamp(2.5rem, 6vw, 4.5rem);
 }
 
 .section-head h2 {
-  font-size: clamp(2rem, 5vw, 3.25rem);
-  margin-top: 0.6rem;
+  font-size: clamp(2.3rem, 6vw, 4.25rem);
+  margin-top: 0.85rem;
 }
 
 .section-head .lede {
-  max-width: 34ch;
+  max-width: 36ch;
+  margin: 0;
+}
+
+/* --- Cam yüzey (Liquid Glass) -------------------------------------- */
+
+.glass {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-stroke);
+  box-shadow: var(--glass-shadow);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+}
+
+/* Saydamlığı azalt tercihinde cam opak bir yüzeye dönüyor. */
+@media (prefers-reduced-transparency: reduce) {
+  .glass {
+    background: var(--surface);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* --- Kinetik başlık (KineticTitle) ---------------------------------
+   Her kelime kendi maskesinin içinden aşağıdan çıkıyor. Gradyan h2'ye
+   değil kelimeye boyanıyor: transform alan bir çocuk, ebeveynin
+   clip:text maskesine her tarayıcıda dahil edilmiyor ve animasyon
+   sırasında yazı kayboluyordu. Gradyan dikey olduğu için kelime başına
+   boyamak tek satırlık başlıkta gözle ayırt edilmiyor.
+
+   Maskenin dört yanında taşma payı var: italik serifin kuyruğu, Türkçe
+   inişler ve ü/ö noktaları kırpılmasın. Düzen kaymıyor, pay negatif
+   marjla geri alınıyor. */
+
+.kt {
+  overflow-wrap: break-word;
+}
+
+.kt-w {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding: 0.1em 0.16em 0.2em;
+  margin: -0.1em -0.16em -0.2em;
+}
+
+.kt-i {
+  display: inline-block;
+  color: var(--text);
+  transform: translate3d(0, 108%, 0) rotate(5deg);
+  transform-origin: 0 100%;
+  transition: transform 1.05s var(--ease);
+  transition-delay: calc(var(--i, 0) * 65ms + var(--kt-delay, 0ms));
+}
+
+.kt.is-in .kt-i {
+  transform: none;
+}
+
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .kt-i {
+    background-image: var(--grad-text);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    padding: 0 0.12em 0.14em;
+    margin: 0 -0.12em -0.14em;
+  }
+
+  .kt-i::selection {
+    -webkit-text-fill-color: var(--bg);
+  }
+}
+
+@media (forced-colors: active) {
+  .kt-i {
+    background-image: none;
+    -webkit-text-fill-color: currentColor;
+  }
+}
+
+/* --- Kaydırınca dolan metin (ScrollFill) --------------------------- */
+
+.sf-w {
+  transition: opacity 0.2s linear;
 }
 
 /* --- Particles ------------------------------------------------------
-   Arda'nın açıkça istediği tek efekt. Eskiden cyan/mor parlıyordu;
-   artık tek renk ve çok daha soluk — arka planda kalması, dikkat
-   çekmemesi gerekiyor.
+   Arda'nın açıkça istediği efekt. Tek renk ve çok soluk — arka planda
+   kalması, dikkat çekmemesi gerekiyor.
 ------------------------------------------------------------------- */
 
 .particles {
@@ -309,11 +425,13 @@ h3 {
   }
 }
 
-/* --- Reveal (IntersectionObserver ile) ----------------------------- */
+/* --- Reveal (IntersectionObserver ile) -----------------------------
+   Kayma mesafesi 24px'ten 18px'e indi: hareket "geliyor" demeli,
+   sahneye fırlatmamalı. */
 
 .reveal {
   opacity: 0;
-  transform: translateY(24px);
+  transform: translateY(18px);
   transition: opacity var(--slow) var(--ease), transform var(--slow) var(--ease);
 }
 
@@ -347,20 +465,27 @@ h3 {
   }
 }
 
+/* Mesaj artık 8-bit bir "kilit açıldı" kutusu: piksel yazı ve
+   box-shadow ile çizilmiş basamaklı çerçeve. */
 .confetti-message {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) scale(0.8);
-  font-size: 1.05rem;
-  font-weight: 500;
+  font-family: var(--font-pixel);
+  font-size: 0.95rem;
   color: var(--text);
-  background: var(--surface);
-  border: 1px solid var(--stroke-strong);
-  padding: 0.9rem 1.6rem;
-  border-radius: var(--radius);
+  background: #0d0f16;
+  padding: 1rem 1.6rem;
+  box-shadow:
+    0 -4px 0 0 #f5f5f4,
+    0 4px 0 0 #f5f5f4,
+    -4px 0 0 0 #f5f5f4,
+    4px 0 0 0 #f5f5f4,
+    0 0 0 8px #060607,
+    0 0 40px 10px rgba(137, 170, 204, 0.35);
   opacity: 0;
-  animation: confetti-message-pop 0.4s var(--ease) forwards,
+  animation: confetti-message-pop 0.4s steps(4) forwards,
     confetti-message-fade 0.4s ease 3s forwards;
   white-space: nowrap;
 }

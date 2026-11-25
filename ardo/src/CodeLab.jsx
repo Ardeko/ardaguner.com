@@ -90,7 +90,8 @@ console.log("sum(2,5) =", sum(2,5));`
   };
 
   return (
-    <div style={{maxWidth: 1200, margin: "2rem auto"}}>
+    // Üst boşluk: başlık sabit üst çubuğun (ada) bandına sıkışıyordu.
+    <div style={{maxWidth: 1200, margin: "7rem auto 4rem", padding: "0 var(--gutter)", position: "relative", zIndex: 1}}>
       <h2 style={{color:"#ffdf6c", textShadow:"0 0 8px #ffdf6c"}}>{T.title}</h2>
       <p style={{opacity:.9, marginBottom:12}}>{T.subtitle}</p>
 

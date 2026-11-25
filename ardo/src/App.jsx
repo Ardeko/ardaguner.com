@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Routes, useLocation } from "react-router-dom";
 import "./App.css";
-import "./components/Enhancements.css";
+import SmoothScroll from "./motion/SmoothScroll";
 
 import tr from "/locales/tr.json";
 import en from "/locales/en.json";
@@ -9,10 +9,6 @@ import { tips } from "./tips";
 
 import Particles from "./Particles";
 import { useKonamiCode, ConfettiBurst } from "./KonamiConfetti";
-import PrivacyPolicy from "./PrivacyPolicy";
-import AccountDeletion from "./AccountDeletion";
-import TermsOfUse from "./TermsOfUse";
-import CaseStudy from "./CaseStudy";
 import StudioSpotlight from "./StudioSpotlight";
 
 import Backdrop from "./components/Backdrop";
@@ -30,6 +26,24 @@ import NotFound from "./components/NotFound";
 
 import { lazy, Suspense } from "react";
 const CodeLab = lazy(() => import("./CodeLab"));
+
+/* v2: ana sayfada hiç gerekmeyen sayfalar da tembel yükleniyor. Yeni
+   hareket katmanı (GSAP + ScrollTrigger + Lenis, ~50 KB gzip) ana
+   pakete girdi; gizlilik politikası, kullanım koşulları, hesap silme ve
+   vaka çalışması (metinleri ve CSS'leriyle birlikte) ayrı parçalara
+   çıkınca ilk yüklemenin büyük kısmı geri kazanılıyor. Adresler aynı. */
+const PrivacyPolicy = lazy(() => import("./PrivacyPolicy"));
+const AccountDeletion = lazy(() => import("./AccountDeletion"));
+const TermsOfUse = lazy(() => import("./TermsOfUse"));
+const CaseStudy = lazy(() => import("./CaseStudy"));
+
+function SayfaBekle() {
+  return (
+    <div className="lab-loading" role="status">
+      <span className="lab-spinner" />
+    </div>
+  );
+}
 
 /* ------------------------------------------------------------------
    Kabuk: dil durumu, rotalar ve bölüm sırası. Eskiden 995 satırdı,
@@ -91,6 +105,11 @@ function App() {
   );
   const bitir = useCallback(() => setYukleniyor(false), []);
 
+  // Hero'nun açılış koreografisi perde KALKARKEN başlıyor (perde tamamen
+  // gidince değil); perde hiç yoksa hemen.
+  const [sahne, setSahne] = useState(() => !yukleniyor);
+  const perdeKalkti = useCallback(() => setSahne(true), []);
+
   const [celebrate, setCelebrate] = useState(false);
   const handleUnlock = useCallback(() => {
     setCelebrate(true);
@@ -111,9 +130,12 @@ function App() {
 
   return (
     <Router>
+      <SmoothScroll />
+
       {yukleniyor && (
         <Preloader
           words={language === "tr" ? ["Tasarla", "Kur", "Yayınla"] : ["Design", "Build", "Ship"]}
+          onLift={perdeKalkti}
           onDone={bitir}
         />
       )}
@@ -122,8 +144,9 @@ function App() {
           içeriğe atlayabiliyor. Odaklanmadıkça görünmüyor. */}
       <SkipLink label={strings.nav.skip} />
 
-      {/* Arka plan katmanı. Varyant: "aurora" | "beams" | "drift" */}
-      <Backdrop variant="drift" />
+      {/* Arka plan katmanı. Varyant: "aurora" (WebGL) | "beams" | "drift".
+          aurora, WebGL yoksa kendiliğinden drift'e düşüyor. */}
+      <Backdrop variant="aurora" />
       <Particles />
       <ConfettiBurst active={celebrate} language={language} />
 
@@ -143,14 +166,14 @@ function App() {
                   Öne çıkanlardan sonra çizelge geliyor (seçilmiş işlerden
                   tüm kataloga), arşiv en sonda: derinleşmek isteyen
                   oraya kadar iniyor. */}
-              <Hero language={language} strings={strings} roles={roller} />
+              <Hero language={language} strings={strings} roles={roller} ready={sahne} />
               <About strings={strings} language={language} />
               <Featured strings={strings} />
               {/* Vitrin ne yaptigini gosterir; bu blok nasil dusundugunu. */}
               <CaseTeaser strings={strings} />
               <Timeline strings={strings} language={language} />
               <Gallery strings={strings} />
-              <StudioSpotlight language={language} />
+              <StudioSpotlight strings={strings} />
             </main>
           }
         />
@@ -171,19 +194,44 @@ function App() {
           }
         />
 
-        <Route path="/privacy-policy" element={<PrivacyPolicy language={language} />} />
+        <Route
+          path="/privacy-policy"
+          element={
+            <Suspense fallback={<SayfaBekle />}>
+              <PrivacyPolicy language={language} />
+            </Suspense>
+          }
+        />
 
         {/* İki dilli, oturumsuz. Statik kopyası vite.config.js'te. */}
-        <Route path={SILME_YOLU} element={<AccountDeletion />} />
+        <Route
+          path={SILME_YOLU}
+          element={
+            <Suspense fallback={<SayfaBekle />}>
+              <AccountDeletion />
+            </Suspense>
+          }
+        />
 
         {/* Oyun kuralları, açık kullanımı yasağı, yaptırımlar. Statik kopyası vite.config.js'te. */}
-        <Route path={KOSUL_YOLU} element={<TermsOfUse language={language} />} />
+        <Route
+          path={KOSUL_YOLU}
+          element={
+            <Suspense fallback={<SayfaBekle />}>
+              <TermsOfUse language={language} />
+            </Suspense>
+          }
+        />
 
         {/* Vaka calismasi. Icerik locales icinde; yeni vaka eklemek
             burada bir rota ve orada bir anahtar demek. */}
         <Route
           path="/case/apex-shift"
-          element={<CaseStudy strings={strings} />}
+          element={
+            <Suspense fallback={<SayfaBekle />}>
+              <CaseStudy strings={strings} />
+            </Suspense>
+          }
         />
 
         {/* Yakalayıcı rota. Yoksa /eskisayfa gibi bir adres üst çubuk

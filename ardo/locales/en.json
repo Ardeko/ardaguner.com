@@ -19,7 +19,9 @@
       "projects": "projects",
       "live": "live",
       "games": "games"
-    }
+    },
+    "founderChip": "Founder of Ardeko Studios",
+    "deckLabel": "Go to selected work"
   },
   "about": {
     "title": "About Me",
@@ -64,7 +66,9 @@
     ],
     "philosophy": "My life philosophy is to always learn, explore, and be open to new opportunities.",
     "githubCTA": "Additionally, I share my projects on my GitHub profile. For more:",
-    "githubLink": "GitHub Profile"
+    "githubLink": "GitHub Profile",
+    "now": "Now",
+    "focus": "Focus areas"
   },
   "projects": {
     "restricted": "This project is restricted due to copyright."
@@ -74,7 +78,11 @@
     "thanks": "Special thanks to Soner and Çiğdem Güner!",
     "copyright": "© 2026 Arda Güner. All rights reserved.",
     "copy": "Copy",
-    "copied": "Copied"
+    "copied": "Copied",
+    "heading": "Let's work together",
+    "lede": "Projects, collaborations, or just a hello — the inbox is open.",
+    "mailCta": "Send an email",
+    "skylineAlt": "Istanbul skyline: Galata Tower, Hagia Sophia, the Blue Mosque and Süleymaniye, the Bosphorus Bridge."
   },
   "cv": {
     "title": "Resume",
@@ -220,12 +228,16 @@
     "titleAccent": "so far",
     "lede": "{n} projects since 2023 — games, apps and client work.",
     "filterLabel": "Filter by category",
-    "all": "All"
+    "all": "All",
+    "expandAll": "Expand all",
+    "collapseAll": "Collapse all"
   },
   "notFound": {
     "title": "Nothing here",
     "desc": "The page you’re looking for may have moved, or never existed.",
-    "cta": "Back to home"
+    "cta": "Back to home",
+    "level": "LEVEL 404",
+    "continue": "CONTINUE?"
   },
   "caseStudies": {
     "apex": {
@@ -328,5 +340,33 @@
         "cta": "Read the case study"
       }
     }
+  },
+  "studio": {
+    "eyebrow": "Indie game studio",
+    "tagline": "The studio behind Switch Master: Railway, Kafa Kafaya, Rushville, and Skyline Swinger.",
+    "cta": "Visit the studio",
+    "press": "PRESS START",
+    "games": "The studio's games",
+    "dioramaAlt": "Isometric workroom of Ardeko Studios: two monitors, an arcade cabinet and a model railway; a drone, diving mask, ice skates and football on the shelf."
+  },
+  "palette": {
+    "open": "Search",
+    "title": "Command palette",
+    "placeholder": "Search sections, projects or actions…",
+    "sections": "Sections",
+    "projects": "Projects",
+    "featured": "Featured projects",
+    "actions": "Actions",
+    "switchLang": "Türkçe'ye geç",
+    "copyEmail": "Copy email address",
+    "downloadCv": "Download résumé",
+    "openGithub": "Open GitHub profile",
+    "openLinkedin": "Open LinkedIn profile",
+    "backToTop": "Back to top",
+    "empty": "No results for “{q}”.",
+    "navigate": "navigate",
+    "select": "select",
+    "close": "close",
+    "copied": "Copied ✓"
   }
 }

@@ -19,7 +19,9 @@
       "projects": "proje",
       "live": "yayında",
       "games": "oyun"
-    }
+    },
+    "founderChip": "Ardeko Studios'un kurucusu",
+    "deckLabel": "Seçilmiş işlere git"
   },
   "about": {
     "title": "Hakkımda",
@@ -64,7 +66,9 @@
     ],
     "philosophy": "Hayat felsefem, sürekli öğrenme, keşfetme ve yeniliklere açık olmaktır.",
     "githubCTA": "Ayrıca, projelerimi GitHub hesabımda paylaşıyorum. Daha fazlası için:",
-    "githubLink": "GitHub Profilim"
+    "githubLink": "GitHub Profilim",
+    "now": "Şu an",
+    "focus": "Odak noktaları"
   },
   "projects": {
     "restricted": "Bu proje telif hakları nedeniyle paylaşılmamaktadır."
@@ -74,7 +78,11 @@
     "thanks": "Soner ve Çiğdem Güner’e özel teşekkürler!",
     "copyright": "© 2026 Arda Güner. Tüm hakları saklıdır.",
     "copy": "Kopyala",
-    "copied": "Kopyalandı"
+    "copied": "Kopyalandı",
+    "heading": "Birlikte çalışalım",
+    "lede": "Proje, iş birliği ya da sadece merhaba — kutunuz açık.",
+    "mailCta": "E-posta gönder",
+    "skylineAlt": "İstanbul silueti: Galata Kulesi, Ayasofya, Sultanahmet ve Süleymaniye camileri, Boğaz Köprüsü."
   },
   "cv": {
     "title": "Özgeçmiş",
@@ -220,12 +228,16 @@
     "titleAccent": "yaptıklarım",
     "lede": "2023’ten bugüne {n} proje — oyunlar, uygulamalar ve kurumsal işler.",
     "filterLabel": "Kategoriye göre filtrele",
-    "all": "Hepsi"
+    "all": "Hepsi",
+    "expandAll": "Hepsini aç",
+    "collapseAll": "Hepsini kapat"
   },
   "notFound": {
     "title": "Burada bir şey yok",
     "desc": "Aradığın sayfa taşınmış ya da hiç var olmamış olabilir.",
-    "cta": "Anasayfaya dön"
+    "cta": "Anasayfaya dön",
+    "level": "SEVİYE 404",
+    "continue": "DEVAM?"
   },
   "caseStudies": {
     "apex": {
@@ -328,5 +340,33 @@
         "cta": "Vaka çalışmasını oku"
       }
     }
+  },
+  "studio": {
+    "eyebrow": "İndie oyun stüdyosu",
+    "tagline": "Switch Master: Railway, Kafa Kafaya, Rushville ve Skyline Swinger'ın arkasındaki oyun stüdyosu.",
+    "cta": "Stüdyoyu ziyaret et",
+    "press": "OYUNA BAŞLA",
+    "games": "Stüdyonun oyunları",
+    "dioramaAlt": "Ardeko Studios'un izometrik çalışma odası: iki monitör, atari makinesi, maket tren yolu; rafta drone, dalış maskesi, buz patenleri ve futbol topu."
+  },
+  "palette": {
+    "open": "Ara",
+    "title": "Komut paleti",
+    "placeholder": "Bölüm, proje ya da eylem ara…",
+    "sections": "Bölümler",
+    "projects": "Projeler",
+    "featured": "Öne çıkan projeler",
+    "actions": "Eylemler",
+    "switchLang": "Switch to English",
+    "copyEmail": "E-posta adresini kopyala",
+    "downloadCv": "Özgeçmişi indir",
+    "openGithub": "GitHub profilini aç",
+    "openLinkedin": "LinkedIn profilini aç",
+    "backToTop": "Başa dön",
+    "empty": "“{q}” için sonuç yok.",
+    "navigate": "gez",
+    "select": "seç",
+    "close": "kapat",
+    "copied": "Kopyalandı ✓"
   }
 }

@@ -82,7 +82,7 @@ function CaseStudy({ strings }) {
           {d.metrics.map((m) => (
             <li key={m.l}>
               <b className="display">{m.n}</b>
-              <span className="eyebrow">{m.l}</span>
+              <span className="eyebrow is-bare">{m.l}</span>
             </li>
           ))}
         </ul>

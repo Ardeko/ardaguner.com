@@ -11,8 +11,8 @@
      .page     z-index 1
      Nav       z-index 900
 
-   Canvas yok, WebGL yok, ek paket yok. Boyanan tek şey birkaç
-   gradient; hepsi GPU'da compositor katmanında kalıyor.
+   v2: "aurora" varyantı WebGL kullanıyor (paket yok, tek shader);
+   ışık sıfıra inince kare çizilmiyor. Diğer iki varyant saf CSS/2D.
 
    DEĞİŞKENLER — Backdrop.jsx tarafından yazılıyor:
      --mx / --my   imleç konumu, yüzde   (ışığın merkezi)
@@ -79,76 +79,41 @@
   }
 }
 
-/* --- Varyant: aurora ----------------------------------------------
-   Üç yumuşak leke. Renk tek: aksan mavisinin iki yoğunluğu ve bir
-   nötr. İkinci bir renk (mor/cyan) bilerek eklenmedi — o ikili siteyi
-   şablona çeviriyordu.
+/* --- Varyant: aurora (v2, WebGL) ---------------------------------
+   Zemini AuroraField çiziyor: ekranın üçte biri çözünürlükte bir canvas,
+   CSS onu tam ekrana yayıyor. Hafif blur kalan basamaklanmayı siliyor;
+   screen karışımı ışığı siyahın üstüne "ekliyor", griye boğmuyor.
 
-   İki hareket üst üste biniyor:
-     transform → kendi yavaş sürüklenmesi (keyframes, imleçten bağımsız)
-     translate → imlece göre paralaks (ayrı CSS özelliği, çakışmıyor)
-   `transform` ve `translate` ayrı özellikler olduğu için ikisi aynı
-   anda çalışabiliyor; tek `transform` ile yapılsaydı animasyon
-   paralaksı her karede eziyordu.
+   .bd-aurora-glow perdenin arkasında sabit, çok soluk bir hale: canvas
+   daha yüklenmeden (ya da ışık sönmüşken) sayfanın tepesi tamamen
+   kapkara durmasın diye. */
 
-   Katsayılar kasıtlı olarak farklı (34/22/14 px): hepsi aynı miktarda
-   kaysaydı düz bir yüzey gibi görünürdü, farklı olunca derinlik çıkıyor.
-------------------------------------------------------------------- */
-
-.bd-blob {
-  border-radius: 50%;
-  filter: blur(90px);
-  will-change: transform, translate;
+.bd-aurora {
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: blur(6px) saturate(1.1);
+  transform: scale(1.04);
+  translate: calc(var(--px, 0) * 18px) calc(var(--py, 0) * 12px);
+  mix-blend-mode: screen;
+  will-change: translate;
 }
 
-.bd-blob-a {
-  inset: auto auto 38% -12%;
-  width: 62vw;
-  height: 62vw;
-  background: radial-gradient(
-    circle,
-    color-mix(in srgb, var(--bd-accent) 30%, transparent),
-    transparent 68%
-  );
-  translate: calc(var(--px, 0) * 34px) calc(var(--py, 0) * 26px);
-  animation: bd-drift-a 34s ease-in-out infinite alternate;
+.bd-aurora-glow {
+  background:
+    radial-gradient(60% 46% at 70% -8%, color-mix(in srgb, var(--bd-accent) 13%, transparent), transparent 70%),
+    radial-gradient(40% 30% at 15% -5%, rgba(63, 143, 154, 0.08), transparent 70%);
 }
 
-.bd-blob-b {
-  inset: -20% -14% auto auto;
-  width: 56vw;
-  height: 56vw;
-  background: radial-gradient(
-    circle,
-    color-mix(in srgb, var(--bd-accent) 22%, transparent),
-    transparent 66%
-  );
-  translate: calc(var(--px, 0) * -22px) calc(var(--py, 0) * -16px);
-  animation: bd-drift-b 42s ease-in-out infinite alternate;
-}
-
-.bd-blob-c {
-  inset: auto 18% -30% auto;
-  width: 50vw;
-  height: 50vw;
-  background: radial-gradient(circle, rgba(245, 245, 244, 0.1), transparent 64%);
-  translate: calc(var(--px, 0) * 14px) calc(var(--py, 0) * 10px);
-  animation: bd-drift-c 50s ease-in-out infinite alternate;
-}
-
-@keyframes bd-drift-a {
-  to {
-    transform: translate3d(13vw, -7vh, 0) scale(1.14);
+@media (prefers-reduced-motion: reduce) {
+  .bd-aurora {
+    translate: none;
   }
 }
-@keyframes bd-drift-b {
-  to {
-    transform: translate3d(-10vw, 9vh, 0) scale(0.9);
-  }
-}
-@keyframes bd-drift-c {
-  to {
-    transform: translate3d(8vw, -5vh, 0) scale(1.1);
+
+@media (max-width: 640px) {
+  .bd-aurora {
+    filter: blur(4px) saturate(1.1);
   }
 }
 
@@ -226,33 +191,6 @@
 
 /* --- Erişilebilirlik ---------------------------------------------- */
 
-@media (prefers-reduced-motion: reduce) {
-  .bd-blob {
-    animation: none;
-    translate: none;
-  }
-}
-
-/* Dar ekranda blur yarıçapı orantısız pahalıya geliyor; küçültülüyor.
-   Lekeler de büyütülüyor, yoksa telefonda üç ayrı benek gibi duruyor. */
-@media (max-width: 640px) {
-  .bd-blob {
-    filter: blur(64px);
-  }
-  .bd-blob-a {
-    width: 108vw;
-    height: 108vw;
-  }
-  .bd-blob-b {
-    width: 96vw;
-    height: 96vw;
-  }
-  .bd-blob-c {
-    width: 86vw;
-    height: 86vw;
-  }
-}
-
 /* --- Varyant: drift ------------------------------------------------
    Zemini DriftField çiziyor (160×90'lık canvas, domain warping).
    Burada yapılan tek şey onu ekrana yaymak ve yumuşatmak.
@@ -277,7 +215,7 @@
 }
 
 /* Alanın üstünde duran sabit ışık: sayfanın tepesi tamamen kararmasın
-   ve nav çubuğu boşlukta durmasın diye. aurora'daki bd-blob-c ile
+   ve nav çubuğu boşlukta durmasın diye. aurora'daki .bd-aurora-glow ile
    aynı işi görüyor. */
 .bd-drift-glow {
   background: radial-gradient(
