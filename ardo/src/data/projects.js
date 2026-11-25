@@ -324,7 +324,7 @@ export const PROJECTS = [
     month: 8,
     category: 'game',
     status: 'wip',
-    platforms: 'WEB',
+    platforms: 'DESKTOP',
     tech: ['Phaser 3', 'Matter.js', 'JavaScript'],
     image: null,
     links: {},
